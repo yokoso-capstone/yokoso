@@ -1,10 +1,10 @@
 import { ReactElement } from "react";
-import { Button } from "@/components/core/Button";
+import Header from "@/components/sections/Header";
 
 function HomePage(): ReactElement {
   return (
     <>
-      <Button>hi</Button>
+      <Header />
     </>
   );
 }
