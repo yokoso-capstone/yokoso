@@ -1,10 +1,15 @@
 import type { AppProps } from "next/app";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, Flex, CSSReset } from "@chakra-ui/react";
+import Header from "@/components/sections/Header";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider>
-      <Component {...pageProps} />
+      <Flex direction='column'>
+        <CSSReset />
+        <Header />
+        <Component {...pageProps} />
+			</Flex>
     </ChakraProvider>
   );
 }
