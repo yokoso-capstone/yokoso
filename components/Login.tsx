@@ -1,4 +1,5 @@
 import Password from "@/components/core/Password";
+import {RedButton} from "@/components/core/Button";
 import {
     Modal,
     ModalOverlay,
@@ -7,7 +8,6 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    Button,
     Input,
     Stack
 } from "@chakra-ui/react"
@@ -22,7 +22,7 @@ function Login(props: LoginProps) {
         <Modal isOpen = {props.isOpen} onClose={props.onClose} isCentered={true}>
             <ModalOverlay/>
             <ModalContent>
-                <ModalHeader>Login</ModalHeader>
+                <ModalHeader margin="0 auto">Login</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
                     <Stack spacing = {4}>
@@ -31,7 +31,7 @@ function Login(props: LoginProps) {
                     </Stack>
                 </ModalBody>
                 <ModalFooter>
-                    <Button>Login</Button>
+                    <RedButton size="md" onClick={props.onClose}>Login</RedButton>
                 </ModalFooter>
             </ModalContent>
         </Modal>

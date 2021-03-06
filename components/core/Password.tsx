@@ -1,9 +1,10 @@
-import React, {useState} from "react";
+import React from "react";
+import {ViewIcon, ViewOffIcon} from "@chakra-ui/icons";
 import { 
     Input,
     InputGroup,
     InputRightElement,
-    Button
+    IconButton
 } from "@chakra-ui/react";
 
 function Password(){
@@ -17,10 +18,8 @@ function Password(){
                 type={show ? "text" : "password"} 
                 placeholder="Password"
             />
-            <InputRightElement width="4.5rem">
-                <Button onClick = {handleClick} h ="1.65rem" size="sm">
-                    {show? "Hide":"Show"}
-                </Button>
+            <InputRightElement width="3rem">
+                <IconButton variant = "ghost" size ="sm" aria-label="Show Password" onClick={handleClick} icon={show? <ViewOffIcon/> :<ViewIcon/>}></IconButton>
             </InputRightElement>
         </InputGroup>
     );
