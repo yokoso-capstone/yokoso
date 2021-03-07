@@ -13,7 +13,8 @@ import {
     Input,
     Stack,
     FormControl,
-    FormLabel
+    FormLabel,
+    FormHelperText
 } from "@chakra-ui/react"
 
 interface SignupProps {
@@ -23,6 +24,21 @@ interface SignupProps {
 
 function Signup(props: SignupProps) {
     const [dob, setDob] = useState(undefined);
+    const [error, setError] = useState(true);
+    const errorMsg = " Pasword must contain 1 number, 1 uppercase character and be 8 characters or more."
+
+    const validatePassword = (value : any) => {
+        var re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\w\W]{8,}$/
+
+        if (re.test(value)) {
+            setError(false);
+            console.log(error);
+        }
+        else if (!re.test(value)){
+            setError(true);
+            console.log(error)
+        }
+    }
     
     return(
         <Modal isOpen = {props.isOpen} onClose={props.onClose} isCentered={true}>
@@ -56,7 +72,14 @@ function Signup(props: SignupProps) {
                         </FormControl>
                         <FormControl>
                             <FormLabel>Password</FormLabel>
-                            <Password/>
+                            <Stack spacing ={2}>
+                                <Password
+                                    isInvalid={error}
+                                    onChange = {value => validatePassword(value.target.value)}
+                                    focusBorderColor={error? undefined: "green.300"}
+                                />
+                                <FormHelperText>{errorMsg}</FormHelperText>
+                            </Stack>
                         </FormControl>
                     </Stack>
                 </ModalBody>
