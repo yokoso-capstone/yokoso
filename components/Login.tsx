@@ -1,15 +1,18 @@
 import Password from "@/components/core/Password";
 import {RedButton} from "@/components/core/Button";
+import {Formik, Form, Field} from "formik";
 import {
     Modal,
     ModalOverlay,
     ModalContent,
     ModalHeader,
-    ModalFooter,
     ModalBody,
     ModalCloseButton,
+    ModalFooter,
     Input,
-    Stack
+    Stack,
+    FormControl,
+    FormLabel
 } from "@chakra-ui/react"
 
 interface LoginProps {
@@ -25,14 +28,41 @@ function Login(props: LoginProps) {
                 <ModalHeader margin="0 auto">Login</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                    <Stack spacing = {4}>
-                        <Input variant="outline" placeholder="Email"/>
-                        <Password/>
-                    </Stack>
+                    <Formik 
+                        initialValues={{
+                            email:'',
+                            password:''
+                        }}
+                        onSubmit={(values, actions) => {
+                            setTimeout(() => {
+                                actions.setSubmitting(false)
+                            }, 1000)
+                        }}
+                    >
+                        <Form>
+                            <Stack spacing = {4}>
+                                <Field name="email" type="email">
+                                    {({field} : any) => (
+                                        <FormControl>
+                                            <FormLabel>Email</FormLabel>
+                                            <Input {...field} variant="outline" placeholder="Email"/>
+                                        </FormControl>
+                                    )}
+                                </Field>
+                                <Field name="password">
+                                    {({field} : any) => (
+                                        <FormControl>
+                                            <FormLabel>Password</FormLabel>
+                                            <Password {...field}/>
+                                        </FormControl>
+                                    )}
+                                </Field>
+                                <RedButton size="md" type="submit">Login</RedButton>
+                            </Stack>
+                        </Form>
+                    </Formik>
                 </ModalBody>
-                <ModalFooter>
-                    <RedButton size="md" onClick={props.onClose}>Login</RedButton>
-                </ModalFooter>
+                <ModalFooter/>
             </ModalContent>
         </Modal>
     );

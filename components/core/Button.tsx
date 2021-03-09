@@ -11,7 +11,7 @@ export const RedButton = chakra(ChakraButton, {
     color:"white",
     background:"#ff3030",
     border:"solid",
-    width:"75%",
+    width:"100%",
     margin:"0 auto",
     display:"block",
     _hover: {
