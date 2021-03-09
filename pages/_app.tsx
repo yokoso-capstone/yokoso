@@ -5,11 +5,11 @@ import Header from "@/components/sections/Header";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider>
-      <Flex direction='column'>
+      <Flex direction="column">
         <CSSReset />
         <Header />
         <Component {...pageProps} />
-			</Flex>
+      </Flex>
     </ChakraProvider>
   );
 }

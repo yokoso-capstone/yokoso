@@ -1,16 +1,32 @@
 import { ReactElement } from "react";
-import { Stack, FormControl, InputGroup, InputLeftAddon, Input, Icon, Flex, Text } from "@chakra-ui/react";
+import {
+  Stack,
+  FormControl,
+  InputGroup,
+  Input,
+  Flex,
+  Text,
+  Box
+} from "@chakra-ui/react";
 
 function HomePage(): ReactElement {
   return (
-    <Flex justify='center' align='center' paddingTop='30px'>
-      <Stack spacing={3} isInline>
+    <Flex
+      justify="center"
+      align="center"
+      paddingTop="30px"
+      bgImage="url('/bg1.jpg')"
+      height="calc(100vh - 165px)"
+      bgPosition="center"
+      bgRepeat="no-repeat"
+      bgSize="cover"
+    >
+      <Stack spacing={3} direction="row">
         <Stack spacing={3}>
           <Text>Location:</Text>
           <FormControl isRequired>
             <InputGroup>
-              <InputLeftAddon children={<Icon name='info' />} />
-              <Input type='name' placeholder='City' aria-lable='City'/>
+              <Input type="name" placeholder="City" aria-label="City" />
             </InputGroup>
           </FormControl>
         </Stack>
@@ -18,7 +34,11 @@ function HomePage(): ReactElement {
           <Text>Renters:</Text>
           <FormControl isRequired>
             <InputGroup>
-              <Input type='number' placeholder='1' aria-lable='Number of Renters'/>
+              <Input
+                type="number"
+                placeholder="1"
+                aria-label="Number of Renters"
+              />
             </InputGroup>
           </FormControl>
         </Stack>
