@@ -1,5 +1,6 @@
 import React, { HTMLAttributes } from "react";
 import ReactDatePicker from "react-datepicker";
+import {Input} from '@chakra-ui/react';
 
 interface Props {
   isClearable?: boolean;
@@ -10,6 +11,8 @@ interface Props {
   startDate?: Date;
   endDate?: Date;
   maxDate?: Date;
+  name?: string;
+  value?:string;
 }
 
 const DatePicker = ({
@@ -21,6 +24,8 @@ const DatePicker = ({
   startDate,
   endDate,
   maxDate,
+  name,
+  onBlur
 }: Props & HTMLAttributes<HTMLElement>) => (
   <ReactDatePicker
     selected={selectedDate}
@@ -31,6 +36,9 @@ const DatePicker = ({
     startDate={startDate}
     endDate={endDate}
     maxDate={maxDate}
+    customInput={<Input/>}
+    name={name}
+    onBlur={onBlur}
   />
 );
 

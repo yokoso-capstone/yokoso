@@ -74,10 +74,10 @@ function Signup(props: SignupProps) {
     return error;
   }
 
-  function validateDob(inputDob: any) {
+  function validateDob() {
     let error;
 
-    if (!inputDob || !dob) {
+    if (!dob) {
       error = "Please enter date of birth";
     }
     return error;
@@ -145,14 +145,18 @@ function Signup(props: SignupProps) {
                   )}
                 </Field>
                 <Field name="dob" validate={validateDob}>
-                  {({ form }: any) => (
+                  {({ field, form }: any) => (
                     <FormControl
-                      isInvalid={form.errors.dob && form.touched.dob}
+                      isInvalid={(form.errors.dob && form.touched.dob)}
                     >
                       <FormLabel>Date of Birth</FormLabel>
                       <DatePicker
+                        {...field}
                         selectedDate={dob}
-                        onChange={(d: any) => setDob(d)}
+                        onChange={(d: any) => {
+                          setDob(d);
+                          console.log(field)
+                        }}
                         showPopperArrow={false}
                         placeholderText="MM/DD/YYYY"
                         maxDate={new Date()}
@@ -179,13 +183,13 @@ function Signup(props: SignupProps) {
                   )}
                 </Field>
                 <Field name="password" validate={validatePassword}>
-                  {({ form }: any) => (
+                  {({ field, form }: any) => (
                     <FormControl
                       isInvalid={form.errors.password && form.touched.password}
                     >
                       <FormLabel>Password</FormLabel>
                       <Stack spacing={2}>
-                        <Password />
+                        <Password {...field}/>
                         <FormHelperText>{helperMsg}</FormHelperText>
                         <FormErrorMessage>
                           {form.errors.password}

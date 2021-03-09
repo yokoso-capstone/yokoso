@@ -27,6 +27,7 @@ function Password(props: PasswordProps) {
         isInvalid={isInvalid}
         onChange={onChange}
         focusBorderColor={focusBorderColor}
+        {...props}
       />
       <InputRightElement width="3rem">
         <IconButton
