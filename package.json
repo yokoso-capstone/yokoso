@@ -7,7 +7,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "format": "prettier --write **/*.{js,ts,tsx,json} --ignore-path .gitignore",
+    "lint": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore",
+    "lint-fix": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore --fix"
   },
   "author": "",
   "license": "MIT",
