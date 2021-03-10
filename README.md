@@ -3,7 +3,7 @@
     <img src="https://user-images.githubusercontent.com/20251243/110607315-120f5800-8159-11eb-9df2-8a074944b681.png?raw=true" alt="Yōkoso logo" width="256" />
   </a>
 </p>
-
+<h3 align="center">ようこそ</h3>
 <h1 align="center">Discover your new home</h1>
 
 <br>
