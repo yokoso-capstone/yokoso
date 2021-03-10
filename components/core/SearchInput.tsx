@@ -1,5 +1,4 @@
 import {
-  background,
     IconButton,
     Input,
     InputGroup,
