@@ -2,7 +2,7 @@ name: Deploy yokoso-staging
 on:
   push:
     branches:
-      - cd/setup-deployments
+      - develop
 jobs:
   deploy-staging:
     runs-on: ubuntu-latest

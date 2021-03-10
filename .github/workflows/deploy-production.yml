@@ -2,7 +2,7 @@ name: Deploy yokoso-production
 on:
   push:
     branches:
-      - cd/setup-deployments
+      - main
 jobs:
   deploy-production:
     runs-on: ubuntu-latest
