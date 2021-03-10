@@ -4,11 +4,11 @@ yokoso-production:
   component: "@sls-next/serverless-component@1.18.0"
   inputs:
     bucketName: yokoso-production-s3
-    description: "*lambda-type*@Edge for yokoso-production"
+    description: "Lambda@Edge for yokoso-production"
     name:
       defaultLambda: yokoso-production-default-lambda
       apiLambda: yokoso-production-api-lambda
-    publicDirectoryCache: false
+    publicDirectoryCache: true
     runtime:
       defaultLambda: "nodejs12.x"
       apiLambda: "nodejs12.x"

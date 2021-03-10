@@ -4,7 +4,7 @@ yokoso-staging:
   component: "@sls-next/serverless-component@1.18.0"
   inputs:
     bucketName: yokoso-staging-s3
-    description: "*lambda-type*@Edge for yokoso-staging"
+    description: "Lambda@Edge for yokoso-staging"
     name:
       defaultLambda: yokoso-staging-default-lambda
       apiLambda: yokoso-staging-api-lambda

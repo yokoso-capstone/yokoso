@@ -29,10 +29,10 @@ jobs:
         run: npm ci
 
       - name: Serverless AWS authentication
-        run: npx serverless config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # - name: Download `.serverless` state from S3
-      #   run: aws s3 sync s3://yokoso-serverless-state-bucket/yokoso/staging/.serverless .serverless --delete
+      - name: Download `.serverless` state from S3
+        run: aws s3 sync s3://yokoso-serverless-state-bucket/yokoso/staging/.serverless .serverless --delete
 
       - name: Deploy to AWS
         run: npx serverless
