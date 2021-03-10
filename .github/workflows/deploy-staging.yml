@@ -1,0 +1,41 @@
+name: Deploy yokoso-staging
+on:
+  push:
+    branches:
+      - cd/setup-deployments
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - uses: canastro/copy-file-action@master
+        with:
+          source: "serverless-staging.yml"
+          target: "serverless.yml"
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: "12"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Serverless AWS authentication
+        run: npx serverless config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # - name: Download `.serverless` state from S3
+      #   run: aws s3 sync s3://yokoso-serverless-state-bucket/yokoso/staging/.serverless .serverless --delete
+
+      - name: Deploy to AWS
+        run: npx serverless
+
+      - name: Upload `.serverless` state to S3
+        run: aws s3 sync .serverless s3://yokoso-serverless-state-bucket/yokoso/staging/.serverless --delete
