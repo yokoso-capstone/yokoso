@@ -1,25 +1,37 @@
 import React from "react";
-import { Flex, Button, Stack, Heading, Icon } from "@chakra-ui/react";
+import { chakra, Flex, Button, Stack, Heading, Icon } from "@chakra-ui/react";
 import {
   BsFillPersonFill,
   BsFillHouseDoorFill,
   BsFillChatDotsFill,
 } from "react-icons/bs";
 
+const SideButton = chakra(Button, {
+  baseStyle: {
+    paddingLeft: "8px",
+    width: "100%",
+    bg: "transparent",
+    rounded: "none",
+    fontWeight: "bold",
+    justifyContent: "start",
+    borderLeft: "4px",
+    borderLeftColor: "transparent",
+    _hover: { bg: "gray", borderLeftColor: "red" },
+  },
+});
+
 const Sidebar = () => (
   <Flex
     as="nav"
     align="left"
-    padding="0rem"
+    paddingTop="32px"
     bg="black"
     color="white"
-    width="10vw"
+    width="200px"
     height="100vh"
     direction="column"
   >
-    <Stack spacing={50}
-    // align="center"
-    >
+    <Stack align="center" paddingBottom="32px">
       <Flex>
         <Heading letterSpacing="-.1rem" color="white">
           Y
@@ -31,59 +43,37 @@ const Sidebar = () => (
           koso
         </Heading>
       </Flex>
-
-      <Stack
-        direction="column"
-        spacing={3}
-        width="100%"
-        justify="flex-start"
-        align="flex-start"
-      >
-        <Button
-          paddingLeft={0}
-          width="100%"
-          leftIcon={<Icon as={BsFillHouseDoorFill} />}
-          bg="transparent"
-          rounded="none"
-          fontWeight="bold"
-          _hover={{ bg: "gray" }}
-        >
-          Listings
-        </Button>
-        <Button
-          paddingLeft={0}
-          width="100%"
-          leftIcon={<Icon as={BsFillPersonFill} />}
-          bg="transparent"
-          rounded="none"
-          fontWeight="bold"
-          _hover={{ bg: "gray" }}
-        >
-          Tenants
-        </Button>
-        <Button
-          paddingLeft={0}
-          width="100%"
-          leftIcon={<Icon as={BsFillChatDotsFill} />}
-          bg="transparent"
-          rounded="none"
-          fontWeight="bold"
-          _hover={{ bg: "gray", borderLeft: "10px", borderLeftColor: "red" }}
-        >
-          Chat
-        </Button>
-        <Button
-          bg="transparent"
-          fontWeight="bold"
-          _hover={{ bg: "gray" }}
-          borderColor="white"
-          border="1px"
-          width="8vw"
-        >
-          Log out
-        </Button>
-      </Stack>
     </Stack>
+
+    <Flex
+      direction="column"
+      height="100%"
+      justify="space-between"
+      align="center"
+    >
+      <Stack direction="column" spacing={2} width="100%">
+        <SideButton leftIcon={<Icon as={BsFillHouseDoorFill} />}>
+          Listings
+        </SideButton>
+        <SideButton leftIcon={<Icon as={BsFillPersonFill} />}>
+          Tenants
+        </SideButton>
+        <SideButton leftIcon={<Icon as={BsFillChatDotsFill} />}>
+          Chat
+        </SideButton>
+      </Stack>
+      <Button
+        bg="transparent"
+        fontWeight="bold"
+        _hover={{ bg: "gray" }}
+        borderColor="white"
+        border="1px"
+        width="80%"
+        marginBottom="16px"
+      >
+        Log out
+      </Button>
+    </Flex>
   </Flex>
 );
 
