@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc",
-    "format": "prettier --write **/*.{js,ts,tsx,json,css} --ignore-path .gitignore",
+    "format": "prettier --write **/*.{js,ts,tsx,css} --ignore-path .gitignore",
     "lint": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore",
     "lint-fix": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore --fix"
   },
