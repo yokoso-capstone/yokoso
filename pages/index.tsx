@@ -1,11 +1,12 @@
 import { ReactElement } from "react";
-import { Button } from "@/components/core/Button";
 import {
+  Button,
   BlackButton,
   WhiteButton,
   TransparentButton,
   RedButton,
 } from "@/components/core/Button";
+
 import SeachInput from "@/components/core/SearchInput";
 
 function HomePage(): ReactElement {
