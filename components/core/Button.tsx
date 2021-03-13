@@ -36,6 +36,7 @@ export const BlackButton = chakra(ChakraButton, {
     border: "1px solid black",
     _hover: {
       bg: theme.colors.brand.background_on,
+      color: "black"
     },
   },
 });
@@ -49,6 +50,7 @@ export const WhiteButton = chakra(ChakraButton, {
     border: "1px solid black",
     _hover: {
       bg: theme.colors.brand.background_on,
+      color: "white"
     },
   },
 });

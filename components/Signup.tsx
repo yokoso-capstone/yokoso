@@ -155,7 +155,6 @@ function Signup(props: SignupProps) {
                         selectedDate={dob}
                         onChange={(d: any) => {
                           setDob(d);
-                          console.log(field);
                         }}
                         showPopperArrow={false}
                         placeholderText="MM/DD/YYYY"
