@@ -86,7 +86,14 @@ function Signup(props: SignupProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent
+        width="100%"
+        minWidth="256px"
+        maxWidth={["100%", "4.5in", "5in", "5in", "5.5in"]}
+        paddingX={["2.5rem", "3.5rem", "3.5rem"]}
+        paddingTop={["3rem", "4rem", "5rem"]}
+        paddingBottom={["4rem", "5rem", "6rem"]}
+      >
         <ModalHeader margin="0 auto">Sign up</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -170,7 +177,7 @@ function Signup(props: SignupProps) {
                       id="email"
                       isInvalid={form.errors.email && form.touched.email}
                     >
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Email Address</FormLabel>
                       <Input
                         {...field}
                         type="email"

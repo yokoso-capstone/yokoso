@@ -1,11 +1,10 @@
 import Password from "@/components/core/Password";
-import { RedButton } from "@/components/core/Button";
+import { BlackButton } from "@/components/core/Button";
 import { Formik, Form, Field } from "formik";
 import {
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
@@ -13,7 +12,15 @@ import {
   Stack,
   FormControl,
   FormLabel,
+  ModalHeader,
 } from "@chakra-ui/react";
+import {
+  Body2,
+  Headline5,
+  Link,
+} from "@/components/core/Text";
+import NextLink from "next/link";
+import RoutePath from "@/src/routes";
 
 interface LoginProps {
   isOpen: boolean;
@@ -24,10 +31,18 @@ function Login(props: LoginProps) {
   const { isOpen, onClose } = props;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+    <Modal 
+      isOpen={isOpen} onClose={onClose} isCentered >
       <ModalOverlay />
-      <ModalContent>
-        <ModalHeader margin="0 auto">Login</ModalHeader>
+      <ModalContent 
+        width="100%"
+        minWidth="256px"
+        maxWidth={["100%", "4.5in", "5in", "5in", "5.5in"]}
+        paddingX={["2.5rem", "3.5rem", "3.5rem"]}
+        paddingTop={["3rem", "4rem", "5rem"]}
+        paddingBottom={["4rem", "5rem", "6rem"]}
+      >
+        <ModalHeader><Headline5 marginBottom="12px">Log in</Headline5></ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Formik
@@ -43,11 +58,11 @@ function Login(props: LoginProps) {
             }}
           >
             <Form>
-              <Stack spacing={4}>
+              <Stack spacing="16px">
                 <Field name="email" type="email">
                   {({ field }: any) => (
                     <FormControl>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Email Adress</FormLabel>
                       <Input {...field} variant="outline" placeholder="Email" />
                     </FormControl>
                   )}
@@ -60,12 +75,18 @@ function Login(props: LoginProps) {
                     </FormControl>
                   )}
                 </Field>
-                <RedButton size="md" type="submit">
-                  Login
-                </RedButton>
+                <BlackButton isFullWidth marginTop="24px" type="submit">
+                  Log in
+                </BlackButton>
               </Stack>
             </Form>
           </Formik>
+          <Body2 marginTop="36px">
+            New to The Yōkoso?{" "}
+            <NextLink href={RoutePath.SignUp} passHref>
+              <Link>Sign up</Link>
+            </NextLink>
+          </Body2>
         </ModalBody>
         <ModalFooter />
       </ModalContent>

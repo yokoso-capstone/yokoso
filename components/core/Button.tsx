@@ -5,7 +5,7 @@ import theme from "@/src/theme";
 export const Button = chakra(ChakraButton, {
   baseStyle: {
     font: "Inter",
-    fontSize: "14px",
+    fontSize: "16px",
     height: "auto",
     borderRadius: "4px",
     padding: "16px 24px"
@@ -27,10 +27,10 @@ export const RedButton = chakra(ChakraButton, {
   },
 });
 
-export const BlackButton = chakra(ChakraButton, {
+export const BlackButton = chakra(Button, {
   baseStyle: {
     font: "Inter-bold",
-    fontWeight: "400",
+    fontWeight: "800",
     color: "white",
     background: "black",
     border: "1px solid black",
@@ -41,10 +41,10 @@ export const BlackButton = chakra(ChakraButton, {
   },
 });
 
-export const WhiteButton = chakra(ChakraButton, {
+export const WhiteButton = chakra(Button, {
   baseStyle: {
     font: "Inter-bold",
-    fontWeight: "400",
+    fontWeight: "800",
     color: "black",
     background: "white",
     border: "1px solid black",
@@ -55,7 +55,7 @@ export const WhiteButton = chakra(ChakraButton, {
   },
 });
 
-export const TransparentButton = chakra(ChakraButton, {
+export const TransparentButton = chakra(Button, {
   baseStyle: {
     fontWeight: "400",
     color: "black",

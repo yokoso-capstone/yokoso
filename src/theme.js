@@ -12,7 +12,7 @@ const theme = {
       primary: "#00A878",
       primary_variant: "#00805B",
       primary_on: "#F8FEFC",
-      secondary: "#03DAC5",
+      secondary: "black",
       secondary_variant: "#018786",
       secondary_on: "#003225",
       background: "#F8FEFC",
@@ -25,7 +25,10 @@ const theme = {
       dark_green: "#003224",
     },
   },
-  fonts,
+  fonts: {
+    heading: "Gilroy",
+    body: "Inter",
+  },
   breakpoints,
   icons: {
     ...chakraTheme.icons,

@@ -1,22 +1,28 @@
 import { ReactElement } from "react";
 import { Button } from "@/components/core/Button";
-import {
-  BlackButton,
-  WhiteButton,
-  TransparentButton,
-  RedButton,
-} from "@/components/core/Button";
-import SeachInput from "@/components/core/SearchInput";
+import Signup from "@/components/Signup";
+import { useDisclosure } from "@chakra-ui/hooks";
+import Login from "@/components/Login";
 
 function HomePage(): ReactElement {
+  const {
+    isOpen: isOpenSignup,
+    onOpen: onOpenSignup,
+    onClose: onCloseSignup,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenLogin,
+    onOpen: onOpenLogin,
+    onClose: onCloseLogin,
+  } = useDisclosure();
   return (
     <>
-      <Button>hi</Button>
-      <BlackButton>Get in Touch</BlackButton>
-      <WhiteButton>Get in Touch</WhiteButton>
-      <TransparentButton>Get in Touch</TransparentButton>
-      <RedButton>Get in Touch</RedButton>
-      <SeachInput />
+      <Button onClick={onOpenSignup}>Signup</Button>
+      <Signup isOpen={isOpenSignup} onClose={onCloseSignup} />
+
+      <Button onClick={onOpenLogin}>Login</Button>
+      <Login isOpen={isOpenLogin} onClose={onCloseLogin} />
     </>
   );
 }
