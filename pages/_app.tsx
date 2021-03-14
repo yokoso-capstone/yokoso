@@ -1,6 +1,7 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { ChakraProvider } from "@chakra-ui/react";
+import theme from "@/src/theme";
 
 import "focus-visible/dist/focus-visible";
 import "react-datepicker/dist/react-datepicker.css";
@@ -13,7 +14,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      <ChakraProvider>
+      <ChakraProvider theme={theme}>
         <Component {...pageProps} />
       </ChakraProvider>
 
@@ -30,7 +31,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
         @font-face {
           font-family: "Inter";
-          font-weight: normal;
+          font-weight: 400;
           font-style: normal;
           src: url("/fonts/inter/Inter-Regular.woff2") format("woff2"),
             url("/fonts/inter/Inter-Regular.woff") format("woff"),
@@ -50,7 +51,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
         @font-face {
           font-family: "Inter";
-          font-weight: bold;
+          font-weight: 700;
           font-style: normal;
           src: url("/fonts/inter/Inter-Bold.woff2") format("woff2"),
             url("/fonts/inter/Inter-Bold.woff") format("woff"),

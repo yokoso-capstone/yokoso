@@ -7,21 +7,27 @@ import {
 import { ReactElement } from "react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 
-function SearchInput(): ReactElement {
+interface SearchInputProps {
+  placeholder: string;
+  ariaLabel: string;
+  onSubmit: () => any;
+}
+
+function SearchInput(props: SearchInputProps): ReactElement {
+  const { placeholder, ariaLabel, onSubmit } = props;
+
   return (
     <>
-      <InputGroup width={["100%", "3.5in", "3in", "3.5in"]} height="45px">
+      <InputGroup height="45px">
         <Input
           type="email"
           paddingRight="72px"
-          placeholder="Where are you staying?"
-          rounded="100px"
+          placeholder={placeholder}
+          rounded="full"
           height="100%"
-          fontFamily="Inter"
           fontSize="14px"
-          borderColor="brand.background_on"
+          borderColor="common.dark"
           _hover={{}}
-          _focus={{}}
         />
         <InputRightElement
           width="32px"
@@ -30,17 +36,19 @@ function SearchInput(): ReactElement {
           marginRight="10px"
         >
           <IconButton
-            aria-label="Search for homes based on location"
+            aria-label={ariaLabel}
             icon={<ArrowForwardIcon w={5} h={5} />}
             isRound
-            backgroundColor="black"
+            backgroundColor="common.dark"
             color="white"
-            fontSize="16px"
             size="sm"
             _hover={{
-              backgroundColor: "#BC002D",
+              backgroundColor: "brand.primary_hover",
             }}
-            _active={{}}
+            _active={{
+              backgroundColor: "brand.primary_active",
+            }}
+            onClick={onSubmit}
           />
         </InputRightElement>
       </InputGroup>
