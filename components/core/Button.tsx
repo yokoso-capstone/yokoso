@@ -5,7 +5,7 @@ export const ButtonBase = chakra(Button, {
     fontSize: "14px",
     height: "auto",
     borderRadius: "4px",
-    padding: "12px 20px",
+    padding: "14px 24px",
   },
 });
 

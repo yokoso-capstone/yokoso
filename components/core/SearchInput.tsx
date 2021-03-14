@@ -17,42 +17,37 @@ function SearchInput(props: SearchInputProps): ReactElement {
   const { placeholder, ariaLabel, onSubmit } = props;
 
   return (
-    <>
-      <InputGroup height="45px">
-        <Input
-          type="email"
-          paddingRight="72px"
-          placeholder={placeholder}
-          rounded="full"
-          height="100%"
-          fontSize="14px"
-          borderColor="common.dark"
-          _hover={{}}
+    <InputGroup height="48px">
+      <Input
+        type="email"
+        paddingLeft="32px"
+        paddingRight="56px"
+        placeholder={placeholder}
+        rounded="full"
+        height="100%"
+        fontSize="16px"
+        color="text.primary"
+        borderColor="common.dark"
+        _hover={{}}
+      />
+      <InputRightElement height="100%" marginRight="8px">
+        <IconButton
+          aria-label={ariaLabel}
+          icon={<ArrowForwardIcon w={5} h={5} />}
+          isRound
+          backgroundColor="common.dark"
+          color="white"
+          size="sm"
+          _hover={{
+            backgroundColor: "brand.primary_hover",
+          }}
+          _active={{
+            backgroundColor: "brand.primary_active",
+          }}
+          onClick={onSubmit}
         />
-        <InputRightElement
-          width="32px"
-          height="100%"
-          justifyContent="flex-end"
-          marginRight="10px"
-        >
-          <IconButton
-            aria-label={ariaLabel}
-            icon={<ArrowForwardIcon w={5} h={5} />}
-            isRound
-            backgroundColor="common.dark"
-            color="white"
-            size="sm"
-            _hover={{
-              backgroundColor: "brand.primary_hover",
-            }}
-            _active={{
-              backgroundColor: "brand.primary_active",
-            }}
-            onClick={onSubmit}
-          />
-        </InputRightElement>
-      </InputGroup>
-    </>
+      </InputRightElement>
+    </InputGroup>
   );
 }
 
