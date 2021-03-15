@@ -14,11 +14,7 @@ import {
   FormLabel,
   ModalHeader,
 } from "@chakra-ui/react";
-import {
-  Body2,
-  Headline5,
-  Link,
-} from "@/components/core/Text";
+import { Body2, Headline5, Link } from "@/components/core/Text";
 import NextLink from "next/link";
 import RoutePath from "@/src/routes";
 
@@ -31,10 +27,9 @@ function Login(props: LoginProps) {
   const { isOpen, onClose } = props;
 
   return (
-    <Modal 
-      isOpen={isOpen} onClose={onClose} isCentered >
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
-      <ModalContent 
+      <ModalContent
         width="100%"
         minWidth="256px"
         maxWidth={["100%", "4.5in", "5in", "5in", "5.5in"]}
@@ -42,7 +37,9 @@ function Login(props: LoginProps) {
         paddingTop={["3rem", "4rem", "5rem"]}
         paddingBottom={["4rem", "5rem", "6rem"]}
       >
-        <ModalHeader><Headline5 marginBottom="12px">Log in</Headline5></ModalHeader>
+        <ModalHeader>
+          <Headline5 marginBottom="12px">Log in</Headline5>
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Formik

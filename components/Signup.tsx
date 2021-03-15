@@ -1,5 +1,5 @@
 import Password from "@/components/core/Password";
-import { RedButton } from "@/components/core/Button";
+import { BlackButton } from "@/components/core/Button";
 import { useState } from "react";
 import DatePicker from "@/components/core/DatePicker";
 import { Formik, Form, Field } from "formik";
@@ -18,6 +18,7 @@ import {
   FormHelperText,
   FormErrorMessage,
 } from "@chakra-ui/react";
+import { Headline5 } from "@/components/core/Text";
 
 interface SignupProps {
   isOpen: boolean;
@@ -84,17 +85,25 @@ function Signup(props: SignupProps) {
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      scrollBehavior="outside"
+      isCentered
+    >
       <ModalOverlay />
       <ModalContent
         width="100%"
         minWidth="256px"
         maxWidth={["100%", "4.5in", "5in", "5in", "5.5in"]}
+        max-height="100vh"
         paddingX={["2.5rem", "3.5rem", "3.5rem"]}
-        paddingTop={["3rem", "4rem", "5rem"]}
-        paddingBottom={["4rem", "5rem", "6rem"]}
+        paddingTop={["3rem", "4rem", "3.5rem"]}
+        paddingBottom={["4rem", "5rem", "4rem"]}
       >
-        <ModalHeader margin="0 auto">Sign up</ModalHeader>
+        <ModalHeader>
+          <Headline5 marginBottom="12px">Sign up</Headline5>
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Formik
@@ -204,9 +213,9 @@ function Signup(props: SignupProps) {
                     </FormControl>
                   )}
                 </Field>
-                <RedButton size="md" type="submit">
+                <BlackButton size="md" type="submit">
                   Sign up
-                </RedButton>
+                </BlackButton>
               </Stack>
             </Form>
           </Formik>
