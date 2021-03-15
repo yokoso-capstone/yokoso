@@ -1,10 +1,13 @@
 import { ReactElement } from "react";
-import { Button } from "@/components/core/Button";
+import Head from "next/head";
 
 function HomePage(): ReactElement {
   return (
     <>
-      <Button>hi</Button>
+      <Head>
+        <title>Yōkoso</title>
+        <meta name="description" content="ようこそ. Discover your new home." />
+      </Head>
     </>
   );
 }
