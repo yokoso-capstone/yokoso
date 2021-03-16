@@ -26,6 +26,7 @@ function SearchInput(props: SearchInputProps): ReactElement {
         rounded="full"
         height="100%"
         fontSize="16px"
+        background="white"
         color="text.primary"
         borderColor="common.dark"
         _hover={{}}
