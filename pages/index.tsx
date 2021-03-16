@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import Head from "next/head";
-import { Flex, Box, Stack } from "@chakra-ui/react";
+import { Flex, Box } from "@chakra-ui/react";
 
 import SearchInput from "@/components/core/SearchInput";
 import { Heading1 } from "@/components/core/Text";
