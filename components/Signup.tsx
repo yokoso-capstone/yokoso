@@ -147,7 +147,7 @@ function Signup(props: SignupProps) {
                 <Field name="dob" validate={validateDob}>
                   {({ field, form }: any) => (
                     <FormControl
-                      isInvalid={(form.errors.dob && form.touched.dob)}
+                      isInvalid={form.errors.dob && form.touched.dob}
                     >
                       <FormLabel>Date of Birth</FormLabel>
                       <DatePicker
@@ -155,7 +155,6 @@ function Signup(props: SignupProps) {
                         selectedDate={dob}
                         onChange={(d: any) => {
                           setDob(d);
-                          console.log(field)
                         }}
                         showPopperArrow={false}
                         placeholderText="MM/DD/YYYY"
@@ -189,7 +188,7 @@ function Signup(props: SignupProps) {
                     >
                       <FormLabel>Password</FormLabel>
                       <Stack spacing={2}>
-                        <Password {...field}/>
+                        <Password {...field} />
                         <FormHelperText>{helperMsg}</FormHelperText>
                         <FormErrorMessage>
                           {form.errors.password}

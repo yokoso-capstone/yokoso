@@ -8,7 +8,6 @@
   display: block;
 }
 
-
 .react-datepicker__navigation--next--with-time:not(.react-datepicker__navigation--next--with-today-button) {
   right: 90px;
 }
