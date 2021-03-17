@@ -1,0 +1,14 @@
+name: yokoso-staging
+
+yokoso-staging:
+  component: "@sls-next/serverless-component@1.18.0"
+  inputs:
+    bucketName: yokoso-staging-s3
+    description: "Lambda@Edge for yokoso-staging"
+    name:
+      defaultLambda: yokoso-staging-default-lambda
+      apiLambda: yokoso-staging-api-lambda
+    publicDirectoryCache: false
+    runtime:
+      defaultLambda: "nodejs12.x"
+      apiLambda: "nodejs12.x"
