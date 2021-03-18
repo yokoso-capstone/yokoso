@@ -1,23 +1,20 @@
 import React from "react";
-import { chakra, Flex, Button, Stack, Heading, Icon } from "@chakra-ui/react";
+import { Flex, chakra, Stack, Icon } from "@chakra-ui/react";
 import {
   BsFillPersonFill,
   BsFillHouseDoorFill,
   BsFillChatDotsFill,
 } from "react-icons/bs";
+import { ButtonPrimary, SideBarButton } from "@/components/core/Button";
 import { LogoWhite } from "@/components/core/Branding";
 
-const SideButton = chakra(Button, {
+const LogOutButton = chakra(ButtonPrimary, {
   baseStyle: {
-    paddingLeft: "8px",
-    width: "100%",
     bg: "transparent",
-    rounded: "none",
+    marginBottom: "32px",
     fontWeight: "bold",
-    justifyContent: "start",
-    borderLeft: "4px",
-    borderLeftColor: "transparent",
-    _hover: { bg: "gray", borderLeftColor: "red" },
+    width: "80%",
+    _hover: { bg: "gray" },
   },
 });
 
@@ -32,7 +29,7 @@ const Sidebar = () => (
     direction="column"
   >
     <Flex justify="center" paddingBottom="32px" >
-      <LogoWhite width="150px" background="black" />
+      <LogoWhite width="100px" background="black" />
     </Flex>
     
     <Flex
@@ -42,27 +39,17 @@ const Sidebar = () => (
       align="center"
     >
       <Stack direction="column" spacing={2} width="100%">
-        <SideButton leftIcon={<Icon as={BsFillHouseDoorFill} />}>
+        <SideBarButton leftIcon={<Icon as={BsFillHouseDoorFill} />}>
           Listings
-        </SideButton>
-        <SideButton leftIcon={<Icon as={BsFillPersonFill} />}>
+        </SideBarButton>
+        <SideBarButton leftIcon={<Icon as={BsFillPersonFill} />}>
           Tenants
-        </SideButton>
-        <SideButton leftIcon={<Icon as={BsFillChatDotsFill} />}>
+        </SideBarButton>
+        <SideBarButton leftIcon={<Icon as={BsFillChatDotsFill} />}>
           Chat
-        </SideButton>
+        </SideBarButton>
       </Stack>
-      <Button
-        bg="transparent"
-        fontWeight="bold"
-        _hover={{ bg: "gray" }}
-        borderColor="white"
-        border="1px"
-        width="80%"
-        marginBottom="16px"
-      >
-        Log out
-      </Button>
+      <LogOutButton borderColor="white">Log out</LogOutButton>
     </Flex>
   </Flex>
 );

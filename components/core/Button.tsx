@@ -77,3 +77,17 @@ export const ButtonSecondaryVariant = chakra(ButtonBase, {
     },
   },
 });
+
+export const SideBarButton = chakra(Button, {
+  baseStyle: {
+    paddingLeft: "8px",
+    width: "100%",
+    bg: "transparent",
+    rounded: "none",
+    fontWeight: "bold",
+    justifyContent: "start",
+    borderLeft: "4px",
+    borderLeftColor: "transparent",
+    _hover: { bg: "gray", borderLeftColor: "red" },
+  },
+});
