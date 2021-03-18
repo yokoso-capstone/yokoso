@@ -7,6 +7,8 @@ import "focus-visible/dist/focus-visible";
 import "react-datepicker/dist/react-datepicker.css";
 import "../styling/date-picker.css";
 
+import HeaderHome from "@/components/sections/HeaderHome";
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
@@ -15,6 +17,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
 
       <ChakraProvider theme={theme}>
+        <HeaderHome />
         <Component {...pageProps} />
       </ChakraProvider>
 
