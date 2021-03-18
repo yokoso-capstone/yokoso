@@ -11,7 +11,7 @@ interface ResultProps {
   price: string;
 }
 
-function SearchResult(props: ResultProps) {
+export function LgSearchResult(props: ResultProps) {
   const { imageUrl, title, numBeds, numBath, location, price, id } = props;
 
   return (
@@ -27,7 +27,7 @@ function SearchResult(props: ResultProps) {
           </Box>
         </GridItem>
         <GridItem colSpan={4} rowSpan={2}>
-          <Box pt="3">
+          <Box>
             <Box>
               <Caption fontSize="14px">{location}</Caption>
               <Body1 fontSize="18px">{title}</Body1>
@@ -71,4 +71,45 @@ function SearchResult(props: ResultProps) {
   );
 }
 
-export default SearchResult;
+export function SmSearchResult(props: ResultProps) {
+  const { imageUrl, title, numBeds, numBath, location, price } = props;
+  return (
+    <Box maxW="sm" borderRadius="lg" p="5" overflow="hidden">
+      <Grid templateRows="repeat(1, 1fr)" gap={2}>
+        <GridItem rowSpan={2}>
+          <Box w="100%" h="100%" objectFit="cover">
+            <Image
+              src={imageUrl}
+              borderRadius="lg"
+              overflow="hidden"
+              fit="cover"
+              w="100%"
+              h="100%"
+            />
+          </Box>
+        </GridItem>
+        <GridItem rowSpan={1}>
+          <Box>
+            <Box>
+              <Caption fontSize="14px">{location}</Caption>
+              <Body1 fontSize="18px">{title}</Body1>
+            </Box>
+            <Box>
+              <Caption fontSize="14px">
+                {numBeds} Bedrooms · {numBath} Bathrooms
+              </Caption>
+            </Box>
+          </Box>
+        </GridItem>
+        <GridItem rowSpan={1}>
+          <Box>
+            <Body1 display="inline" fontWeight="800">
+              {price}
+            </Body1>
+            <Body1 display="inline">&nbsp;/month</Body1>
+          </Box>
+        </GridItem>
+      </Grid>
+    </Box>
+  );
+}
