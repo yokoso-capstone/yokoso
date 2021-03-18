@@ -1,9 +1,12 @@
 import { ReactElement } from "react";
 import Head from "next/head";
-import { Flex, Box } from "@chakra-ui/react";
+// import { Flex, Box } from "@chakra-ui/react";
 
-import SearchInput from "@/components/core/SearchInput";
-import { Heading1 } from "@/components/core/Text";
+// import SearchInput from "@/components/core/SearchInput";
+// import { Heading1 } from "@/components/core/Text";
+// import HeaderHome from "@/components/sections/HeaderHome";
+
+import Sidebar from "@/components/sections/Sidebar";
 
 function HomePage(): ReactElement {
   return (
@@ -12,6 +15,8 @@ function HomePage(): ReactElement {
         <title>Yōkoso</title>
         <meta name="description" content="ようこそ. Discover your new home." />
       </Head>
+      <Sidebar />
+      {/* <HeaderHome />
       <Flex
         align="center"
         bgImage="url('/bg1.jpg')"
@@ -32,7 +37,7 @@ function HomePage(): ReactElement {
           <Heading1 color="White">Discover your</Heading1>
           <Heading1 color="White">new home</Heading1>
         </Box>
-      </Flex>
+      </Flex> */}
     </>
   );
 }
