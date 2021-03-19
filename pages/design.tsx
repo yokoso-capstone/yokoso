@@ -2,6 +2,7 @@ import { ReactElement } from "react";
 import Head from "next/head";
 import { Box } from "@chakra-ui/react";
 import { LogoBlack, LogoWhite } from "@/components/core/Branding";
+import { LgSearchResult, SmSearchResult } from "@/components/SearchResult";
 import {
   ButtonPrimary,
   ButtonSecondary,
@@ -53,6 +54,26 @@ function DesignPage(): ReactElement {
         <Body2>Body2</Body2>
         <Caption>Caption</Caption>
       </Box>
+
+      <LgSearchResult
+        imageUrl="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        location="Kanata"
+        price="$680"
+        numBath="2"
+        numBeds="4"
+        id="1"
+        title="Beautiful apartment with great view"
+      />
+
+      <SmSearchResult
+        imageUrl="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+        location="Kanata"
+        price="$680"
+        numBath="2"
+        numBeds="4"
+        id="1"
+        title="Beautiful apartment with great view"
+      />
     </>
   );
 }
