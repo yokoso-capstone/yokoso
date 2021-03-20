@@ -1,7 +1,7 @@
 {
   "name": "yokoso",
   "version": "1.0.0",
-  "description": "",
+  "description": "ようこそ",
   "main": "index.js",
   "scripts": {
     "dev": "env-cmd -e staging next dev",
