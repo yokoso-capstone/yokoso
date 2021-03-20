@@ -1,68 +1,79 @@
-import { chakra, Button as ChakraButton } from "@chakra-ui/react";
-import theme from "@/src/theme";
+import { chakra, Button } from "@chakra-ui/react";
 
-
-export const Button = chakra(ChakraButton, {
+export const ButtonBase = chakra(Button, {
   baseStyle: {
-    font: "Inter",
-    fontSize: "16px",
+    fontSize: "14px",
     height: "auto",
     borderRadius: "4px",
-    padding: "16px 24px"
+    padding: "14px 24px",
   },
 });
 
-export const RedButton = chakra(ChakraButton, {
+export const RedButton = chakra(ButtonBase, {
   baseStyle: {
     color: "white",
-    background: "#BC002D",
-    border: "1px solid",
+    background: "brand.primary",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: "brand.primary",
     width: "100%",
     margin: "0 auto",
     display: "block",
     _hover: {
-      bg: "white",
-      color: "#BC002D",
+      background: "brand.primary_hover",
+      borderColor: "brand.primary_hover",
+    },
+    _active: {
+      background: "brand.primary_active",
+      borderColor: "brand.primary_active",
     },
   },
 });
 
-export const BlackButton = chakra(Button, {
+export const ButtonPrimary = chakra(ButtonBase, {
   baseStyle: {
-    font: "Inter-bold",
-    fontWeight: "800",
+    fontWeight: "bold",
     color: "white",
-    background: "black",
-    border: "1px solid black",
+    background: "common.dark",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: "common.dark",
     _hover: {
-      bg: theme.colors.brand.background_on,
-      color: "black"
+      background: "common.dark_hover",
     },
   },
 });
 
-export const WhiteButton = chakra(Button, {
+export const ButtonSecondary = chakra(ButtonBase, {
   baseStyle: {
-    font: "Inter-bold",
-    fontWeight: "800",
-    color: "black",
-    background: "white",
-    border: "1px solid black",
+    fontWeight: "bold",
+    color: "text.primary",
+    background: "common.light",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: "common.dark_hover",
     _hover: {
-      bg: theme.colors.brand.background_on,
-      color: "white"
+      background: "common.light_hover",
+    },
+    _active: {
+      background: "common.light_active",
     },
   },
 });
 
-export const TransparentButton = chakra(Button, {
+export const ButtonSecondaryVariant = chakra(ButtonBase, {
   baseStyle: {
-    fontWeight: "400",
-    color: "black",
+    fontWeight: "normal",
+    color: "text.secondary",
     background: "transparent",
-    border: "1px solid #AAAAAA",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: "common.neutral",
     _hover: {
-      bg: theme.colors.brand.background_on,
+      background: "common.light_hover",
+    },
+    _active: {
+      background: "common.light_active",
     },
   },
 });

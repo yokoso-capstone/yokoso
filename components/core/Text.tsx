@@ -1,112 +1,74 @@
-import { chakra, Heading, Link as ChakraLink, Text } from "@chakra-ui/react";
-import theme from "@/src/theme";
+import { chakra, Heading, Text } from "@chakra-ui/react";
 
-export const Headline = chakra(Heading, {
+export const HeadingBase = chakra(Heading, {
   baseStyle: {
-    fontWeight: 800,
-    color: theme.colors.brand.primary_variant,
+    fontFamily: "Gilroy",
+    fontWeight: "extrabold",
+    lineHeight: "1.1",
+    color: "text.primary",
   },
 });
 
-export const Headline1 = chakra(Headline, {
+export const Heading1 = chakra((props) => <HeadingBase as="h1" {...props} />, {
   baseStyle: {
-    fontSize: "96px !important",
+    fontSize: "96px",
   },
 });
 
-export const Headline2 = chakra(Headline, {
+export const Heading2 = chakra((props) => <HeadingBase as="h2" {...props} />, {
   baseStyle: {
-    fontSize: "60px !important",
+    fontSize: "60px",
   },
 });
 
-export const Headline3 = chakra(Headline, {
+export const Heading3 = chakra((props) => <HeadingBase as="h3" {...props} />, {
   baseStyle: {
-    fontSize: "48px !important",
+    fontSize: "48px",
   },
 });
 
-export const Headline4 = chakra(Headline, {
+export const Heading4 = chakra((props) => <HeadingBase as="h4" {...props} />, {
   baseStyle: {
-    fontSize: "34px !important",
+    fontSize: "36px",
   },
 });
 
-export const Headline5 = chakra(Headline, {
+export const Heading5 = chakra((props) => <HeadingBase as="h5" {...props} />, {
   baseStyle: {
-    fontSize: "24px !important",
+    fontSize: "24px",
   },
 });
 
-export const Headline6 = chakra(Headline, {
+export const Heading6 = chakra((props) => <HeadingBase as="h6" {...props} />, {
   baseStyle: {
-    fontSize: "20px !important",
+    fontSize: "20px",
   },
 });
 
-export const HeadlineAuto = chakra(Headline, {
-  baseStyle: {
-    fontSize: [28, 32, 32, 36].map((size) => `${size}px !important`),
-    lineHeight: 1.25,
-  },
-});
-
-export const HeadlineVarient = chakra(Heading, {
-  baseStyle: {
-    fontFamily: "Inter",
-    fontWeight: 400,
-    color: theme.colors.brand.secondary,
-  },
-});
-
-export const Body = chakra(Text, {
+export const TextBase = chakra(Text, {
   baseStyle: {
     fontWeight: "normal",
-    color: theme.colors.brand.secondary,
+    lineHeight: "1.5",
+    color: "text.primary",
   },
 });
 
-export const Body1 = chakra(Body, {
+export const Body1 = chakra(TextBase, {
   baseStyle: {
     fontSize: "16px",
   },
 });
 
-export const Body2 = chakra(Body, {
+export const Body2 = chakra(TextBase, {
   baseStyle: {
     fontSize: "14px",
   },
 });
 
-export const BodyAuto = chakra(Body, {
+export const Caption = chakra(Text, {
   baseStyle: {
-    fontSize: [14, 14, 16].map((size) => `${size}px`),
-  },
-});
-
-export const Button = chakra(Text, {
-  baseStyle: {
-    fontWeight: 500,
-    fontSize: "14px",
-    color: theme.colors.brand.primary,
-  },
-});
-
-// export const Caption = chakra(Text, {
-//   baseStyle: {
-//     fontWeight: "normal",
-//     fontSize: "12px",
-//     color: theme.colors.brand.caption,
-//   },
-// });
-
-export const Link = chakra(ChakraLink, {
-  baseStyle: {
-    fontWeight: 700,
-    fontSize: "14px",
-    color: theme.colors.brand.primary,
-    _hover: {
-      color: theme.colors.brand.primary_variant,
-    },
+    fontSize: "12px",
+    fontWeight: "normal",
+    color: "text.secondary",
   },
 });
