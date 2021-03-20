@@ -1,5 +1,5 @@
 import Password from "@/components/core/Password";
-import { BlackButton } from "@/components/core/Button";
+import { ButtonPrimary } from "@/components/core/Button";
 import { Formik, Form, Field } from "formik";
 import {
   Modal,
@@ -14,7 +14,7 @@ import {
   FormLabel,
   ModalHeader,
 } from "@chakra-ui/react";
-import { Body2, Headline5, Link } from "@/components/core/Text";
+import { Body2, Heading5, Link } from "@/components/core/Text";
 import NextLink from "next/link";
 import RoutePath from "@/src/routes";
 
@@ -32,13 +32,13 @@ function Login(props: LoginProps) {
       <ModalContent
         width="100%"
         minWidth="256px"
-        maxWidth={["100%", "4.5in", "5in", "5in", "5.5in"]}
+        maxWidth={["4.5in", "5in", "5in", "5.5in"]}
         paddingX={["2.5rem", "3.5rem", "3.5rem"]}
         paddingTop={["3rem", "4rem", "5rem"]}
         paddingBottom={["4rem", "5rem", "6rem"]}
       >
         <ModalHeader>
-          <Headline5 marginBottom="12px">Log in</Headline5>
+          <Heading5 marginBottom="12px">Log in</Heading5>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -72,9 +72,9 @@ function Login(props: LoginProps) {
                     </FormControl>
                   )}
                 </Field>
-                <BlackButton isFullWidth marginTop="24px" type="submit">
+                <ButtonPrimary isFullWidth marginTop="24px" type="submit">
                   Log in
-                </BlackButton>
+                </ButtonPrimary>
               </Stack>
             </Form>
           </Formik>

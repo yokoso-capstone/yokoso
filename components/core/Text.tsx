@@ -1,4 +1,4 @@
-import { chakra, Heading, Text } from "@chakra-ui/react";
+import { chakra, Heading, Link as ChakraLink, Text } from "@chakra-ui/react";
 
 export const HeadingBase = chakra(Heading, {
   baseStyle: {
@@ -70,5 +70,16 @@ export const Caption = chakra(Text, {
     fontSize: "12px",
     fontWeight: "normal",
     color: "text.secondary",
+  },
+});
+
+export const Link = chakra(ChakraLink, {
+  baseStyle: {
+    fontWeight: 700,
+    fontSize: "14px",
+    color: "text.primary",
+    _hover: {
+      color: "text.secondary",
+    },
   },
 });
