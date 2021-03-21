@@ -1,18 +1,19 @@
 import { Box, Image, Grid, GridItem } from "@chakra-ui/react";
 import { Body1, Caption, Body2 } from "@/components/core/Text";
+import { Description, MultiWeightText } from "@/components/sections/Results";
 
 interface ResultProps {
   id: string;
   imageUrl: string;
   title: string;
   numBeds: string;
-  numBath: string;
+  numBaths: string;
   location: string;
   price: string;
 }
 
 export function LgSearchResult(props: ResultProps) {
-  const { imageUrl, title, numBeds, numBath, location, price, id } = props;
+  const { imageUrl, title, numBeds, numBaths, location, price, id } = props;
 
   return (
     <Box maxW="2xl" borderRadius="lg" p="5">
@@ -27,17 +28,12 @@ export function LgSearchResult(props: ResultProps) {
           </Box>
         </GridItem>
         <GridItem colSpan={4} rowSpan={2}>
-          <Box>
-            <Box>
-              <Caption fontSize="14px">{location}</Caption>
-              <Body1 fontSize="18px">{title}</Body1>
-            </Box>
-            <Box>
-              <Caption fontSize="14px">
-                {numBeds} Bedrooms · {numBath} Bathrooms
-              </Caption>
-            </Box>
-          </Box>
+          <Description
+            numBaths={numBaths}
+            numBeds={numBeds}
+            title={title}
+            location={location}
+          />
         </GridItem>
         <GridItem rowSpan={1} colSpan={2}>
           <Box position="relative" pt="3">
@@ -59,10 +55,7 @@ export function LgSearchResult(props: ResultProps) {
         <GridItem rowSpan={1} colSpan={2}>
           <Box h="100%" position="relative">
             <Box position="absolute" bottom="8px" right="8px">
-              <Body1 display="inline" fontWeight="800">
-                {price}
-              </Body1>
-              <Body1 display="inline">&nbsp;/month</Body1>
+              <MultiWeightText bold={price} normal="/month" />
             </Box>
           </Box>
         </GridItem>
@@ -72,7 +65,7 @@ export function LgSearchResult(props: ResultProps) {
 }
 
 export function SmSearchResult(props: ResultProps) {
-  const { imageUrl, title, numBeds, numBath, location, price } = props;
+  const { imageUrl, title, numBeds, numBaths, location, price } = props;
   return (
     <Box maxW="sm" borderRadius="lg" p="5" overflow="hidden">
       <Grid templateRows="repeat(1, 1fr)" gap={2}>
@@ -96,18 +89,13 @@ export function SmSearchResult(props: ResultProps) {
             </Box>
             <Box>
               <Caption fontSize="14px">
-                {numBeds} Bedrooms · {numBath} Bathrooms
+                {numBeds} Bedrooms · {numBaths} Bathrooms
               </Caption>
             </Box>
           </Box>
         </GridItem>
         <GridItem rowSpan={1}>
-          <Box>
-            <Body1 display="inline" fontWeight="800">
-              {price}
-            </Body1>
-            <Body1 display="inline">&nbsp;/month</Body1>
-          </Box>
+          <MultiWeightText bold={price} normal="/month" />
         </GridItem>
       </Grid>
     </Box>
