@@ -4,6 +4,7 @@ import { Flex, Box } from "@chakra-ui/react";
 
 import SearchInput from "@/components/core/SearchInput";
 import { Heading1 } from "@/components/core/Text";
+import HeaderHome from "@/components/sections/HeaderHome";
 
 function HomePage(): ReactElement {
   return (
@@ -12,6 +13,7 @@ function HomePage(): ReactElement {
         <title>Yōkoso</title>
         <meta name="description" content="ようこそ. Discover your new home." />
       </Head>
+      <HeaderHome />
       <Flex
         align="center"
         bgImage="url('/bg1.jpg')"
