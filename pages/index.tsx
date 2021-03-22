@@ -18,7 +18,13 @@ function HomePage(): ReactElement {
       <Flex
         align="center"
         bgImage="url('/bg1.jpg')"
-        height="calc(100vh - 110px)"
+        height={[
+          "calc(100vh - 110px)",
+          "calc(100vh - 110px)",
+          "calc(100vh - 78px)",
+          "calc(100vh - 78px)",
+          "calc(100vh - 78px)",
+        ]}
         bgPosition="25% 75%"
         bgRepeat="no-repeat"
         bgSize="cover"

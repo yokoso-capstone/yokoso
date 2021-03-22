@@ -22,8 +22,9 @@ const HeaderHome = () => (
       "space-between",
     ]}
     wrap="wrap"
-    padding={["8px", "8px", "2rem", "2rem", "2rem"]}
+    padding={["8px", "8px", "1rem", "1rem", "1rem"]}
     bg="black"
+    height={["110px", "110px", "78px", "78px", "78px"]}
   >
     <Flex
       align="center"
@@ -45,15 +46,17 @@ const HeaderHome = () => (
 
     {/* Smaller screen size display */}
     <Stack
-      spacing={3}
+      spacing={2}
       direction="column"
       display={["block", "block", "none", "none", "none"]}
     >
       <Flex justify="center">
         <LogoWhite width="150px" background="black" />
       </Flex>
-      <HeaderButton>Post Listing</HeaderButton>
-      <HeaderButton borderColor="white">Get Started</HeaderButton>
+      <Stack spacing={2} justify="center" direction="row">
+        <HeaderButton>Post Listing</HeaderButton>
+        <HeaderButton borderColor="white">Get Started</HeaderButton>
+      </Stack>
     </Stack>
   </Flex>
 );
