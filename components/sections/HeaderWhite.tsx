@@ -19,8 +19,9 @@ const Header = () => (
       align="center"
       justify={["center", "center", "center", "space-between", "space-between"]}
       wrap="wrap"
-      padding={["8px", "8px", "1rem", "2rem", "2rem"]}
+      padding={["8px", "8px", "8px", "1rem", "1rem"]}
       bg="white"
+      height={["170px", "170px", "170px", "78px", "78px"]}
     >
       <Flex
         align="center"
@@ -55,7 +56,7 @@ const Header = () => (
 
       {/* Smaller screen size display */}
       <Stack
-        spacing={3}
+        spacing={2}
         direction="column"
         display={["block", "block", "block", "none", "none"]}
       >
@@ -69,7 +70,7 @@ const Header = () => (
             onSubmit={() => undefined}
           />
         </Flex>
-        <Stack justify="center" direction="row">
+        <Stack spacing={2} justify="center" direction="row">
           <HeaderButton bg="white" color="black">Post Listing</HeaderButton>
           <HeaderButton borderColor="white">Get Started</HeaderButton>
         </Stack>
