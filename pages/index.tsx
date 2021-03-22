@@ -5,6 +5,7 @@ import { Flex, Box } from "@chakra-ui/react";
 import SearchInput from "@/components/core/SearchInput";
 import { Heading1 } from "@/components/core/Text";
 import HeaderHome from "@/components/sections/HeaderHome";
+import { ContainerPrimary } from "@/components/core/Layout";
 
 function HomePage(): ReactElement {
   return (
@@ -23,17 +24,23 @@ function HomePage(): ReactElement {
         bgSize="cover"
         direction="column"
       >
-        <Box marginTop="100px" width="30vw">
-          <SearchInput
-            placeholder="Where are you staying?"
-            ariaLabel="Search for homes based on location"
-            onSubmit={() => undefined}
-          />
-        </Box>
-        <Box marginRight="55%" marginTop="7%">
-          <Heading1 color="White">Discover your</Heading1>
-          <Heading1 color="White">new home</Heading1>
-        </Box>
+        <ContainerPrimary align="center" maxWidth="1980px">
+          <Box marginTop="100px" width={[300, 400, 500, 550, 600, 650]}>
+            <SearchInput
+              placeholder="Where are you staying?"
+              ariaLabel="Search for homes based on location"
+              onSubmit={() => undefined}
+            />
+          </Box>
+          <Box marginTop="7%" align="left">
+            <Heading1 fontSize={[40, 50, 50, 55, 80, 96]} color="white">
+              Discover your
+            </Heading1>
+            <Heading1 fontSize={[40, 50, 50, 55, 80, 96]} color="white">
+              new home
+            </Heading1>
+          </Box>
+        </ContainerPrimary>
       </Flex>
     </>
   );
