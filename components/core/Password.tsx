@@ -23,7 +23,7 @@ function Password(props: PasswordProps) {
       <Input
         pr="4.5rem"
         type={show ? "text" : "password"}
-        placeholder="Password"
+        placeholder="*******"
         isInvalid={isInvalid}
         onChange={onChange}
         focusBorderColor={focusBorderColor}
