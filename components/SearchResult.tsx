@@ -1,6 +1,6 @@
 import { Box, Image, Grid, GridItem } from "@chakra-ui/react";
 import { Body1, Caption, Body2 } from "@/components/core/Text";
-import { Description, MultiWeightText } from "@/components/sections/Results";
+import { PropertyDes, MultiWeightText } from "@/components/sections/Listings";
 
 interface ResultProps {
   id: string;
@@ -28,7 +28,7 @@ export function LgSearchResult(props: ResultProps) {
           </Box>
         </GridItem>
         <GridItem colSpan={4} rowSpan={2}>
-          <Description
+          <PropertyDes
             numBaths={numBaths}
             numBeds={numBeds}
             title={title}
