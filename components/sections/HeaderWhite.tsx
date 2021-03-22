@@ -1,7 +1,7 @@
 import React from "react";
 import { chakra, Flex, Stack } from "@chakra-ui/react";
 import { ButtonPrimary } from "@/components/core/Button";
-import { LogoWhite } from "@/components/core/Branding";
+import { LogoBlack } from "@/components/core/Branding";
 
 import SearchInput from "@/components/core/SearchInput";
 
@@ -20,14 +20,14 @@ const Header = () => (
       justify={["center", "center", "center", "space-between", "space-between"]}
       wrap="wrap"
       padding={["8px", "8px", "1rem", "2rem", "2rem"]}
-      bg="black"
+      bg="white"
     >
       <Flex
         align="center"
         direction="row"
         display={["none", "none", "none", "block", "block"]}
       >
-        <LogoWhite width="150px" background="black" marginLeft="64px" />
+        <LogoBlack width="150px" marginLeft="64px" />
       </Flex>
 
       <Flex
@@ -49,7 +49,7 @@ const Header = () => (
         marginRight="64px"
         display={["none", "none", "none", "block", "block"]}
       >
-        <HeaderButton>Post Listing</HeaderButton>
+        <HeaderButton bg="white" color="black">Post Listing</HeaderButton>
         <HeaderButton borderColor="white">Get Started</HeaderButton>
       </Stack>
 
@@ -60,9 +60,9 @@ const Header = () => (
         display={["block", "block", "block", "none", "none"]}
       >
         <Flex justify="center">
-          <LogoWhite width="150px" background="black" />
+          <LogoBlack width="150px" />
         </Flex>
-        <Flex align="center">
+        <Flex align="center" >
           <SearchInput
             placeholder="Where are you staying?"
             ariaLabel="Search for homes based on location"
@@ -70,7 +70,7 @@ const Header = () => (
           />
         </Flex>
         <Stack justify="center" direction="row">
-          <HeaderButton>Post Listing</HeaderButton>
+          <HeaderButton bg="white" color="black">Post Listing</HeaderButton>
           <HeaderButton borderColor="white">Get Started</HeaderButton>
         </Stack>
       </Stack>

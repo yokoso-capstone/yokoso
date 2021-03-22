@@ -5,10 +5,7 @@ import { Flex, Box } from "@chakra-ui/react";
 import SearchInput from "@/components/core/SearchInput";
 import { Heading1 } from "@/components/core/Text";
 import HeaderHome from "@/components/sections/HeaderHome";
-<<<<<<< HEAD
 import { ContainerPrimary } from "@/components/core/Layout";
-=======
->>>>>>> develop
 
 function HomePage(): ReactElement {
   return (
