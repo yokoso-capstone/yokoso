@@ -12,5 +12,8 @@ export const Card = chakra(Box, {
     background: "white",
     borderRadius: "4px",
     boxShadow: "md",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: "gray.200",
   },
 });
