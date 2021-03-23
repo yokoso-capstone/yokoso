@@ -19,6 +19,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { CheckIcon } from "@chakra-ui/icons";
+import { getUTCMonthString } from "@/src/utils";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -38,7 +39,7 @@ export const getServerSideProps = async (
     price: 1000,
     poster: {
       name: "Emad Fadel",
-      joined: 123456789,
+      joined: Date.now(),
     },
     details: {
       numBedrooms: 1,
@@ -61,6 +62,7 @@ function ListingPage(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ): ReactElement {
   const { title, city, price, poster, details, images } = props;
+  const joinedDate = new Date(poster.joined);
 
   return (
     <>
@@ -102,7 +104,10 @@ function ListingPage(
                       <Body1>{poster.name}</Body1>
                       <CheckIcon />
                     </HStack>
-                    <Body1 color="text.variant">Joined {poster.joined}</Body1>
+                    <Body1 color="text.variant">
+                      Joined {getUTCMonthString(joinedDate)}{" "}
+                      {joinedDate.getUTCFullYear()}
+                    </Body1>
                   </Stack>
                 </HStack>
                 <Divider />
