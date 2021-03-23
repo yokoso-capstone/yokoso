@@ -1,26 +1,34 @@
-import React from "react";
-import { chakra, Flex, Stack } from "@chakra-ui/react";
+import React, { ReactElement } from "react";
+import { Box, Flex, Stack } from "@chakra-ui/react";
 import { ButtonPrimary } from "@/components/core/Button";
-import { LogoWhite } from "@/components/core/Branding";
-
+import { LogoWhite, LogoBlack } from "@/components/core/Branding";
 import SearchInput from "@/components/core/SearchInput";
 
-const HeaderButton = chakra(ButtonPrimary, {
-  baseStyle: {
-    bg: "black",
-    _hover: { bg: "gray" },
-  },
-});
+interface HeaderProps {
+  darkTheme: boolean;
+  searchInput: boolean;
+  isWide: boolean;
+}
 
-const Header = () => (
-  <>
+function Header(props: HeaderProps): ReactElement {
+  const { darkTheme, searchInput, isWide } = props;
+  const Logo = darkTheme ? LogoWhite : LogoBlack;
+  const background = darkTheme ? "black" : "white";
+  const buttonBorder = darkTheme ? "white" : "";
+  const width = isWide ? "1753px" : "1619px";
+  const margin = isWide ? "84px" : "64px";
+
+  return (
+    <Box
+      maxWidth={width}
+    >
     <Flex
       as="nav"
       align="center"
       justify={["center", "center", "center", "space-between", "space-between"]}
       wrap="wrap"
       padding={["8px", "8px", "8px", "1rem", "1rem"]}
-      bg="black"
+      bg={background}
       height={["170px", "170px", "170px", "78px", "78px"]}
     >
       <Flex
@@ -28,7 +36,7 @@ const Header = () => (
         direction="row"
         display={["none", "none", "none", "block", "block"]}
       >
-        <LogoWhite width="150px" background="black" marginLeft="64px" />
+        <Logo width="150px" marginLeft={margin} />
       </Flex>
 
       <Flex
@@ -37,21 +45,21 @@ const Header = () => (
         display={["none", "none", "none", "block", "block"]}
         width={[0, 0, 0, 300, 400, 500]}
       >
-        <SearchInput
+        {searchInput && <SearchInput
           placeholder="Where are you staying?"
           ariaLabel="Search for homes based on location"
           onSubmit={() => undefined}
-        />
+        />}
       </Flex>
 
       <Stack
         spacing={3}
         direction="row"
-        marginRight="64px"
         display={["none", "none", "none", "block", "block"]}
+        marginRight={margin}
       >
-        <HeaderButton>Post Listing</HeaderButton>
-        <HeaderButton borderColor="white">Get Started</HeaderButton>
+        <ButtonPrimary>Post Listing</ButtonPrimary>
+        <ButtonPrimary borderColor={buttonBorder}>Get Started</ButtonPrimary>
       </Stack>
 
       {/* Smaller screen size display */}
@@ -61,22 +69,23 @@ const Header = () => (
         display={["block", "block", "block", "none", "none"]}
       >
         <Flex justify="center">
-          <LogoWhite width="150px" background="black" />
+          <Logo width="150px" background={background} />
         </Flex>
         <Flex align="center">
-          <SearchInput
+          {searchInput && <SearchInput
             placeholder="Where are you staying?"
             ariaLabel="Search for homes based on location"
             onSubmit={() => undefined}
-          />
+          />}
         </Flex>
         <Stack spacing={2} justify="center" direction="row">
-          <HeaderButton>Post Listing</HeaderButton>
-          <HeaderButton borderColor="white">Get Started</HeaderButton>
+          <ButtonPrimary>Post Listing</ButtonPrimary>
+          <ButtonPrimary borderColor={buttonBorder}>Get Started</ButtonPrimary>
         </Stack>
       </Stack>
     </Flex>
-  </>
-);
+  </Box>
+  );
+}
 
 export default Header;
