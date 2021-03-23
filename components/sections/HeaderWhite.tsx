@@ -16,12 +16,15 @@ const Header = () => (
   <>
     <Flex
       as="nav"
+      w="100%"
       align="center"
       justify={["center", "center", "center", "space-between", "space-between"]}
       wrap="wrap"
       padding={["8px", "8px", "8px", "1rem", "1rem"]}
       bg="white"
       height={["170px", "170px", "170px", "78px", "78px"]}
+      boxShadow="md"
+      position="absolute"
     >
       <Flex
         align="center"

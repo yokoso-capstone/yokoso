@@ -10,13 +10,25 @@ interface ResultProps {
   numBaths: string;
   location: string;
   price: string;
+  display?: any;
+  width?: any;
 }
 
 export function LgSearchResult(props: ResultProps) {
-  const { imageUrl, title, numBeds, numBaths, location, price, id } = props;
+  const {
+    imageUrl,
+    title,
+    numBeds,
+    numBaths,
+    location,
+    price,
+    id,
+    display,
+    width,
+  } = props;
 
   return (
-    <Box maxW="2xl" borderRadius="lg" p="5">
+    <Box maxW="3xl" borderRadius="lg" p="5" display={display} w={width}>
       <Grid
         templateColumns="repeat(9, 1fr)"
         templateRows="repeat(2, 1fr)"
@@ -65,10 +77,19 @@ export function LgSearchResult(props: ResultProps) {
 }
 
 export function SmSearchResult(props: ResultProps) {
-  const { imageUrl, title, numBeds, numBaths, location, price } = props;
+  const {
+    imageUrl,
+    title,
+    numBeds,
+    numBaths,
+    location,
+    price,
+    display,
+    width,
+  } = props;
   return (
-    <Box maxW="sm" borderRadius="lg" p="5" overflow="hidden">
-      <Grid templateRows="repeat(1, 1fr)" gap={2}>
+    <Box maxW="md" borderRadius="lg" p="5" overflow="hidden" display={display}>
+      <Grid templateRows="repeat(1, 1fr)" gap={2} w={width}>
         <GridItem rowSpan={2}>
           <Box w="100%" h="100%" objectFit="cover">
             <Image
