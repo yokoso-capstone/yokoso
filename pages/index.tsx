@@ -14,7 +14,7 @@ function HomePage(): ReactElement {
         <title>Yōkoso</title>
         <meta name="description" content="ようこそ. Discover your new home." />
       </Head>
-      <Header darkTheme={true} searchInput={false} isWide={false}/>
+      <Header darkTheme={true} searchInput={false} isWide={false} />
       <Flex
         align="center"
         bgImage="url('/bg1.jpg')"
