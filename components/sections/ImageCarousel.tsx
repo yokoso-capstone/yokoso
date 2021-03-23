@@ -1,6 +1,6 @@
 import { useRef, useState, ReactElement } from "react";
 import styled from "@emotion/styled";
-import { Box, IconButton } from "@chakra-ui/react";
+import { chakra, Box, IconButton } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -14,6 +14,16 @@ const Carousel = styled(Slider)`
     }
   }
 `;
+
+const CarouselImageBox = chakra(Box, {
+  baseStyle: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+  },
+});
 
 interface ArrowButtonProps {
   ariaLabel: string;
@@ -103,26 +113,16 @@ function ImageCarousel({ images }: ImageCarouselProps): ReactElement {
       >
         {images.map((image, index) => (
           <Box key={`${index}-${image}`} height="6in">
-            <Box
-              zIndex={1}
-              position="absolute"
-              width="100%"
-              height="100%"
+            <CarouselImageBox
               backgroundImage={`url(${image})`}
-              backgroundRepeat="no-repeat"
-              backgroundPosition="center"
-              backgroundSize="contain"
-            />
-            <Box
-              position="absolute"
-              width="100%"
-              height="100%"
-              backgroundImage={`url(${image})`}
-              backgroundRepeat="no-repeat"
-              backgroundPosition="center"
               backgroundSize="cover"
               filter="blur(16px) brightness(1.1) opacity(0.75)"
-              transform="scale(1.1)"
+              transform="scale(1.2)"
+            />
+            <CarouselImageBox
+              zIndex={1}
+              backgroundImage={`url(${image})`}
+              backgroundSize="contain"
             />
           </Box>
         ))}
