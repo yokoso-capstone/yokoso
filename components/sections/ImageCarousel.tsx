@@ -10,6 +10,7 @@ const Carousel = styled(Slider)`
   .slick-dots {
     button::before {
       font-size: 12px;
+      color: white !important;
     }
   }
 `;
