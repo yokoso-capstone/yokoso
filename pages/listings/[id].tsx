@@ -15,6 +15,7 @@ import {
   Grid,
   HStack,
   Image,
+  SkeletonCircle,
   Stack,
   Textarea,
 } from "@chakra-ui/react";
@@ -98,6 +99,7 @@ function ListingPage(
                     rounded="full"
                     boxSize="48px"
                     objectFit="cover"
+                    fallback={<SkeletonCircle size="48px" />}
                   />
                   <Stack spacing="4px">
                     <HStack>

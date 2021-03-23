@@ -1,6 +1,6 @@
 import { useRef, useState, ReactElement } from "react";
 import styled from "@emotion/styled";
-import { chakra, Box, IconButton } from "@chakra-ui/react";
+import { chakra, Box, IconButton, Spinner } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -81,6 +81,7 @@ function ImageCarousel({ images }: ImageCarouselProps): ReactElement {
         dots
         infinite
         fade
+        lazyLoad="progressive"
         speed={100}
         prevArrow={
           <ArrowButton
@@ -113,10 +114,20 @@ function ImageCarousel({ images }: ImageCarouselProps): ReactElement {
       >
         {images.map((image, index) => (
           <Box key={`${index}-${image}`} height="6in">
+            <Spinner
+              zIndex={-1}
+              position="absolute"
+              top="calc(50% - 16px)"
+              left="calc(50% - 16px)"
+              thickness="4px"
+              speed="0.65s"
+              color="common.neutral"
+              size="lg"
+            />
             <CarouselImageBox
               backgroundImage={`url(${image})`}
               backgroundSize="cover"
-              filter="blur(16px) brightness(1.1) opacity(0.75)"
+              filter="blur(16px) brightness(1.2) saturate(0.75) contrast(75%)"
               transform="scale(1.2)"
             />
             <CarouselImageBox
