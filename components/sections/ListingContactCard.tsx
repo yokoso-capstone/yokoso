@@ -45,9 +45,6 @@ function ListingCard(props: ListingCardProps): ReactElement {
     <Card
       width="100%"
       padding={["3rem 2rem", "5rem 3rem", "5rem 4rem", "4rem 3rem"]}
-      position="sticky"
-      top={0}
-      marginX="auto"
     >
       <Stack spacing="24px">
         <HStack align="baseline">
@@ -90,7 +87,7 @@ function ListingCard(props: ListingCardProps): ReactElement {
             borderRadius="4px"
             padding="16px"
             lineHeight="1.5"
-            height="max-content"
+            height="100px"
             value={value}
             onChange={handleInputChange}
             onFocus={handleFocus}
