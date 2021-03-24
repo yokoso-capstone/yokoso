@@ -67,7 +67,7 @@ export const Body2 = chakra(TextBase, {
 
 export const Caption = chakra(Text, {
   baseStyle: {
-    fontSize: "12px",
+    fontSize: "14px",
     fontWeight: "normal",
     color: "text.secondary",
   },
