@@ -41,6 +41,9 @@ export const ButtonPrimary = chakra(ButtonBase, {
     _hover: {
       background: "common.dark_hover",
     },
+    _active: {
+      background: "common.dark",
+    },
   },
 });
 
