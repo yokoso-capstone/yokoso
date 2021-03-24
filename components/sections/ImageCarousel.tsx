@@ -7,6 +7,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const Carousel = styled(Slider)`
+  min-height: 6in;
+
   .slick-dots {
     button::before {
       font-size: 12px;
@@ -30,7 +32,7 @@ interface ArrowButtonProps {
   pos: "left" | "right";
   icon: ReactElement;
   faded: boolean;
-  clickFunc: () => any;
+  handleClick: () => any;
 }
 
 const ArrowButton = ({
@@ -38,14 +40,14 @@ const ArrowButton = ({
   pos,
   icon,
   faded,
-  clickFunc,
+  handleClick,
 }: ArrowButtonProps) => (
   <IconButton
     aria-label={ariaLabel}
     icon={icon}
     {...{ [pos]: "32px" }}
     opacity={faded ? 0.5 : 1}
-    onClick={clickFunc}
+    onClick={handleClick}
     rounded="full"
     zIndex={1}
     position="absolute"
@@ -89,7 +91,7 @@ function ImageCarousel({ images }: ImageCarouselProps): ReactElement {
             pos="left"
             icon={<ChevronLeftIcon />}
             faded={isMouseOut}
-            clickFunc={() => carouselRef.current?.slickPrev()}
+            handleClick={() => carouselRef.current?.slickPrev()}
           />
         }
         nextArrow={
@@ -98,7 +100,7 @@ function ImageCarousel({ images }: ImageCarouselProps): ReactElement {
             pos="right"
             icon={<ChevronRightIcon />}
             faded={isMouseOut}
-            clickFunc={() => carouselRef.current?.slickNext()}
+            handleClick={() => carouselRef.current?.slickNext()}
           />
         }
         appendDots={(dots) => (
