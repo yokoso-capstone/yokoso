@@ -30,7 +30,7 @@ function ListingCard(props: ListingCardProps): ReactElement {
   const placeholderText = `Hi ${firstName}, I am interested in your listing. Is it still available? When would be a good time to view it?`;
 
   const handleFocus = () => {
-    if (firstFocus.current) {
+    if (firstFocus.current || (!firstFocus.current && !value)) {
       setValue(placeholderText);
       firstFocus.current = false;
     }
@@ -51,7 +51,7 @@ function ListingCard(props: ListingCardProps): ReactElement {
     >
       <Stack spacing="24px">
         <HStack align="baseline">
-          <Heading4>${price} </Heading4>{" "}
+          <Heading4>${price.toLocaleString("en")} </Heading4>{" "}
           <TextBase fontSize="20px">/month</TextBase>
         </HStack>
         <Divider />
