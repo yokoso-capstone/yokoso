@@ -122,15 +122,15 @@ function ListingPage(
               )}
             </Box>
             <Divider />
-            <Box>
+            <Box height="3in">
               <Heading4>Lease details</Heading4>
             </Box>
             <Divider />
-            <Box>
+            <Box height="3in">
               <Heading4>Amenities</Heading4>
             </Box>
             <Divider />
-            <Box>
+            <Box height="3in">
               <Heading4>Reviews</Heading4>
             </Box>
           </Stack>
