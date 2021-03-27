@@ -4,5 +4,6 @@ export interface ListingType{
   numBaths: string;
   price: string;
   title: string;
+  id:string;
   imageUrl: string;
 }
