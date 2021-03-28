@@ -28,10 +28,10 @@ const Sidebar = () => (
     height="100vh"
     direction="column"
   >
-    <Flex justify="center" paddingBottom="32px" >
+    <Flex justify="center" paddingBottom="32px">
       <LogoWhite width="100px" background="black" />
     </Flex>
-    
+
     <Flex
       direction="column"
       height="100%"
