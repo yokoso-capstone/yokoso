@@ -74,7 +74,7 @@ function Search(props: SearchProps): ReactElement {
   const { location } = props;
 
   const [getListings, setListings] = useState([]);
-  const [priceFilter, setPriceFilter] = useState(0);
+  const [priceFilter, setPriceFilter] = useState([0, 2150]);
   const [rooms, setRooms] = useState(1);
   const [bathrooms, setBathroom] = useState(1);
 
@@ -149,10 +149,10 @@ function Search(props: SearchProps): ReactElement {
               onClose={onClosePrice}
               childComp={
                 <SliderFilter
-                  maxValue={2100}
-                  minValue={0}
+                  max={2100}
+                  min={0}
                   value={priceFilter}
-                  step={100}
+                  step={50}
                   filterName="Max price"
                   onChange={(val) => setPriceFilter(val)}
                 />

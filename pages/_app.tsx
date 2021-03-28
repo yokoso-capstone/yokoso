@@ -3,7 +3,7 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "@/src/theme";
-
+import "rc-slider/assets/index.css";
 import "focus-visible/dist/focus-visible";
 import "react-datepicker/dist/react-datepicker.css";
 import "../styling/date-picker.css";
