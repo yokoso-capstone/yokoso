@@ -77,7 +77,7 @@ export function SliderFilter(props: SliderProps) {
               fontSize="1em"
               children="$"
             />
-            <Input value={`${value[0]}`} />
+            <Input defaultValue={`${value[0]}`} />
           </InputGroup>
           <Box>
             <Heading6>-</Heading6>
@@ -92,7 +92,7 @@ export function SliderFilter(props: SliderProps) {
             />
             <Input
               isReadOnly
-              value={`${value[1] > max ? `${max}+` : `${value[1]}`}`}
+              defaultValue={`${value[1] > max ? `${max}+` : `${value[1]}`}`}
             />
           </InputGroup>
         </HStack>
