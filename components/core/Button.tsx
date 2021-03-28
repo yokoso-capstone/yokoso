@@ -41,6 +41,9 @@ export const ButtonPrimary = chakra(ButtonBase, {
     _hover: {
       background: "common.dark_hover",
     },
+    _active: {
+      background: "common.dark",
+    },
   },
 });
 
@@ -75,5 +78,19 @@ export const ButtonSecondaryVariant = chakra(ButtonBase, {
     _active: {
       background: "common.light_active",
     },
+  },
+});
+
+export const SideBarButton = chakra(Button, {
+  baseStyle: {
+    paddingLeft: "8px",
+    width: "100%",
+    bg: "transparent",
+    rounded: "none",
+    fontWeight: "bold",
+    justifyContent: "start",
+    borderLeft: "4px",
+    borderLeftColor: "transparent",
+    _hover: { bg: "gray", borderLeftColor: "red" },
   },
 });
