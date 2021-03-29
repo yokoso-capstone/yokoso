@@ -44,6 +44,11 @@ export const ButtonPrimary = chakra(ButtonBase, {
     _active: {
       background: "common.dark",
     },
+    _disabled: {
+      _hover: {
+        background: "common.dark_hover",
+      },
+    },
   },
 });
 
@@ -61,6 +66,11 @@ export const ButtonSecondary = chakra(ButtonBase, {
     _active: {
       background: "common.light_active",
     },
+    _disabled: {
+      _hover: {
+        background: "common.light_hover",
+      },
+    },
   },
 });
 
@@ -77,6 +87,11 @@ export const ButtonSecondaryVariant = chakra(ButtonBase, {
     },
     _active: {
       background: "common.light_active",
+    },
+    _disabled: {
+      _hover: {
+        background: "common.light_hover",
+      },
     },
   },
 });

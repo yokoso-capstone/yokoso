@@ -1,8 +1,9 @@
-import { useRef, useState, ChangeEvent, ReactElement } from "react";
+import { useState, ChangeEvent, ReactElement } from "react";
 import { ButtonPrimary } from "@/components/core/Button";
 import { Card } from "@/components/core/Layout";
 import { Body1, Heading4, Heading5, TextBase } from "@/components/core/Text";
 import {
+  Box,
   Divider,
   HStack,
   Icon,
@@ -10,6 +11,7 @@ import {
   SkeletonCircle,
   Stack,
   Textarea,
+  Tooltip,
 } from "@chakra-ui/react";
 import { FaCheckCircle } from "react-icons/fa";
 import { getUTCMonthString } from "@/src/utils";
@@ -26,13 +28,11 @@ function ListingCard(props: ListingCardProps): ReactElement {
   const { price, firstName, lastName, profilePicture, joined } = props;
   const joinedDate = new Date(joined);
   const [value, setValue] = useState("");
-  const firstFocus = useRef(true);
   const placeholderText = `Hi ${firstName}, I am interested in your listing. Is it still available? When would be a good time to view it?`;
 
   const handleFocus = () => {
-    if (firstFocus.current || (!firstFocus.current && !value)) {
+    if (!value) {
       setValue(placeholderText);
-      firstFocus.current = false;
     }
   };
 
@@ -92,7 +92,17 @@ function ListingCard(props: ListingCardProps): ReactElement {
             onChange={handleInputChange}
             onFocus={handleFocus}
           />
-          <ButtonPrimary>Send</ButtonPrimary>
+          <Tooltip
+            isDisabled={Boolean(value)}
+            hasArrow
+            label="Enter a message to send"
+          >
+            <Box>
+              <ButtonPrimary isDisabled={!value} isFullWidth>
+                Send
+              </ButtonPrimary>
+            </Box>
+          </Tooltip>
         </Stack>
       </Stack>
     </Card>

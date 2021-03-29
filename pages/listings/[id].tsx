@@ -119,7 +119,7 @@ function ListingPage(
                       setDescriptionExpanded(!isDescriptionExpanded)
                     }
                   >
-                    {isDescriptionExpanded ? "Read less" : "Read more"}
+                    {isDescriptionExpanded ? "See less" : "See more"}
                   </Button>
                 </Box>
               ) : (
