@@ -30,6 +30,7 @@ function Header(props: HeaderProps): ReactElement {
       padding={["8px", "8px", "8px", "1rem", "1rem"]}
       bg={background}
       height={["170px", "170px", "170px", "78px", "78px"]}
+      boxShadow="md"
     >
       <Flex
         align="center"
