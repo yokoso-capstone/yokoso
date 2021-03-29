@@ -50,7 +50,9 @@ const Header = () => (
         marginRight="64px"
         display={["none", "none", "none", "block", "block"]}
       >
-        <HeaderButton bg="white" color="black">Post Listing</HeaderButton>
+        <HeaderButton bg="white" color="black">
+          Post Listing
+        </HeaderButton>
         <HeaderButton borderColor="white">Get Started</HeaderButton>
       </Stack>
 
@@ -63,7 +65,7 @@ const Header = () => (
         <Flex justify="center">
           <LogoBlack width="150px" />
         </Flex>
-        <Flex align="center" >
+        <Flex align="center">
           <SearchInput
             placeholder="Where are you staying?"
             ariaLabel="Search for homes based on location"
@@ -71,7 +73,9 @@ const Header = () => (
           />
         </Flex>
         <Stack spacing={2} justify="center" direction="row">
-          <HeaderButton bg="white" color="black">Post Listing</HeaderButton>
+          <HeaderButton bg="white" color="black">
+            Post Listing
+          </HeaderButton>
           <HeaderButton borderColor="white">Get Started</HeaderButton>
         </Stack>
       </Stack>

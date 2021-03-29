@@ -4,7 +4,7 @@ on:
     branches:
       - develop
 jobs:
-  deploy-staging:
+  deploy-nextjs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -39,3 +39,16 @@ jobs:
 
       - name: Upload `.serverless` state to S3
         run: aws s3 sync .serverless s3://yokoso-serverless-state-bucket/yokoso/staging/.serverless --delete
+
+  deploy-firebase:
+    needs: deploy-nextjs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy -P staging --only firestore,storage
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_STAGING }}

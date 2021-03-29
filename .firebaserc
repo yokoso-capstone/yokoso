@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "yokoso-staging",
+    "staging": "yokoso-staging",
+    "production": "yokoso-production"
+  }
+}

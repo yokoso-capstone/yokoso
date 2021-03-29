@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { ChakraProvider } from "@chakra-ui/react";
@@ -7,7 +8,27 @@ import "focus-visible/dist/focus-visible";
 import "react-datepicker/dist/react-datepicker.css";
 import "../styling/date-picker.css";
 
+import firebase from "firebase/app";
+import "firebase/analytics";
+import firebaseConfig from "@/src/firebaseConfig";
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const initAnalytics = async () => {
+  const isSupported = await firebase.analytics.isSupported();
+
+  if (firebaseConfig.measurementId && isSupported) {
+    firebase.analytics();
+  }
+};
+
 function MyApp({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    initAnalytics();
+  }, []);
+
   return (
     <>
       <Head>

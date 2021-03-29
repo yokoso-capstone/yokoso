@@ -1,11 +1,13 @@
 {
   "name": "yokoso",
   "version": "1.0.0",
-  "description": "",
+  "description": "ようこそ",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "env-cmd -e staging next dev",
+    "build": "env-cmd -e staging next build",
+    "build:staging": "env-cmd -e staging next build",
+    "build:production": "env-cmd -e production next build",
     "start": "next start",
     "typecheck": "tsc",
     "format": "prettier --write **/*.{js,ts,tsx,css} --ignore-path .gitignore",
@@ -20,6 +22,8 @@
     "@chakra-ui/theme-tools": "^1.1.0",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
+    "@types/react-slick": "^0.23.4",
+    "firebase": "^8.3.1",
     "focus-visible": "^5.2.0",
     "formik": "^2.2.6",
     "framer-motion": "^3.3.0",
@@ -27,7 +31,9 @@
     "react": "^17.0.1",
     "react-datepicker": "^3.6.0",
     "react-dom": "^17.0.1",
-    "react-icons": "^4.2.0"
+    "react-icons": "^4.2.0",
+    "react-slick": "^0.28.1",
+    "slick-carousel": "^1.8.1"
   },
   "devDependencies": {
     "@svgr/webpack": "^5.5.0",
@@ -37,6 +43,7 @@
     "@typescript-eslint/eslint-plugin": "^4.15.1",
     "@typescript-eslint/parser": "^4.15.1",
     "babel-eslint": "^10.1.0",
+    "env-cmd": "^10.1.0",
     "eslint": "^7.20.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^7.2.0",
