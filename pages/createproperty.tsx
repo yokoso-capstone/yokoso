@@ -6,19 +6,66 @@ import {
   Flex,
   Box,
   Stack,
-  Radio,
-  RadioGroup,
   Switch,
+  useRadioGroup,
+  HStack,
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { Heading6 } from "@/components/core/Text";
 import Sidebar from "@/components/sections/Sidebar";
 import ProvinceSelector from "@/components/core/ProvinceSelector";
 import { ButtonSecondary } from "@/components/core/Button";
+import PropertyRadio from "@/components/core/PropertyRadio";
+
+function PropRadio() {
+  const options = ["Apartment", "House", "Town House"];
+
+  const { getRootProps, getRadioProps } = useRadioGroup({
+    name: "framework",
+    defaultValue: "react",
+  });
+
+  const group = getRootProps();
+
+  return (
+    <HStack {...group} justify="space-between">
+      {options.map((value) => {
+        const radio = getRadioProps({ value });
+        return (
+          <PropertyRadio key={value} {...radio}>
+            {value}
+          </PropertyRadio>
+        );
+      })}
+    </HStack>
+  );
+}
+
+function RentalRadio() {
+  const options = ["Entire Building", "Partial Building", "Single Room"];
+
+  const { getRootProps, getRadioProps } = useRadioGroup({
+    name: "framework",
+    defaultValue: "react",
+  });
+
+  const group = getRootProps();
+
+  return (
+    <HStack {...group} justify="space-between">
+      {options.map((value) => {
+        const radio = getRadioProps({ value });
+        return (
+          <PropertyRadio key={value} {...radio}>
+            {value}
+          </PropertyRadio>
+        );
+      })}
+    </HStack>
+  );
+}
 
 function CreateProperty(): ReactElement {
-  const [propertyValue, setPropertyValue] = React.useState("1");
-  const [rentalValue, setRentalValue] = React.useState("1");
   return (
     <>
       <Head>
@@ -26,16 +73,15 @@ function CreateProperty(): ReactElement {
         <meta name="description" content="ようこそ. Discover your new home." />
       </Head>
 
-      <Flex direction="row">
+      <Flex direction="row" >
         <Sidebar />
-        <Flex width="full" align="center" justifyContent="center">
-          <Box
-            p={8}
-            // maxWidth="500px"
-            borderWidth={1}
-            borderRadius={8}
-            boxShadow="lg"
-          >
+        <Flex
+          width="full"
+          align="center"
+          justifyContent="center"
+          marginLeft="200px"
+        >
+          <Box p={8} borderWidth={1} borderRadius={8} boxShadow="lg">
             <Box my={4} textAlign="left">
               <form>
                 <Heading6 textAlign="center" mb={4}>
@@ -48,17 +94,7 @@ function CreateProperty(): ReactElement {
                   boxShadow="md"
                   margin={8}
                 >
-                  <RadioGroup onChange={setPropertyValue} value={propertyValue}>
-                    <Stack
-                      direction="row"
-                      spacing={8}
-                      justifyContent="space-between"
-                    >
-                      <Radio value="1">Apartment</Radio>
-                      <Radio value="2">House</Radio>
-                      <Radio value="3">Townhouse</Radio>
-                    </Stack>
-                  </RadioGroup>
+                  <PropRadio />
                 </Box>
                 <Heading6 textAlign="center" mb={4}>
                   Then select your rental space
@@ -69,19 +105,8 @@ function CreateProperty(): ReactElement {
                   borderRadius={8}
                   boxShadow="md"
                   margin={8}
-                  justifyContent="center"
                 >
-                  <RadioGroup onChange={setRentalValue} value={rentalValue}>
-                    <Stack
-                      direction="row"
-                      spacing={8}
-                      justifyContent="space-between"
-                    >
-                      <Radio value="1">Entire Building</Radio>
-                      <Radio value="2">Partial Building</Radio>
-                      <Radio value="3">Single Room</Radio>
-                    </Stack>
-                  </RadioGroup>
+                  <RentalRadio />
                 </Box>
 
                 <Heading6 textAlign="center" mb={4}>
