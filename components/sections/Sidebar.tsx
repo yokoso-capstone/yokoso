@@ -27,6 +27,7 @@ const Sidebar = () => (
     width="200px"
     height="100vh"
     direction="column"
+    position="fixed"
   >
     <Flex justify="center" paddingBottom="32px" >
       <LogoWhite width="100px" background="black" />
