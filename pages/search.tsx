@@ -1,9 +1,10 @@
 import React, { ReactElement, useState } from "react";
 import HeaderWhite from "@/components/sections/HeaderWhite";
 import Head from "next/head";
+import Map from "@/components/sections/Map";
 import { Heading4 } from "@/components/core/Text";
 import { LgSearchResult, SmSearchResult } from "@/components/SearchResult";
-import { ListingType } from "../src/types";
+import { ListingType, testListing } from "../src/types";
 import { CounterFilter, SliderFilter } from "@/components/sections/Filters";
 import {
   ButtonSecondaryVariant,
@@ -36,6 +37,7 @@ import {
 
 interface SearchProps {
   location: string;
+  listings: ListingType[];
 }
 
 interface FilterDisplay {
@@ -71,12 +73,11 @@ function Search(props: SearchProps): ReactElement {
     isOpen: isOpenPrice,
   } = useDisclosure();
 
-  const { location } = props;
-
-  const [getListings, setListings] = useState([]);
   const [priceFilter, setPriceFilter] = useState([0, 2150]);
   const [rooms, setRooms] = useState(1);
   const [bathrooms, setBathroom] = useState(1);
+
+  const { location, listings = [testListing] } = props;
 
   const FilterModals = ({ isOpen, onClose }: any) => {
     return (
@@ -106,7 +107,8 @@ function Search(props: SearchProps): ReactElement {
         <PopoverTrigger>
           <ButtonSecondaryVariant
             padding="9px"
-            display={["none", "none", "block", "block", "block"]}
+            display={["none", "none", "none", "block", "block"]}
+            maxW="140px"
           >
             {name}
           </ButtonSecondaryVariant>
@@ -137,11 +139,11 @@ function Search(props: SearchProps): ReactElement {
         height="100vh"
         bg="white"
       >
-        <Box flex="1" row={3} overflowY="scroll">
+        <Box flex={[1, 1, 1, 1, 0.9]} row={3} overflowY="scroll">
           <Box flex="1" p="5">
             <Heading4>Listings in {location}</Heading4>
           </Box>
-          <SimpleGrid flex="1" p="4" spacing={[0, 0, 1, 4, 4]} columns={4}>
+          <SimpleGrid flex="1" p="4" spacing={[0, 0, 1, 2, 2]} columns={4}>
             <SingleFilter
               name="Price"
               isOpen={isOpenPrice}
@@ -192,47 +194,57 @@ function Search(props: SearchProps): ReactElement {
               }
             ></SingleFilter>
 
-            <ButtonSecondaryVariant padding="9px" onClick={onFilterOpen}>
+            <ButtonSecondaryVariant
+              maxW="140px"
+              padding="9px"
+              onClick={onFilterOpen}
+            >
               Other
             </ButtonSecondaryVariant>
             <FilterModals isOpen={isFilterOpen} onClose={onFilterClose} />
           </SimpleGrid>
           <Divider />
-          <Box flex="2" overflow="auto">
-            {getListings.map((listing: ListingType) => (
+          <Box flex="1" overflow="auto" w="100%">
+            {listings.map((listing: ListingType) => (
               <LgSearchResult
                 imageUrl={listing.imageUrl}
-                location={listing.location}
+                location={listing.location.city}
                 price={listing.price}
                 numBaths={listing.numBaths}
                 numBeds={listing.numBeds}
-                id={listing.id}
+                id={listing.key}
                 title={listing.title}
-                display={["none", "block", "block", "block", "block"]}
+                display={["none", "block", "none", "block", "block"]}
                 width="100%"
               />
             ))}
           </Box>
-          <Box flex="2" paddingTop={4} overflow="auto">
-            {getListings.map((listing: ListingType) => (
+          <Box flex="1" paddingTop={4} overflow="auto" w="100%">
+            {listings.map((listing: ListingType) => (
               <SmSearchResult
                 imageUrl={listing.imageUrl}
-                location={listing.location}
+                location={listing.location.city}
                 price={listing.price}
                 numBaths={listing.numBaths}
                 numBeds={listing.numBeds}
-                id={listing.id}
+                id={listing.key}
                 title={listing.title}
-                display={["block", "none", "none", "none", "none"]}
+                display={["block", "none", "block", "none", "none"]}
                 width="100%"
               />
             ))}
           </Box>
         </Box>
         <Box
-          flex="1.25"
+          flex={[0, 0, 1, 1, 1.25]}
           display={["none", "none", "block", "block", "block"]}
-        ></Box>
+        >
+          <Map
+            defaultLat={43.65107}
+            defaultLong={-79.347015}
+            listings={listings}
+          />
+        </Box>
       </Flex>
     </>
   );

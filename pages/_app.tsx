@@ -33,6 +33,10 @@ function MyApp({ Component, pageProps }: AppProps) {
     <>
       <Head>
         <link rel="icon" href="/favicon.png" />
+        <link
+          href="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css"
+          rel="stylesheet"
+        />
       </Head>
 
       <ChakraProvider theme={theme}>
