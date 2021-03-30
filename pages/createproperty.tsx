@@ -73,15 +73,18 @@ function CreateProperty(): ReactElement {
         <meta name="description" content="ようこそ. Discover your new home." />
       </Head>
 
-      <Flex direction="row" >
-        <Sidebar />
+      <Flex direction="row">
+        <Box display={["none", "none", "none", "block", "block"]}>
+          <Sidebar />
+        </Box>
         <Flex
           width="full"
           align="center"
           justifyContent="center"
-          marginLeft="200px"
+          marginLeft={["0px", "0px", "0px", "200px", "200px"]}
+          marginTop="10px"
         >
-          <Box p={8} borderWidth={1} borderRadius={8} boxShadow="lg">
+          <Box borderWidth={1} boxShadow="lg">
             <Box my={4} textAlign="left">
               <form>
                 <Heading6 textAlign="center" mb={4}>

@@ -1,7 +1,7 @@
 /* eslint-disable react/destructuring-assignment */
-import { useRadio, Box, UseRadioProps } from "@chakra-ui/react";
+import { useRadio, Box, Stack } from "@chakra-ui/react";
 
-function PropertyRadio(props: UseRadioProps) {
+function PropertyRadio(props: any) {
   const { getInputProps, getCheckboxProps } = useRadio(props);
 
   const input = getInputProps();
@@ -12,7 +12,8 @@ function PropertyRadio(props: UseRadioProps) {
       <input {...input} />
       <Box
         {...checkbox}
-        width="150px"
+        width={["None", "100px", "150px", "150px", "150px"]}
+        height={["65px", "65px", "74px", "74px", "74px"]}
         textAlign="center"
         cursor="pointer"
         borderWidth="1px"
@@ -26,8 +27,8 @@ function PropertyRadio(props: UseRadioProps) {
         _focus={{
           boxShadow: "outline",
         }}
-        px={5}
-        py={3}
+        px={["2", "2", "5", "5", "5"]}
+        py={["2", "2", "3", "3", "3"]}
       >
         {props.children}
       </Box>
