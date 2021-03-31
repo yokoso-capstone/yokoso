@@ -138,8 +138,9 @@ function Search(props: SearchProps): ReactElement {
         column={2}
         height="100vh"
         bg="white"
+        overflow="hidden"
       >
-        <Box flex={[1, 1, 1, 1, 0.9]} row={3} overflowY="scroll">
+        <Box flex={[1, 1, 1, 1, 0.9]} row={3} overflowY="scroll" maxW="700px">
           <Box flex="1" p="5">
             <Heading4>Listings in {location}</Heading4>
           </Box>
@@ -238,6 +239,8 @@ function Search(props: SearchProps): ReactElement {
         <Box
           flex={[0, 0, 1, 1, 1.25]}
           display={["none", "none", "block", "block", "block"]}
+          position="relative"
+          maxW="100%"
         >
           <Map
             defaultLat={43.65107}
