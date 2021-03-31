@@ -1,5 +1,5 @@
 /* eslint-disable react/destructuring-assignment */
-import { useRadio, Box, Stack } from "@chakra-ui/react";
+import { useRadio, Box } from "@chakra-ui/react";
 
 function PropertyRadio(props: any) {
   const { getInputProps, getCheckboxProps } = useRadio(props);
