@@ -10,7 +10,8 @@
     "build:production": "env-cmd -e production next build",
     "start": "next start",
     "typecheck": "tsc",
-    "format": "prettier --write **/*.{js,ts,tsx,css} --ignore-path .gitignore",
+    "format": "prettier --write '**/*'.{js,ts,tsx,css} --ignore-path .gitignore",
+    "format:check": "prettier --check '**/*'.{js,ts,tsx,css} --ignore-path .gitignore",
     "lint": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore",
     "lint-fix": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore --fix"
   },
@@ -27,7 +28,7 @@
     "focus-visible": "^5.2.0",
     "formik": "^2.2.6",
     "framer-motion": "^3.3.0",
-    "next": "^10.0.7",
+    "next": "^10.1.2",
     "react": "^17.0.1",
     "react-datepicker": "^3.6.0",
     "react-dom": "^17.0.1",
