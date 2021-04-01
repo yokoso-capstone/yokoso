@@ -206,8 +206,9 @@ function Search(props: SearchProps): ReactElement {
           </SimpleGrid>
           <Divider />
           <Box flex="1" overflow="auto" w="100%">
-            {listings.map((listing: ListingType) => (
+            {listings.map((listing: ListingType, index) => (
               <LgSearchResult
+                key={index}
                 imageUrl={listing.imageUrl}
                 location={listing.location.city}
                 price={listing.price}
@@ -221,8 +222,9 @@ function Search(props: SearchProps): ReactElement {
             ))}
           </Box>
           <Box flex="1" paddingTop={4} overflow="auto" w="100%">
-            {listings.map((listing: ListingType) => (
+            {listings.map((listing: ListingType, index) => (
               <SmSearchResult
+                key={index}
                 imageUrl={listing.imageUrl}
                 location={listing.location.city}
                 price={listing.price}
