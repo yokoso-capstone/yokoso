@@ -4,7 +4,7 @@ import Head from "next/head";
 import Map from "@/components/sections/Map";
 import { Heading4 } from "@/components/core/Text";
 import { LgSearchResult, SmSearchResult } from "@/components/SearchResult";
-import { ListingType, testListing } from "../src/types";
+import { ListingType, testListing, Coordinate } from "../src/types";
 import { CounterFilter, SliderFilter } from "@/components/sections/Filters";
 import {
   ButtonSecondaryVariant,
@@ -36,7 +36,7 @@ import {
 } from "@chakra-ui/react";
 
 interface SearchProps {
-  location: string;
+  location: Coordinate;
   listings: ListingType[];
 }
 
@@ -142,7 +142,7 @@ function Search(props: SearchProps): ReactElement {
       >
         <Box flex={[1, 1, 1, 1, 0.9]} row={3} overflowY="scroll" maxW="700px">
           <Box flex="1" p="5">
-            <Heading4>Listings in {location}</Heading4>
+            <Heading4>Listings in {location?.locationName}</Heading4>
           </Box>
           <SimpleGrid flex="1" p="4" spacing={[0, 0, 1, 2, 2]} columns={4}>
             <SingleFilter
@@ -247,6 +247,8 @@ function Search(props: SearchProps): ReactElement {
           <Map
             defaultLat={43.65107}
             defaultLong={-79.347015}
+            // defaultLat={location.latitude}
+            // defaultLong={location.longitude}
             listings={listings}
           />
         </Box>

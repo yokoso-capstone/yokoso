@@ -9,6 +9,7 @@ export interface ListingType{
 }
 
 export interface Coordinate{
+  locationName?: string;
   latitude: number;
   longitude: number;
 }
