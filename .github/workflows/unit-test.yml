@@ -1,5 +1,8 @@
 name: Unit test
-on: push
+on:
+  push:
+    paths:
+      - ".firebase/firestore.rules"
 
 jobs:
   test-firestore:
