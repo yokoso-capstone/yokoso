@@ -88,7 +88,6 @@ const onSubmit = (values: any) => {
 };
 
 function CreateProperty(): ReactElement {
-  const [value, setValue] = React.useState("1");
   return (
     <>
       <Head>
@@ -294,6 +293,7 @@ function CreateProperty(): ReactElement {
                         <SelectControl
                           name="province"
                           selectProps={{ placeholder: "Select option" }}
+                          isRequired
                         >
                           <option value="Alberta">Alberta</option>
                           <option value="British Columbia">
