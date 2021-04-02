@@ -36,7 +36,7 @@ function validateLetterString(string: any) {
   const re = /^[\w'\-,.][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{1,}$/;
 
   if (!string || !re.test(string)) {
-    error = "Please enter a valid input.";
+    error = "Please enter a valid input - no numbers.";
   }
 
   return error;
@@ -88,6 +88,7 @@ const onSubmit = (values: any) => {
 };
 
 function CreateProperty(): ReactElement {
+  const [value, setValue] = React.useState("1");
   return (
     <>
       <Head>
@@ -122,28 +123,38 @@ function CreateProperty(): ReactElement {
                     margin={8}
                   >
                     <RadioGroupControl name="propertyType">
-                      <HStack justify="space-between">
-                        <Stack direction="column">
+                      <HStack>
+                        <Stack
+                          direction="column"
+                          // I had to use padding here because radiogroupcontrol not 
+                          // working with justify, if you make it work tell me how lmao
+                          paddingLeft={["10%", "15%", "33%", "33%", "33%"]}
+                          paddingRight={["5%", "5%", "25%", "25%", "25%"]}
+                        >
                           <Icon
                             as={BiBuilding}
                             alignSelf="center"
                             boxSize={16}
                           />
-                          <Text alignSelf="center">Apartment</Text>
+                          <Text textAlign="center">Apartment</Text>
                           <Radio value="Apartment" justifyContent="center" />
                         </Stack>
                         <Stack direction="column">
                           <Icon as={BiHome} alignSelf="center" boxSize={16} />
-                          <Text alignSelf="center">House</Text>
+                          <Text textAlign="center">House</Text>
                           <Radio value="House" justifyContent="center" />
                         </Stack>
-                        <Stack direction="column">
+                        <Stack
+                          direction="column"
+                          paddingLeft={["5%", "5%", "25%", "25%", "25%"]}
+                          paddingRight={["10%", "15%", "33%", "33%", "33%"]}
+                        >
                           <Icon
                             as={BiBuildingHouse}
                             alignSelf="center"
                             boxSize={16}
                           />
-                          <Text alignSelf="center">Townhouse</Text>
+                          <Text textAlign="center">Townhouse</Text>
                           <Radio value="Townhouse" justifyContent="center" />
                         </Stack>
                       </HStack>
@@ -162,13 +173,17 @@ function CreateProperty(): ReactElement {
                   >
                     <RadioGroupControl name="rentalType">
                       <HStack spacing={8}>
-                        <Stack direction="column">
+                        <Stack
+                          direction="column"
+                          paddingLeft={["0%", "0%", "18%", "18%", "18%"]}
+                          paddingRight={["5%", "5%", "20%", "20%", "20%"]}
+                        >
                           <Icon
                             as={BsCircleFill}
                             alignSelf="center"
                             boxSize={16}
                           />
-                          <Text>Entire Building</Text>
+                          <Text textAlign="center">Entire Building</Text>
                           <Radio
                             value="Entire Building"
                             justifyContent="center"
@@ -180,19 +195,23 @@ function CreateProperty(): ReactElement {
                             alignSelf="center"
                             boxSize={16}
                           />
-                          <Text>Partial Building</Text>
+                          <Text textAlign="center">Partial Building</Text>
                           <Radio
                             value="Partial Building"
                             justifyContent="center"
                           />
                         </Stack>
-                        <Stack direction="column">
+                        <Stack
+                          direction="column"
+                          paddingLeft={["5%", "5%", "20%", "20%", "20%"]}
+                          paddingRight={["0%", "0%", "18%", "18%", "18%"]}
+                        >
                           <Icon
                             as={BiDoorOpen}
                             alignSelf="center"
                             boxSize={16}
                           />
-                          <Text>Single Room</Text>
+                          <Text textAlign="center">Single Room</Text>
                           <Radio value="Single Room" justifyContent="center" />
                         </Stack>
                       </HStack>
