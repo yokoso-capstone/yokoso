@@ -20,8 +20,4 @@ jobs:
         run: npm ci
 
       - name: Run Firestore unit tests
-        uses: w9jds/firebase-action@master
-        with:
-          args: emulators:exec --only firestore "npm run test:unit:firestore"
-        env:
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_STAGING }}
+        run: npx -y firebase-tools emulators:exec --only firestore "npm run test:unit:firestore"
