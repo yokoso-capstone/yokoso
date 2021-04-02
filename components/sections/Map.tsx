@@ -2,9 +2,9 @@ import { useState } from "react";
 import { chakra, Box, IconButton } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import ReactMapGL, { Marker, Popup } from "react-map-gl";
+import { XsSearchResult } from "@/components/SearchResult";
 import LocationPinSvg from "../svg/location-pin.svg";
 import { ListingType } from "../../src/types";
-import { XsSearchResult } from "@/components/SearchResult";
 
 interface MapProps {
   defaultLat: number;
@@ -61,7 +61,7 @@ function Map(props: MapProps) {
             anchor="bottom"
             longitude={popupInfo.location.coordinates.longitude}
             latitude={popupInfo.location.coordinates.latitude}
-            closeOnClick={true}
+            closeOnClick
             onClose={setPopupInfo}
           >
             <XsSearchResult

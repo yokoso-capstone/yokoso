@@ -8,11 +8,10 @@ interface ResultProps {
   title: string;
   numBeds: string;
   numBaths: string;
-  location: string;
   price: string;
+  location: string;
   display?: any;
   width?: any;
-  key: any;
   onClick?: () => any;
 }
 
@@ -23,7 +22,6 @@ const XsMaxTitleCharacters = 15;
 export function LgSearchResult(props: ResultProps) {
   const {
     imageUrl,
-    key,
     title,
     numBeds,
     numBaths,
@@ -37,7 +35,6 @@ export function LgSearchResult(props: ResultProps) {
 
   return (
     <Box
-      id={key}
       maxW="3xl"
       borderRadius="lg"
       p="5"
@@ -100,7 +97,6 @@ export function SmSearchResult(props: ResultProps) {
     numBaths,
     location,
     price,
-    key,
     display,
     width,
     onClick,
@@ -113,7 +109,6 @@ export function SmSearchResult(props: ResultProps) {
       overflow="hidden"
       display={display}
       onClick={onClick}
-      id={key}
     >
       <Grid templateRows="repeat(1, 1fr)" gap={2} w={width}>
         <GridItem rowSpan={2}>
@@ -155,7 +150,6 @@ export function SmSearchResult(props: ResultProps) {
 export function XsSearchResult(props: ResultProps) {
   const {
     imageUrl,
-    key,
     title,
     numBeds,
     numBaths,
@@ -172,7 +166,6 @@ export function XsSearchResult(props: ResultProps) {
       p={3}
       display={display}
       onClick={onClick}
-      id={key}
     >
       <Grid templateRows="repeat(1, 1fr)" gap={2} w={width}>
         <GridItem rowSpan={2}>

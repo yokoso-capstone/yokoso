@@ -4,7 +4,6 @@ import Head from "next/head";
 import Map from "@/components/sections/Map";
 import { Heading4 } from "@/components/core/Text";
 import { LgSearchResult, SmSearchResult } from "@/components/SearchResult";
-import { ListingType, testListing, Coordinate } from "../src/types";
 import { CounterFilter, SliderFilter } from "@/components/sections/Filters";
 import {
   ButtonSecondaryVariant,
@@ -34,6 +33,7 @@ import {
   FormLabel,
   useDisclosure,
 } from "@chakra-ui/react";
+import { ListingType, testListing, Coordinate } from "../src/types";
 
 interface SearchProps {
   location: Coordinate;
@@ -155,12 +155,10 @@ function Search(props: SearchProps): ReactElement {
                   max={2100}
                   min={0}
                   value={priceFilter}
-                  step={50}
-                  filterName="Max price"
                   onChange={(val) => setPriceFilter(val)}
                 />
               }
-            ></SingleFilter>
+            />
 
             <SingleFilter
               name="Rooms"
@@ -170,12 +168,11 @@ function Search(props: SearchProps): ReactElement {
               childComp={
                 <CounterFilter
                   value={rooms}
-                  set={setRooms}
                   onClickAdd={() => (rooms < 15 ? setRooms(rooms + 1) : null)}
                   onClickMinus={() => (rooms > 1 ? setRooms(rooms - 1) : null)}
                 />
               }
-            ></SingleFilter>
+            />
             <SingleFilter
               name="Bathrooms"
               isOpen={isOpenBathroom}
@@ -183,7 +180,6 @@ function Search(props: SearchProps): ReactElement {
               onClose={onCloseBathroom}
               childComp={
                 <CounterFilter
-                  set={setBathroom}
                   value={bathrooms}
                   onClickAdd={() =>
                     bathrooms < 99 ? setBathroom(bathrooms + 1) : null
@@ -193,7 +189,7 @@ function Search(props: SearchProps): ReactElement {
                   }
                 />
               }
-            ></SingleFilter>
+            />
 
             <ButtonSecondaryVariant
               maxW="140px"
@@ -256,5 +252,4 @@ function Search(props: SearchProps): ReactElement {
     </>
   );
 }
-
 export default Search;

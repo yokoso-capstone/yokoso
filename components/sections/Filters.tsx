@@ -15,18 +15,12 @@ interface CounterProps {
   onClickMinus: () => any;
   onClickAdd: () => any;
   value: number;
-  onOpen?: () => any;
-  onClose?: () => any;
-  isOpen?: boolean;
-  set: (x: any) => any;
 }
 
 interface SliderProps {
   max: number;
   min: number;
   value: number[];
-  step?: number;
-  filterName: string;
   onChange: (x: any) => any;
 }
 
@@ -75,8 +69,9 @@ export function SliderFilter(props: SliderProps) {
               padding="0px"
               color="gray.300"
               fontSize="1em"
-              children="$"
-            />
+            >
+              $
+            </InputLeftElement>
             <Input defaultValue={`${value[0]}`} />
           </InputGroup>
           <Box>
@@ -88,8 +83,9 @@ export function SliderFilter(props: SliderProps) {
               padding="0px"
               color="gray.300"
               fontSize="1em"
-              children="$"
-            />
+            >
+              $
+            </InputLeftElement>
             <Input
               isReadOnly
               defaultValue={`${value[1] > max ? `${max}+` : `${value[1]}`}`}
