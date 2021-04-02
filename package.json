@@ -2,7 +2,6 @@
   "name": "yokoso",
   "version": "1.0.0",
   "description": "ようこそ",
-  "main": "index.js",
   "scripts": {
     "dev": "env-cmd -e staging next dev",
     "build": "env-cmd -e staging next build",
@@ -13,9 +12,9 @@
     "format": "prettier --write '**/*'.{js,ts,tsx,css} --ignore-path .gitignore",
     "format:check": "prettier --check '**/*'.{js,ts,tsx,css} --ignore-path .gitignore",
     "lint": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore",
-    "lint-fix": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore --fix"
+    "lint-fix": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore --fix",
+    "test:unit:firestore": "jest test/unit/firestore"
   },
-  "author": "",
   "license": "MIT",
   "dependencies": {
     "@chakra-ui/icons": "^1.0.6",
@@ -37,7 +36,9 @@
     "slick-carousel": "^1.8.1"
   },
   "devDependencies": {
+    "@firebase/testing": "^0.20.11",
     "@svgr/webpack": "^5.5.0",
+    "@types/jest": "^26.0.22",
     "@types/node": "^14.14.28",
     "@types/react": "^17.0.2",
     "@types/react-datepicker": "^3.1.5",
@@ -53,7 +54,9 @@
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "jest": "^26.6.3",
     "prettier": "^2.2.1",
+    "ts-jest": "^26.5.4",
     "typescript": "^4.1.5"
   }
 }
