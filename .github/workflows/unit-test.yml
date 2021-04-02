@@ -1,12 +1,9 @@
 name: Unit test
-on:
-  push:
-    paths:
-      - ".firebase/firestore.rules"
+on: push
 
 jobs:
   test-firestore:
-    name: Unit test Firestore
+    name: Test Firestore security rules
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -26,3 +23,5 @@ jobs:
         uses: w9jds/firebase-action@master
         with:
           args: emulators:exec --only firestore "npm run test:unit:firestore"
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_STAGING }}
