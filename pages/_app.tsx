@@ -3,7 +3,7 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "@/src/theme";
-
+import "rc-slider/assets/index.css";
 import "focus-visible/dist/focus-visible";
 import "react-datepicker/dist/react-datepicker.css";
 import "../styling/date-picker.css";
@@ -33,6 +33,10 @@ function MyApp({ Component, pageProps }: AppProps) {
     <>
       <Head>
         <link rel="icon" href="/favicon.png" />
+        <link
+          href="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css"
+          rel="stylesheet"
+        />
       </Head>
 
       <ChakraProvider theme={theme}>

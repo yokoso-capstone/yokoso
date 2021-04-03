@@ -56,6 +56,7 @@ function DesignPage(): ReactElement {
       </Box>
 
       <LgSearchResult
+        key="1"
         imageUrl="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
         location="Kanata"
         price="$680"
@@ -66,6 +67,7 @@ function DesignPage(): ReactElement {
       />
 
       <SmSearchResult
+        key="2"
         imageUrl="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
         location="Kanata"
         price="$680"
