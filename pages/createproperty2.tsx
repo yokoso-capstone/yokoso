@@ -73,7 +73,6 @@ const onSubmit = (values: any) => {
     // eslint-disable-next-line no-alert
     window.alert(JSON.stringify(values, null, 2));
   });
-  console.log(initialValues.files)
 };
 
 function CreateProperty(): ReactElement {
@@ -99,7 +98,7 @@ function CreateProperty(): ReactElement {
           <Box borderWidth={1} boxShadow="lg">
             <Box my={4} textAlign="left">
               <Formik initialValues={initialValues} onSubmit={onSubmit}>
-                {({ setFieldValue, values, errors }) => (
+                {({ setFieldValue }) => (
                   <Form>
                     <Heading6 textAlign="center" mb={4}>
                       Enter Details
@@ -116,7 +115,9 @@ function CreateProperty(): ReactElement {
                           <Field name="size" validate={validateNumber}>
                             {({ field, form }: any) => (
                               <FormControl
-                                isInvalid={form.errors.size && form.touched.size}
+                                isInvalid={
+                                  form.errors.size && form.touched.size
+                                }
                               >
                                 <FormLabel>Rental Size (Sq.Ft)</FormLabel>
                                 <Input
@@ -187,7 +188,9 @@ function CreateProperty(): ReactElement {
                           >
                             <option value="unfurnished">Unfurnished</option>
                             <option value="furnished">Furnished</option>
-                            <option value="semi-furnished">Semi-Furnished</option>
+                            <option value="semi-furnished">
+                              Semi-Furnished
+                            </option>
                           </SelectControl>
                         </Box>
                         <Divider />
@@ -306,7 +309,9 @@ function CreateProperty(): ReactElement {
                             isRequired
                           >
                             <option value="monthly">Monthly</option>
-                            <option value="semester">Semester (4 Months)</option>
+                            <option value="semester">
+                              Semester (4 Months)
+                            </option>
                             <option value="twoSemester">
                               Two Semesters (8 Months)
                             </option>
@@ -356,7 +361,10 @@ function CreateProperty(): ReactElement {
                             <CheckboxControl name="features" value="microwave">
                               Microwave
                             </CheckboxControl>
-                            <CheckboxControl name="features" value="snowRemoval">
+                            <CheckboxControl
+                              name="features"
+                              value="snowRemoval"
+                            >
                               Snow Removal
                             </CheckboxControl>
                             <CheckboxControl name="features" value="tv">
@@ -373,7 +381,9 @@ function CreateProperty(): ReactElement {
                         <Field name="featureDescription">
                           {({ field, form }: any) => (
                             <FormControl>
-                              <FormLabel>Describe Additional Features</FormLabel>
+                              <FormLabel>
+                                Describe Additional Features
+                              </FormLabel>
                               <Textarea
                                 {...field}
                                 borderColor="lightgray"
@@ -408,7 +418,10 @@ function CreateProperty(): ReactElement {
                             <CheckboxControl name="utilities" value="cable">
                               Cable
                             </CheckboxControl>
-                            <CheckboxControl name="utilities" value="electricity">
+                            <CheckboxControl
+                              name="utilities"
+                              value="electricity"
+                            >
                               Electricity
                             </CheckboxControl>
                             <CheckboxControl name="utilities" value="heating">
@@ -420,7 +433,10 @@ function CreateProperty(): ReactElement {
                             <CheckboxControl name="utilities" value="internet">
                               Internet
                             </CheckboxControl>
-                            <CheckboxControl name="utilities" value="naturalGas">
+                            <CheckboxControl
+                              name="utilities"
+                              value="naturalGas"
+                            >
                               Natural Gas
                             </CheckboxControl>
                           </Stack>
@@ -428,7 +444,9 @@ function CreateProperty(): ReactElement {
                         <Field name="utilitiesDescription">
                           {({ field, form }: any) => (
                             <FormControl>
-                              <FormLabel>Describe Additional Utilities</FormLabel>
+                              <FormLabel>
+                                Describe Additional Utilities
+                              </FormLabel>
                               <Textarea
                                 {...field}
                                 borderColor="lightgray"
@@ -491,7 +509,7 @@ function CreateProperty(): ReactElement {
                           justifyContent="center"
                           borderColor="green"
                         >
-                          <Input {...getInputProps()} />
+                          <input {...getInputProps()} />
                           <Box textAlign="center">
                             Drag and drop files here, or click to select files
                           </Box>
