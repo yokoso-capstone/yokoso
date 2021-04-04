@@ -132,123 +132,121 @@ function Search(props: SearchProps): ReactElement {
         <title>Yōkoso</title>
         <meta name="description" content="ようこそ. Discover your new home." />
       </Head>
-      <HeaderWhite />
-      <Flex
-        paddingTop={["170px", "170px", "170px", "78px", "78px"]}
-        column={2}
-        height="100vh"
-        bg="white"
-        overflow="hidden"
-      >
-        <Box flex={[1, 1, 1, 1, 0.9]} row={3} overflowY="scroll" maxW="700px">
-          <Box flex="1" p="5">
-            <Heading4>Listings in {location?.locationName}</Heading4>
-          </Box>
-          <SimpleGrid flex="1" p="4" spacing={[0, 0, 1, 2, 2]} columns={4}>
-            <SingleFilter
-              name="Price"
-              isOpen={isOpenPrice}
-              onOpen={onOpenPrice}
-              onClose={onClosePrice}
-              childComp={
-                <SliderFilter
-                  max={2100}
-                  min={0}
-                  value={priceFilter}
-                  onChange={(val) => setPriceFilter(val)}
-                />
-              }
-            />
-
-            <SingleFilter
-              name="Rooms"
-              isOpen={isOpenRooms}
-              onOpen={onOpenRooms}
-              onClose={onCloseRooms}
-              childComp={
-                <CounterFilter
-                  value={rooms}
-                  onClickAdd={() => (rooms < 15 ? setRooms(rooms + 1) : null)}
-                  onClickMinus={() => (rooms > 1 ? setRooms(rooms - 1) : null)}
-                />
-              }
-            />
-            <SingleFilter
-              name="Bathrooms"
-              isOpen={isOpenBathroom}
-              onOpen={onOpenBathroom}
-              onClose={onCloseBathroom}
-              childComp={
-                <CounterFilter
-                  value={bathrooms}
-                  onClickAdd={() =>
-                    bathrooms < 99 ? setBathroom(bathrooms + 1) : null
-                  }
-                  onClickMinus={() =>
-                    bathrooms > 1 ? setBathroom(bathrooms - 1) : null
-                  }
-                />
-              }
-            />
-
-            <ButtonSecondaryVariant
-              maxW="140px"
-              padding="9px"
-              onClick={onFilterOpen}
-            >
-              Other
-            </ButtonSecondaryVariant>
-            <FilterModals isOpen={isFilterOpen} onClose={onFilterClose} />
-          </SimpleGrid>
-          <Divider />
-          <Box flex="1" overflow="auto" w="100%">
-            {listings.map((listing: ListingType, index) => (
-              <LgSearchResult
-                key={index}
-                imageUrl={listing.imageUrl}
-                location={listing.location.city}
-                price={listing.price}
-                numBaths={listing.numBaths}
-                numBeds={listing.numBeds}
-                id={listing.key}
-                title={listing.title}
-                display={["none", "block", "none", "block", "block"]}
-                width="100%"
+      <Box height="100vh" overflow="hidden">
+        <HeaderWhite />
+        <Flex column={2} height="100%" bg="white">
+          <Box flex={[1, 1, 1, 1, 0.9]} row={3} overflowY="scroll" maxW="700px">
+            <Box flex="1" p="5">
+              <Heading4>Listings in {location?.locationName}</Heading4>
+            </Box>
+            <SimpleGrid flex="1" p="4" spacing={[0, 0, 1, 2, 2]} columns={4}>
+              <SingleFilter
+                name="Price"
+                isOpen={isOpenPrice}
+                onOpen={onOpenPrice}
+                onClose={onClosePrice}
+                childComp={
+                  <SliderFilter
+                    max={2100}
+                    min={0}
+                    value={priceFilter}
+                    onChange={(val) => setPriceFilter(val)}
+                  />
+                }
               />
-            ))}
-          </Box>
-          <Box flex="1" paddingTop={4} overflow="auto" w="100%">
-            {listings.map((listing: ListingType, index) => (
-              <SmSearchResult
-                key={index}
-                imageUrl={listing.imageUrl}
-                location={listing.location.city}
-                price={listing.price}
-                numBaths={listing.numBaths}
-                numBeds={listing.numBeds}
-                id={listing.key}
-                title={listing.title}
-                display={["block", "none", "block", "none", "none"]}
-                width="100%"
+
+              <SingleFilter
+                name="Rooms"
+                isOpen={isOpenRooms}
+                onOpen={onOpenRooms}
+                onClose={onCloseRooms}
+                childComp={
+                  <CounterFilter
+                    value={rooms}
+                    onClickAdd={() => (rooms < 15 ? setRooms(rooms + 1) : null)}
+                    onClickMinus={() =>
+                      rooms > 1 ? setRooms(rooms - 1) : null
+                    }
+                  />
+                }
               />
-            ))}
+              <SingleFilter
+                name="Bathrooms"
+                isOpen={isOpenBathroom}
+                onOpen={onOpenBathroom}
+                onClose={onCloseBathroom}
+                childComp={
+                  <CounterFilter
+                    value={bathrooms}
+                    onClickAdd={() =>
+                      bathrooms < 99 ? setBathroom(bathrooms + 1) : null
+                    }
+                    onClickMinus={() =>
+                      bathrooms > 1 ? setBathroom(bathrooms - 1) : null
+                    }
+                  />
+                }
+              />
+
+              <ButtonSecondaryVariant
+                maxW="140px"
+                padding="9px"
+                onClick={onFilterOpen}
+              >
+                Other
+              </ButtonSecondaryVariant>
+              <FilterModals isOpen={isFilterOpen} onClose={onFilterClose} />
+            </SimpleGrid>
+            <Divider />
+            <Box flex="1" overflow="auto" w="100%">
+              {listings.map((listing: ListingType, index) => (
+                <LgSearchResult
+                  key={index}
+                  imageUrl={listing.imageUrl}
+                  location={listing.location.city}
+                  price={listing.price}
+                  numBaths={listing.numBaths}
+                  numBeds={listing.numBeds}
+                  id={listing.key}
+                  title={listing.title}
+                  display={["none", "block", "none", "block", "block"]}
+                  width="100%"
+                />
+              ))}
+            </Box>
+            <Box flex="1" paddingTop={4} overflow="auto" w="100%">
+              {listings.map((listing: ListingType, index) => (
+                <SmSearchResult
+                  key={index}
+                  imageUrl={listing.imageUrl}
+                  location={listing.location.city}
+                  price={listing.price}
+                  numBaths={listing.numBaths}
+                  numBeds={listing.numBeds}
+                  id={listing.key}
+                  title={listing.title}
+                  display={["block", "none", "block", "none", "none"]}
+                  width="100%"
+                />
+              ))}
+            </Box>
           </Box>
-        </Box>
-        <Box
-          flex={[0, 0, 1, 1, 1.25]}
-          display={["none", "none", "block", "block", "block"]}
-          position="relative"
-          maxW="100%"
-        >
-          <Map
-            defaultLat={43.65107}
-            defaultLong={-79.347015}
-            // defaultLat={location.latitude}
-            // defaultLong={location.longitude}
-            listings={listings}
-          />
-        </Box>
-      </Flex>
+          <Box
+            flex={[0, 0, 1, 1, 1.25]}
+            display={["none", "none", "block", "block", "block"]}
+            position="relative"
+            maxW="100%"
+          >
+            <Map
+              defaultLat={43.65107}
+              defaultLong={-79.347015}
+              // defaultLat={location.latitude}
+              // defaultLong={location.longitude}
+              listings={listings}
+            />
+          </Box>
+        </Flex>
+      </Box>
     </>
   );
 }
