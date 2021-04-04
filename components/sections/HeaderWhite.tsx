@@ -1,16 +1,9 @@
 import React from "react";
-import { chakra, Flex, Stack } from "@chakra-ui/react";
-import { ButtonPrimary } from "@/components/core/Button";
+import { Flex, Stack } from "@chakra-ui/react";
+import { ButtonPrimary, ButtonSecondary } from "@/components/core/Button";
 import { LogoBlack } from "@/components/core/Branding";
 
 import SearchInput from "@/components/core/SearchInput";
-
-const HeaderButton = chakra(ButtonPrimary, {
-  baseStyle: {
-    bg: "black",
-    _hover: { bg: "gray" },
-  },
-});
 
 const Header = () => (
   <>
@@ -24,7 +17,9 @@ const Header = () => (
       bg="white"
       height={["170px", "170px", "170px", "78px", "78px"]}
       boxShadow="md"
-      position="absolute"
+      position="sticky"
+      top={0}
+      zIndex={1000}
     >
       <Flex
         align="center"
@@ -53,10 +48,8 @@ const Header = () => (
         marginRight="64px"
         display={["none", "none", "none", "block", "block"]}
       >
-        <HeaderButton bg="white" color="black">
-          Post Listing
-        </HeaderButton>
-        <HeaderButton borderColor="white">Get Started</HeaderButton>
+        <ButtonSecondary>Post Listing</ButtonSecondary>
+        <ButtonPrimary>Get Started</ButtonPrimary>
       </Stack>
 
       {/* Smaller screen size display */}
@@ -76,10 +69,8 @@ const Header = () => (
           />
         </Flex>
         <Stack spacing={2} justify="center" direction="row">
-          <HeaderButton bg="white" color="black">
-            Post Listing
-          </HeaderButton>
-          <HeaderButton borderColor="white">Get Started</HeaderButton>
+          <ButtonSecondary>Post Listing</ButtonSecondary>
+          <ButtonPrimary>Get Started</ButtonPrimary>
         </Stack>
       </Stack>
     </Flex>
