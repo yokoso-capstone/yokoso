@@ -25,6 +25,8 @@ const HeaderHome = () => (
     padding={["8px", "8px", "1rem", "1rem", "1rem"]}
     bg="black"
     height={["110px", "110px", "78px", "78px", "78px"]}
+    position="absolute"
+    w="100%"
   >
     <Flex
       align="center"

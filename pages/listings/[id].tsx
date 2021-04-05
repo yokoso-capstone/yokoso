@@ -68,7 +68,7 @@ function ListingPage(
       </Head>
       <HeaderWhite />
       <ImageCarousel images={images} />
-      <ContainerPrimary paddingY="0.5in">
+      <ContainerPrimary>
         <Grid
           gridTemplateColumns={["100%", "100%", "100%", "auto 4in"]}
           gridTemplateRows="min-content"
@@ -78,7 +78,8 @@ function ListingPage(
             gridColumn="1"
             gridRow={["2", "2", "2", "1"]}
             spacing="2.5rem"
-            paddingY={[0, 0, 0, "0.5in"]}
+            paddingTop={[0, 0, 0, "1in"]}
+            paddingBottom={["0.5in", "0.5in", "0.5in", "1in"]}
           >
             <Box>
               <Caption>{city}</Caption>
@@ -140,7 +141,12 @@ function ListingPage(
             </Box>
           </Stack>
           <Box gridColumn={["1", "1", "1", "2"]} gridRow="1">
-            <Box position="sticky" top={0} paddingY={[0, 0, 0, "0.5in"]}>
+            <Box
+              position="sticky"
+              top={0}
+              paddingTop={["0.5in", "0.5in", "0.5in", "1in"]}
+              paddingBottom={[0, 0, 0, "1in"]}
+            >
               <ListingContactCard
                 price={price}
                 firstName={poster.firstName}

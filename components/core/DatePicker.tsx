@@ -13,7 +13,6 @@ interface Props {
   maxDate?: Date;
   minDate?: Date;
   name?: string;
-  value?: string;
 }
 
 const DatePicker = ({

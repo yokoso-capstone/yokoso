@@ -18,20 +18,17 @@ function HomePage(): ReactElement {
       <Flex
         align="center"
         bgImage="url('/bg1.jpg')"
-        height={[
-          "calc(100vh - 110px)",
-          "calc(100vh - 110px)",
-          "calc(100vh - 78px)",
-          "calc(100vh - 78px)",
-          "calc(100vh - 78px)",
-        ]}
+        h="100vh"
         bgPosition="25% 75%"
         bgRepeat="no-repeat"
         bgSize="cover"
         direction="column"
       >
         <ContainerPrimary align="center" maxWidth="1980px">
-          <Box marginTop="100px" width={[300, 400, 500, 550, 600, 650]}>
+          <Box
+            marginTop={["210px", "210px", "188px", "188px", "188px"]}
+            width={[300, 400, 500, 550, 600, 650]}
+          >
             <SearchInput
               placeholder="Where are you staying?"
               ariaLabel="Search for homes based on location"
