@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { Box, Flex, Stack } from "@chakra-ui/react";
+import { Flex, Stack } from "@chakra-ui/react";
 import { ButtonPrimary } from "@/components/core/Button";
 import { LogoWhite, LogoBlack } from "@/components/core/Branding";
 import SearchInput from "@/components/core/SearchInput";
