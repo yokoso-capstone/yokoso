@@ -14,37 +14,39 @@ function HomePage(): ReactElement {
         <title>Yōkoso</title>
         <meta name="description" content="ようこそ. Discover your new home." />
       </Head>
-      <Header darkTheme searchInput={false} isWide={false} />
-      <Flex
+      <Box
+        height="100vh"
         align="center"
         bgImage="url('/bg1.jpg')"
-        h="100vh"
-        bgPosition="25% 75%"
+        bgPosition="25% 30%"
         bgRepeat="no-repeat"
         bgSize="cover"
         direction="column"
       >
-        <ContainerPrimary align="center" maxWidth="1980px">
-          <Box
-            marginTop={["210px", "210px", "188px", "188px", "188px"]}
-            width={[300, 400, 500, 550, 600, 650]}
-          >
-            <SearchInput
-              placeholder="Where are you staying?"
-              ariaLabel="Search for homes based on location"
-              onSubmit={() => undefined}
-            />
-          </Box>
-          <Box marginTop="7%" align="left">
-            <Heading1 fontSize={[40, 50, 50, 55, 80, 96]} color="white">
-              Discover your
-            </Heading1>
-            <Heading1 fontSize={[40, 50, 50, 55, 80, 96]} color="white">
-              new home
-            </Heading1>
-          </Box>
-        </ContainerPrimary>
-      </Flex>
+        <Header darkTheme searchInput={false} isWide={false} />
+        <Flex>
+          <ContainerPrimary align="center" maxWidth="1980px">
+            <Box
+              marginTop={["210px", "210px", "188px", "188px", "188px"]}
+              width={[300, 400, 500, 550, 600, 650]}
+            >
+              <SearchInput
+                placeholder="Where are you staying?"
+                ariaLabel="Search for homes based on location"
+                onSubmit={() => undefined}
+              />
+            </Box>
+            <Box marginTop="7%" align="left">
+              <Heading1 fontSize={[40, 50, 50, 55, 80, 96]} color="white">
+                Discover your
+              </Heading1>
+              <Heading1 fontSize={[40, 50, 50, 55, 80, 96]} color="white">
+                new home
+              </Heading1>
+            </Box>
+          </ContainerPrimary>
+        </Flex>
+      </Box>
     </>
   );
 }

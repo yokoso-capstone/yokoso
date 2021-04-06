@@ -15,41 +15,64 @@ function Header(props: HeaderProps): ReactElement {
   const Logo = darkTheme ? LogoWhite : LogoBlack;
   const background = darkTheme ? "black" : "white";
   const buttonBorder = darkTheme ? "white" : "";
-  const width = isWide ? "1753px" : "1619px";
   const margin = isWide ? "84px" : "64px";
 
   return (
-    <Box maxWidth={width}>
+    <Flex
+      as="nav"
+      align="center"
+      justify={["center", "center", "center", "space-between", "space-between"]}
+      wrap="wrap"
+      padding={["8px", "8px", "8px", "1rem", "1rem"]}
+      bg={background}
+      height={["170px", "170px", "170px", "78px", "78px"]}
+      boxShadow="md"
+      maxWidth="100%"
+      position="sticky"
+    >
       <Flex
-        as="nav"
         align="center"
-        justify={[
-          "center",
-          "center",
-          "center",
-          "space-between",
-          "space-between",
-        ]}
-        wrap="wrap"
-        padding={["8px", "8px", "8px", "1rem", "1rem"]}
-        bg={background}
-        height={["170px", "170px", "170px", "78px", "78px"]}
-        boxShadow="md"
+        direction="row"
+        display={["none", "none", "none", "block", "block"]}
       >
-        <Flex
-          align="center"
-          direction="row"
-          display={["none", "none", "none", "block", "block"]}
-        >
-          <Logo width="150px" marginLeft={margin} />
-        </Flex>
+        <Logo width="150px" marginLeft={margin} />
+      </Flex>
 
-        <Flex
-          align="center"
-          direction="row"
-          display={["none", "none", "none", "block", "block"]}
-          width={[0, 0, 0, 300, 400, 500]}
-        >
+      <Flex
+        align="center"
+        direction="row"
+        display={["none", "none", "none", "block", "block"]}
+        width={[0, 0, 0, 300, 400, 500]}
+      >
+        {searchInput && (
+          <SearchInput
+            placeholder="Where are you staying?"
+            ariaLabel="Search for homes based on location"
+            onSubmit={() => undefined}
+          />
+        )}
+      </Flex>
+
+      <Stack
+        spacing={3}
+        direction="row"
+        display={["none", "none", "none", "block", "block"]}
+        marginRight={margin}
+      >
+        <ButtonPrimary>Post Listing</ButtonPrimary>
+        <ButtonPrimary borderColor={buttonBorder}>Get Started</ButtonPrimary>
+      </Stack>
+
+      {/* Smaller screen size display */}
+      <Stack
+        spacing={2}
+        direction="column"
+        display={["block", "block", "block", "none", "none"]}
+      >
+        <Flex justify="center">
+          <Logo width="150px" background={background} />
+        </Flex>
+        <Flex align="center">
           {searchInput && (
             <SearchInput
               placeholder="Where are you staying?"
@@ -58,44 +81,12 @@ function Header(props: HeaderProps): ReactElement {
             />
           )}
         </Flex>
-
-        <Stack
-          spacing={3}
-          direction="row"
-          display={["none", "none", "none", "block", "block"]}
-          marginRight={margin}
-        >
+        <Stack spacing={2} justify="center" direction="row">
           <ButtonPrimary>Post Listing</ButtonPrimary>
           <ButtonPrimary borderColor={buttonBorder}>Get Started</ButtonPrimary>
         </Stack>
-
-        {/* Smaller screen size display */}
-        <Stack
-          spacing={2}
-          direction="column"
-          display={["block", "block", "block", "none", "none"]}
-        >
-          <Flex justify="center">
-            <Logo width="150px" background={background} />
-          </Flex>
-          <Flex align="center">
-            {searchInput && (
-              <SearchInput
-                placeholder="Where are you staying?"
-                ariaLabel="Search for homes based on location"
-                onSubmit={() => undefined}
-              />
-            )}
-          </Flex>
-          <Stack spacing={2} justify="center" direction="row">
-            <ButtonPrimary>Post Listing</ButtonPrimary>
-            <ButtonPrimary borderColor={buttonBorder}>
-              Get Started
-            </ButtonPrimary>
-          </Stack>
-        </Stack>
-      </Flex>
-    </Box>
+      </Stack>
+    </Flex>
   );
 }
 
