@@ -8,15 +8,40 @@ interface ResultProps {
   title: string;
   numBeds: string;
   numBaths: string;
-  location: string;
   price: string;
+  location: string;
+  display?: any;
+  width?: any;
+  onClick?: () => any;
 }
 
+const LgMaxTitleCharacters = 35;
+const SmMaxTitleCharacters = 50;
+const XsMaxTitleCharacters = 15;
+
 export function LgSearchResult(props: ResultProps) {
-  const { imageUrl, title, numBeds, numBaths, location, price, id } = props;
+  const {
+    imageUrl,
+    title,
+    numBeds,
+    numBaths,
+    location,
+    price,
+    id,
+    display,
+    width,
+    onClick,
+  } = props;
 
   return (
-    <Box maxW="2xl" borderRadius="lg" p="5">
+    <Box
+      maxW="3xl"
+      borderRadius="lg"
+      p="5"
+      display={display}
+      w={width}
+      onClick={onClick}
+    >
       <Grid
         templateColumns="repeat(9, 1fr)"
         templateRows="repeat(2, 1fr)"
@@ -31,7 +56,7 @@ export function LgSearchResult(props: ResultProps) {
           <PropertyDes
             numBaths={numBaths}
             numBeds={numBeds}
-            title={title}
+            title={`${title.substring(0, LgMaxTitleCharacters)}...`}
             location={location}
           />
         </GridItem>
@@ -65,10 +90,27 @@ export function LgSearchResult(props: ResultProps) {
 }
 
 export function SmSearchResult(props: ResultProps) {
-  const { imageUrl, title, numBeds, numBaths, location, price } = props;
+  const {
+    imageUrl,
+    title,
+    numBeds,
+    numBaths,
+    location,
+    price,
+    display,
+    width,
+    onClick,
+  } = props;
   return (
-    <Box maxW="sm" borderRadius="lg" p="5" overflow="hidden">
-      <Grid templateRows="repeat(1, 1fr)" gap={2}>
+    <Box
+      maxW="md"
+      borderRadius="lg"
+      p="5"
+      overflow="hidden"
+      display={display}
+      onClick={onClick}
+    >
+      <Grid templateRows="repeat(1, 1fr)" gap={2} w={width}>
         <GridItem rowSpan={2}>
           <Box w="100%" h="100%" objectFit="cover">
             <Image
@@ -85,13 +127,72 @@ export function SmSearchResult(props: ResultProps) {
           <Box>
             <Box>
               <Caption fontSize="14px">{location}</Caption>
-              <Body1 fontSize="18px">{title}</Body1>
+              <Body1 fontSize="18px">{`${title.substring(
+                0,
+                SmMaxTitleCharacters
+              )}...`}</Body1>
             </Box>
             <Box>
               <Caption fontSize="14px">
                 {numBeds} Bedrooms · {numBaths} Bathrooms
               </Caption>
             </Box>
+          </Box>
+        </GridItem>
+        <GridItem rowSpan={1}>
+          <MultiWeightText bold={price} normal="/month" />
+        </GridItem>
+      </Grid>
+    </Box>
+  );
+}
+
+export function XsSearchResult(props: ResultProps) {
+  const {
+    imageUrl,
+    title,
+    numBeds,
+    numBaths,
+    price,
+    display,
+    width,
+    onClick,
+  } = props;
+  return (
+    <Box
+      maxW="xs"
+      borderRadius="lg"
+      overflow="hidden"
+      p={3}
+      display={display}
+      onClick={onClick}
+    >
+      <Grid templateRows="repeat(1, 1fr)" gap={2} w={width}>
+        <GridItem rowSpan={2}>
+          <Box w="150px" h="100%" objectFit="cover">
+            <Image
+              src={imageUrl}
+              borderRadius="lg"
+              overflow="hidden"
+              fit="cover"
+              w="100%"
+              h="100%"
+            />
+          </Box>
+        </GridItem>
+        <GridItem rowSpan={1}>
+          <Box>
+            <Box maxW="150px">
+              <Body1 fontSize="18px">{`${title.substring(
+                0,
+                XsMaxTitleCharacters
+              )}...`}</Body1>
+            </Box>
+          </Box>
+          <Box>
+            <Caption fontSize="12px">
+              {numBeds} Bedrooms · {numBaths} Bathrooms
+            </Caption>
           </Box>
         </GridItem>
         <GridItem rowSpan={1}>

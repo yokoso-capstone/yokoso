@@ -11,8 +11,8 @@ interface Props {
   startDate?: Date;
   endDate?: Date;
   maxDate?: Date;
+  minDate?: Date;
   name?: string;
-  value?: string;
 }
 
 const DatePicker = ({
@@ -24,6 +24,7 @@ const DatePicker = ({
   startDate,
   endDate,
   maxDate,
+  minDate,
   name,
   onBlur,
 }: Props & HTMLAttributes<HTMLElement>) => (
@@ -36,6 +37,7 @@ const DatePicker = ({
     startDate={startDate}
     endDate={endDate}
     maxDate={maxDate}
+    minDate={minDate}
     customInput={<Input />}
     name={name}
     onBlur={onBlur}

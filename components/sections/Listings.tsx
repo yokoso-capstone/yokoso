@@ -1,4 +1,4 @@
-import { Box, Image } from "@chakra-ui/react";
+import { Box, Image, Center } from "@chakra-ui/react";
 import { Caption, Body1 } from "@/components/core/Text";
 
 interface DescriptionProps {
@@ -31,7 +31,7 @@ export function MultiWeightText(props: TextProps) {
   const { bold, normal } = props;
   return (
     <Box>
-      <Body1 display="inline" fontWeight="800">
+      <Body1 display="inline" fontWeight="700">
         {bold}
       </Body1>
       <Body1 display="inline">&nbsp;{normal}</Body1>
@@ -42,7 +42,7 @@ export function MultiWeightText(props: TextProps) {
 export function PropertyDes(props: DescriptionProps) {
   const { location, title, numBeds, numBaths } = props;
   return (
-    <Box>
+    <Center display="block" pl="5px" pt="10px">
       <Box>
         <Caption fontSize="14px">{location}</Caption>
         <Body1 fontSize="18px">{title}</Body1>
@@ -52,6 +52,6 @@ export function PropertyDes(props: DescriptionProps) {
           {numBeds} Bedrooms · {numBaths} Bathrooms
         </Caption>
       </Box>
-    </Box>
+    </Center>
   );
 }
