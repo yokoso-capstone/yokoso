@@ -27,8 +27,8 @@ function Header(props: HeaderProps): ReactElement {
       bg={background}
       height={["170px", "170px", "170px", "78px", "78px"]}
       boxShadow="md"
-      maxWidth="100%"
-      position="sticky"
+      width="100vw"
+      position="fixed"
     >
       <Flex
         align="center"
