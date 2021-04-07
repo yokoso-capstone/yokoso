@@ -16,9 +16,9 @@ function HomePage(): ReactElement {
       </Head>
       <Header darkTheme searchInput={false} isWide={false} />
       <Flex
+        height="100vh"
         align="center"
         bgImage="url('/bg1.jpg')"
-        h="100vh"
         bgPosition="25% 75%"
         bgRepeat="no-repeat"
         bgSize="cover"
