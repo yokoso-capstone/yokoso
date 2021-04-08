@@ -19,3 +19,5 @@ jobs:
         run: npm install -g npm@7
       - run: npm ci
       - run: npm run build
+        env:
+          FIREBASE_ADMINSDK_SA_KEY: ${{ secrets.FIREBASE_ADMINSDK_SA_KEY_STAGING }}
