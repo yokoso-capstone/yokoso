@@ -1,7 +1,4 @@
-import firebase from "firebase/app";
-import "firebase/firestore";
-
-const db = firebase.firestore();
+import { firestore } from "@/src/firebase";
 
 export enum CollectionName {
   ChatRooms = "chat-rooms",
@@ -11,10 +8,10 @@ export enum CollectionName {
   UsersPublic = "users-public",
 }
 
-export const chatRooms = db.collection(CollectionName.ChatRooms);
+export const chatRooms = firestore.collection(CollectionName.ChatRooms);
 
-export const listings = db.collection(CollectionName.Listings);
+export const listings = firestore.collection(CollectionName.Listings);
 
-export const usersPrivate = db.collection(CollectionName.UsersPrivate);
+export const usersPrivate = firestore.collection(CollectionName.UsersPrivate);
 
-export const usersPublic = db.collection(CollectionName.UsersPublic);
+export const usersPublic = firestore.collection(CollectionName.UsersPublic);
