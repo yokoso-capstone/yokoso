@@ -9,9 +9,9 @@ import { ButtonPrimary, SideBarButton } from "@/components/core/Button";
 import { LogoWhite } from "@/components/core/Branding";
 
 interface SidebarProps {
-  onClickTenant: () => any;
-  onClickLandlord: () => any;
-  onClickChat: () => any;
+  onClickTenant?: () => any;
+  onClickLandlord?: () => any;
+  onClickChat?: () => any;
 }
 
 const LogOutButton = chakra(ButtonPrimary, {
