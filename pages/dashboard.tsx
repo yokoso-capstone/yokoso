@@ -38,13 +38,21 @@ function DashboardPage(): ReactElement {
     DashboardDisplay.Listings
   );
 
-  const [listingData, setListingsData] = useState([
+  const listingData = [
     testListing,
     testListing,
     testListing,
     testListing,
     testListing,
-  ]);
+  ];
+
+  // const [listingData, setListingsData] = useState([
+  //   testListing,
+  //   testListing,
+  //   testListing,
+  //   testListing,
+  //   testListing,
+  // ]);
 
   const openLandlordListing = () => {
     setDashboardType(DashboardDisplay.Listings);
