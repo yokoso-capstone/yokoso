@@ -7,7 +7,7 @@ const DashboardSearchInput = () => (
   <>
     <InputGroup height="48px">
       <Input
-        type="email"
+        type="search"
         paddingLeft="36px"
         paddingRight="56px"
         placeholder="Search"
@@ -20,7 +20,7 @@ const DashboardSearchInput = () => (
         _hover={{}}
       />
       <InputLeftElement height="100%" paddingRight="5px" paddingLeft="5px">
-        <SearchIcon></SearchIcon>
+        <SearchIcon />
       </InputLeftElement>
     </InputGroup>
   </>
