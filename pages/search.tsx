@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from "react";
-import HeaderWhite from "@/components/sections/HeaderWhite";
+import Header from "@/components/sections/Header";
 import Head from "next/head";
 import Map from "@/components/sections/Map";
 import { Heading4 } from "@/components/core/Text";
@@ -133,7 +133,7 @@ function Search(props: SearchProps): ReactElement {
         <meta name="description" content="ようこそ. Discover your new home." />
       </Head>
       <Box height="100vh" overflow="hidden">
-        <HeaderWhite />
+        <Header searchInput maxWidth="none" paddingX="4" />
         <Flex column={2} height="100%" bg="white">
           <Box flex={[1, 1, 1, 1, 0.9]} row={3} overflowY="scroll" maxW="700px">
             <Box flex="1" p="5">
