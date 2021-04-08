@@ -35,8 +35,9 @@ interface ListingProps {
 
 function DashboardPage(): ReactElement {
   const [dashboardType, setDashboardType] = useState<DashboardDisplay>(
-    DashboardDisplay.listings
+    DashboardDisplay.Listings
   );
+
   const [listingData, setListingsData] = useState([
     testListing,
     testListing,
