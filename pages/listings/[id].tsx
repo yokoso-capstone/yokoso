@@ -11,52 +11,61 @@ import { Body1, Caption, Heading4 } from "@/components/core/Text";
 import ImageCarousel from "@/components/sections/ImageCarousel";
 import ListingContactCard from "@/components/sections/ListingContactCard";
 import { Box, Button, Divider, Grid, HStack, Stack } from "@chakra-ui/react";
+import { firestoreAdmin } from "@/src/firebaseAdmin";
+import { CollectionName } from "@/src/api/collections";
+import { FirestoreTimestamp, Listing } from "@/src/api/types";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
-  if (!context.params) {
+  if (!context.params || !context.params.id) {
     const result: GetServerSidePropsResult<undefined> = { notFound: true };
     return result;
   }
 
-  // @ts-ignore
-  const { id } = context.params;
-  // TODO: database lookup based on id (return notFound if doesn't exist)
+  try {
+    const { id } = context.params;
+    const documentId = typeof id === "string" ? id : id[0];
 
-  const props = {
-    title: "Beautiful apartment with great view",
-    city: "Kanata",
-    price: 1000,
-    poster: {
-      firstName: "Emad",
-      lastName: "Fadel",
-      profilePicture: "https://placekitten.com/100/100",
-      joined: Date.now(),
-    },
-    details: {
-      numBedrooms: 1,
-      numBeds: 1,
-      numBaths: 1,
-      description: `This furnished studio apartment boasts a functional floorplan, renovated open concept kitchen with dishwasher, bedroom nook, and ample storage. As a fully furnished apartment for rent with modern furnishings, this unit is move-in ready so you can live worry free in the heart of the city. Minimum one-month tenancy required. Somerset is nestled in the heart of downtown, Vancouver on a rare quite cul-de-sac just steps from the shopping, business and entertainment districts. The building offers stellar amenities, including a gym and rooftop pool and terrace with stunning skyline views, so you can relax and enjoy. Minimum one month tenancy required and cable & internet included in furnished rentals.`,
-    },
-    images: [
-      "https://placekitten.com/1000/600",
-      "https://placekitten.com/400/600",
-      "https://placekitten.com/800/600",
-      "https://placekitten.com/1200/300",
-    ],
-  };
-  const result: GetServerSidePropsResult<typeof props> = { props };
+    const ref = firestoreAdmin
+      .collection(CollectionName.Listings)
+      .doc(documentId);
+    const document = await ref.get();
+    const props = document.data() as Listing;
 
-  return result;
+    // TODO: pass user token and display private listings belonging to them
+    if (props.visibility !== "public") {
+      throw Error("Listing is not public");
+    }
+
+    if (props.createdAt) {
+      props.createdAt = (props.createdAt as FirestoreTimestamp).toMillis();
+    }
+
+    if (props.owner.createdAt) {
+      props.owner.createdAt = (props.owner
+        .createdAt as FirestoreTimestamp).toMillis();
+    }
+
+    const result: GetServerSidePropsResult<typeof props> = { props };
+
+    return result;
+  } catch (error) {
+    const result: GetServerSidePropsResult<undefined> = { notFound: true };
+    return result;
+  }
 };
 
 function ListingPage(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ): ReactElement {
-  const { title, city, price, poster, details, images } = props;
-  const { numBedrooms, numBeds, numBaths, description } = details;
+  const {
+    owner: { firstName, lastName, profilePicture, createdAt },
+    location: { city },
+    details: { title, description, numBedrooms, numBeds, numBaths },
+    lease: { price },
+    images,
+  } = props;
   const maxDescriptionCharacters = 300;
   const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
 
@@ -149,10 +158,10 @@ function ListingPage(
             >
               <ListingContactCard
                 price={price}
-                firstName={poster.firstName}
-                lastName={poster.lastName}
-                profilePicture={poster.profilePicture}
-                joined={poster.joined}
+                firstName={firstName}
+                lastName={lastName}
+                profilePicture={profilePicture}
+                joined={createdAt as number}
               />
             </Box>
           </Box>
