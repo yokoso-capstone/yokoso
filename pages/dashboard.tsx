@@ -1,5 +1,11 @@
 import React, { ReactElement, useState } from "react";
 import Head from "next/head";
+import { ListingType, testListing } from "../src/types";
+import { DashboardDisplay } from "../src/enum";
+import { TabPrimary } from "@/components/core/Tabs";
+import Sidebar from "@/components/sections/Sidebar";
+import { ButtonSecondary } from "@/components/core/Button";
+import DashboardHeader from "@/components/sections/DashboardHeader";
 import {
   Center,
   Flex,
@@ -17,17 +23,11 @@ import {
   Th,
   Td,
 } from "@chakra-ui/react";
-import { TabPrimary } from "@/components/core/Tabs";
-import Sidebar from "@/components/sections/Sidebar";
-import { ButtonSecondary } from "@/components/core/Button";
-import DashboardHeader from "@/components/sections/DashboardHeader";
 import {
   PropertyImage,
   MultiWeightText,
   PropertyDes,
 } from "@/components/sections/Listings";
-import { ListingType, testListing } from "../src/types";
-import { DashboardDisplay } from "../src/enum";
 
 interface ListingProps {
   listings: ListingType[];
@@ -38,21 +38,9 @@ function DashboardPage(): ReactElement {
     DashboardDisplay.Listings
   );
 
-  const listingData = [
-    testListing,
-    testListing,
-    testListing,
-    testListing,
-    testListing,
-  ];
+  const listingData = [testListing, testListing, testListing];
 
-  // const [listingData, setListingsData] = useState([
-  //   testListing,
-  //   testListing,
-  //   testListing,
-  //   testListing,
-  //   testListing,
-  // ]);
+  // const [listingData, setListingsData] = useState([]);
 
   const openLandlordListing = () => {
     setDashboardType(DashboardDisplay.Listings);
@@ -75,7 +63,7 @@ function DashboardPage(): ReactElement {
           <TabPrimary>Upcoming</TabPrimary>
         </TabList>
         <TabPanels
-          overflowY="scroll"
+          overflowY="auto"
           maxHeight={["75vh", "75vh", "80vh", "65vh", "65vh"]}
           w="100%"
         >
@@ -102,7 +90,7 @@ function DashboardPage(): ReactElement {
           <TabPrimary>Hidden</TabPrimary>
         </TabList>
         <TabPanels
-          overflowY="scroll"
+          overflowY="auto"
           maxHeight={["75vh", "75vh", "80vh", "65vh", "65vh"]}
           w="100%"
         >
@@ -234,7 +222,8 @@ function DashboardPage(): ReactElement {
         <GridItem rowSpan={3} h="100%">
           <Center bg="#F9FBFD" h="100%">
             <Flex
-              boxShadow="xl"
+              borderRadius="8px"
+              boxShadow="base"
               w={["100%", "100%", "100%", "95%", "95%"]}
               h={["100%", "100%", "100%", "80vh", "80vh"]}
               bg="#FFFFFF"

@@ -48,8 +48,8 @@ export const testListing: ListingType = {
       longitude: -79.347015,
     },
   },
-  status:{
-    applicants:10,
-    isHidden:false
-  }
+  status: {
+    applicants: 10,
+    isHidden: false,
+  },
 };

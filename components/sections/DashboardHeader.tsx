@@ -25,20 +25,11 @@ function DashboardHeader(props: DashboardHeaderProps): ReactElement {
         position="sticky"
         boxShadow="md"
       >
-        <Flex
-          align="center"
-          direction="row"
-          display={["none", "none", "none", "block", "block"]}
-        >
+        <Flex align="center" direction="row" display="block">
           <Heading4 marginLeft="36px">{title}</Heading4>
         </Flex>
 
-        <Stack
-          spacing={8}
-          direction="row"
-          display={["none", "none", "none", "block", "block"]}
-          marginRight="36px"
-        >
+        <Stack spacing={8} direction="row" display="block" marginRight="36px">
           <IconButton
             aria-label="Search database"
             width="40px"

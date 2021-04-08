@@ -125,7 +125,7 @@ function CreateProperty(): ReactElement {
                       <HStack>
                         <Stack
                           direction="column"
-                          // I had to use padding here because radiogroupcontrol not 
+                          // I had to use padding here because radiogroupcontrol not
                           // working with justify, if you make it work tell me how lmao
                           paddingLeft={["10%", "15%", "33%", "33%", "33%"]}
                           paddingRight={["5%", "5%", "25%", "25%", "25%"]}
