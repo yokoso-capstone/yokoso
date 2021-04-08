@@ -15,9 +15,10 @@ const DashboardSearchInput = () => (
         fontSize="16px"
         background="white"
         color="text.primary"
-        borderWidth="0 0 1px 0"
-        borderRadius="0"
+        borderWidth="0 0 3px 0"
+        borderRadius="1px"
         _hover={{}}
+        _focus={{ borderColor: "brand.primary" }}
       />
       <InputLeftElement height="100%" paddingRight="5px" paddingLeft="5px">
         <SearchIcon />

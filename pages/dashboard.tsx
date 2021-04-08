@@ -6,6 +6,7 @@ import { TabPrimary } from "@/components/core/Tabs";
 import Sidebar from "@/components/sections/Sidebar";
 import { ButtonSecondary } from "@/components/core/Button";
 import DashboardHeader from "@/components/sections/DashboardHeader";
+import DashboardSearchInput from "@/components/core/DashboardSearchInput";
 import {
   Center,
   Flex,
@@ -17,6 +18,7 @@ import {
   GridItem,
   Table,
   Thead,
+  Spacer,
   Box,
   Tbody,
   Tr,
@@ -61,6 +63,10 @@ function DashboardPage(): ReactElement {
           <TabPrimary>Past</TabPrimary>
           <TabPrimary>Current</TabPrimary>
           <TabPrimary>Upcoming</TabPrimary>
+          <Spacer />
+          <Box margin="15px">
+            <DashboardSearchInput />
+          </Box>
         </TabList>
         <TabPanels
           overflowY="auto"
@@ -84,11 +90,16 @@ function DashboardPage(): ReactElement {
   const LandlordListings = ({ isOpen }: any) => {
     return (
       <Tabs w="100%" h="100%" display={isOpen ? "block" : "none"}>
-        <TabList>
+        <TabList w="100%">
           <TabPrimary>Listing</TabPrimary>
           <TabPrimary>Draft</TabPrimary>
           <TabPrimary>Hidden</TabPrimary>
+          <Spacer />
+          <Box margin="15px">
+            <DashboardSearchInput />
+          </Box>
         </TabList>
+
         <TabPanels
           overflowY="auto"
           maxHeight={["75vh", "75vh", "80vh", "65vh", "65vh"]}
@@ -227,7 +238,7 @@ function DashboardPage(): ReactElement {
               w={["100%", "100%", "100%", "95%", "95%"]}
               h={["100%", "100%", "100%", "80vh", "80vh"]}
               bg="#FFFFFF"
-              padding="3vh 4vh"
+              padding="1vh 4vh"
             >
               <LandlordListings
                 isOpen={dashboardType === DashboardDisplay.Listings}

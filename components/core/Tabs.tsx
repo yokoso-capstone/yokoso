@@ -4,7 +4,7 @@ export const TabBase = chakra(Tab, {
   baseStyle: {
     fontSize: "16px",
     height: "auto",
-    padding: "10px 14px",
+    padding: "0px 14px",
   },
 });
 
