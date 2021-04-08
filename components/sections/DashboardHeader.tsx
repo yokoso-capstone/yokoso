@@ -13,7 +13,7 @@ function DashboardHeader(props: DashboardHeaderProps): ReactElement {
   const { title } = props;
 
   return (
-    <Box maxWidth="1619px">
+    <Box maxWidth="100%">
       <Flex
         as="nav"
         align="center"
@@ -22,6 +22,7 @@ function DashboardHeader(props: DashboardHeaderProps): ReactElement {
         padding={["8px", "8px", "8px", "1rem", "1rem"]}
         bg="white"
         height="78px"
+        position="sticky"
         boxShadow="md"
       >
         <Flex

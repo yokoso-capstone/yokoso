@@ -107,6 +107,5 @@ export const SideBarButton = chakra(Button, {
     borderLeft: "4px",
     borderLeftColor: "transparent",
     _hover: { bg: "gray", borderLeftColor: "red" },
-    _focus: { bg: "gray.600", borderLeftColor: "red" },
   },
 });

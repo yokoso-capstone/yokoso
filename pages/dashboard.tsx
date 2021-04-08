@@ -20,21 +20,23 @@ import {
 import { TabPrimary } from "@/components/core/Tabs";
 import Sidebar from "@/components/sections/Sidebar";
 import { ButtonSecondary } from "@/components/core/Button";
+import DashboardHeader from "@/components/sections/DashboardHeader";
 import {
   PropertyImage,
   MultiWeightText,
   PropertyDes,
 } from "@/components/sections/Listings";
 import { ListingType, testListing } from "../src/types";
+import { DashboardDisplay } from "../src/enum";
 
 interface ListingProps {
   listings: ListingType[];
 }
 
 function DashboardPage(): ReactElement {
-  const [isTenantOpen, setTenantOpen] = useState(true);
-  const [isLandlordOpen, setLandlordOpen] = useState(false);
-  const [isChatOpen, setChatOpen] = useState(false);
+  const [dashboardType, setDashboardType] = useState<DashboardDisplay>(
+    DashboardDisplay.listings
+  );
   const [listingData, setListingsData] = useState([
     testListing,
     testListing,
@@ -44,21 +46,15 @@ function DashboardPage(): ReactElement {
   ]);
 
   const openLandlordListing = () => {
-    setLandlordOpen(true);
-    setTenantOpen(false);
-    setChatOpen(false);
+    setDashboardType(DashboardDisplay.Listings);
   };
 
   const openTenantListing = () => {
-    setLandlordOpen(false);
-    setTenantOpen(true);
-    setChatOpen(false);
+    setDashboardType(DashboardDisplay.Tenants);
   };
 
   const openChatListing = () => {
-    setChatOpen(true);
-    setLandlordOpen(false);
-    setTenantOpen(false);
+    setDashboardType(DashboardDisplay.Chat);
   };
 
   const TenantListings = ({ isOpen }: any) => {
@@ -223,8 +219,8 @@ function DashboardPage(): ReactElement {
             onClickChat={openChatListing}
           />
         </GridItem>
-        <GridItem bg="yellow.200" rowSpan="auto">
-          <Flex h="78px" />
+        <GridItem rowSpan="auto">
+          <DashboardHeader title={dashboardType} />
         </GridItem>
         <GridItem rowSpan={3} h="100%">
           <Center bg="#F9FBFD" h="100%">
@@ -235,8 +231,12 @@ function DashboardPage(): ReactElement {
               bg="#FFFFFF"
               padding="3vh 4vh"
             >
-              <LandlordListings isOpen={isLandlordOpen} />
-              <TenantListings isOpen={isTenantOpen} />
+              <LandlordListings
+                isOpen={dashboardType === DashboardDisplay.Listings}
+              />
+              <TenantListings
+                isOpen={dashboardType === DashboardDisplay.Tenants}
+              />
             </Flex>
           </Center>
         </GridItem>
