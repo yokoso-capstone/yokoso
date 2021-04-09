@@ -135,7 +135,7 @@ function Search(props: SearchProps): ReactElement {
       <Box height="100vh" overflow="hidden">
         <Header searchInput maxWidth="none" paddingX="4" />
         <Flex column={2} height="100%" bg="white">
-          <Box flex={[1, 1, 1, 1, 0.9]} row={3} overflowY="scroll" maxW="700px">
+          <Box flex={[1, 1, 1, 1, 0.9]} row={3} overflowY="auto" maxW="700px">
             <Box flex="1" p="5">
               <Heading4>Listings in {location?.locationName}</Heading4>
             </Box>

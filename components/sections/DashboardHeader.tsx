@@ -13,7 +13,7 @@ function DashboardHeader(props: DashboardHeaderProps): ReactElement {
   const { title } = props;
 
   return (
-    <Box maxWidth="1619px">
+    <Box maxWidth="100%">
       <Flex
         as="nav"
         align="center"
@@ -22,22 +22,14 @@ function DashboardHeader(props: DashboardHeaderProps): ReactElement {
         padding={["8px", "8px", "8px", "1rem", "1rem"]}
         bg="white"
         height="78px"
+        position="sticky"
         boxShadow="md"
       >
-        <Flex
-          align="center"
-          direction="row"
-          display={["none", "none", "none", "block", "block"]}
-        >
+        <Flex align="center" direction="row" display="block">
           <Heading4 marginLeft="36px">{title}</Heading4>
         </Flex>
 
-        <Stack
-          spacing={8}
-          direction="row"
-          display={["none", "none", "none", "block", "block"]}
-          marginRight="36px"
-        >
+        <Stack spacing={8} direction="row" display="block" marginRight="36px">
           <IconButton
             aria-label="Search database"
             width="40px"
