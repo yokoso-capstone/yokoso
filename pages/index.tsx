@@ -14,32 +14,30 @@ function HomePage(): ReactElement {
         <title>Yōkoso</title>
         <meta name="description" content="ようこそ. Discover your new home." />
       </Head>
-      <Header darkTheme searchInput={false} isWide={false} />
+
       <Flex
-        height="100vh"
-        align="center"
+        minHeight="100vh"
         bgImage="url('/bg1.jpg')"
-        bgPosition="25% 75%"
         bgRepeat="no-repeat"
         bgSize="cover"
         direction="column"
       >
-        <ContainerPrimary align="center" maxWidth="1980px">
-          <Box
-            marginTop={["210px", "210px", "188px", "188px", "188px"]}
-            width={[300, 400, 500, 550, 600, 650]}
-          >
-            <SearchInput
-              placeholder="Where are you staying?"
-              ariaLabel="Search for homes based on location"
-              onSubmit={() => undefined}
-            />
-          </Box>
-          <Box marginTop="7%" align="left">
-            <Heading1 fontSize={[40, 50, 50, 55, 80, 96]} color="white">
+        <Header darkTheme />
+
+        <ContainerPrimary marginY="auto" paddingTop="4rem" paddingBottom="2in">
+          <Flex justify="center">
+            <Box width={[300, 400, 500, 550, 600, 650]}>
+              <SearchInput
+                placeholder="Where are you staying?"
+                ariaLabel="Search for homes based on location"
+                onSubmit={() => undefined}
+              />
+            </Box>
+          </Flex>
+          <Box marginTop="100px">
+            <Heading1 fontSize={[48, 60, 60, 96]} color="white">
               Discover your
-            </Heading1>
-            <Heading1 fontSize={[40, 50, 50, 55, 80, 96]} color="white">
+              <br />
               new home
             </Heading1>
           </Box>

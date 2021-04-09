@@ -49,6 +49,7 @@
     "no-unused-vars": "off",
     "no-use-before-define": "off",
     "prefer-destructuring": "warn",
+    "import/extensions": "off",
     "import/no-unresolved": "off",
     "import/prefer-default-export": "off",
     "react/react-in-jsx-scope": "off",
