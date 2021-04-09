@@ -49,6 +49,7 @@ function Header(props: HeaderProps): ReactElement {
       width="100%"
       zIndex={10000}
       position={position || "sticky"}
+      top={0}
       paddingY="1rem"
     >
       <ContainerPrimary
