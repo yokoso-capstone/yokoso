@@ -33,7 +33,7 @@ import {
   FormLabel,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ListingType, testListing, Coordinate } from "../src/types";
+import { ListingType, testListing, Coordinate } from "@/src/types";
 
 interface SearchProps {
   location: Coordinate;

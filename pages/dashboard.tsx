@@ -1,7 +1,7 @@
 import React, { ReactElement, useState } from "react";
 import Head from "next/head";
-import { ListingType, testListing } from "../src/types";
-import { DashboardDisplay } from "../src/enum";
+import { ListingType, testListing } from "@/src/types";
+import { DashboardDisplay } from "@/src/enum";
 import { TabPrimary } from "@/components/core/Tabs";
 import Sidebar from "@/components/sections/Sidebar";
 import { ButtonSecondary } from "@/components/core/Button";

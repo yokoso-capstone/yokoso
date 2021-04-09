@@ -3,8 +3,8 @@ import { chakra, Box, IconButton } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import ReactMapGL, { Marker, Popup } from "react-map-gl";
 import { XsSearchResult } from "@/components/SearchResult";
+import { ListingType } from "@/src/types";
 import LocationPinSvg from "../svg/location-pin.svg";
-import { ListingType } from "../../src/types";
 
 interface MapProps {
   defaultLat: number;
