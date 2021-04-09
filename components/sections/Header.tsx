@@ -47,7 +47,7 @@ function Header(props: HeaderProps): ReactElement {
       bg={background}
       boxShadow="md"
       width="100%"
-      zIndex={10000}
+      zIndex={100}
       position={position || "sticky"}
       top={0}
       paddingY="1rem"
