@@ -30,7 +30,6 @@ function HomePage(): ReactElement {
               <SearchInput
                 placeholder="Where are you staying?"
                 ariaLabel="Search for homes based on location"
-                onSubmit={() => undefined}
               />
             </Box>
           </Flex>

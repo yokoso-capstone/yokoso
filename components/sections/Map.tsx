@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { chakra, Box, IconButton } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import ReactMapGL, { Marker, Popup } from "react-map-gl";
@@ -9,6 +9,7 @@ import LocationPinSvg from "../svg/location-pin.svg";
 interface MapProps {
   defaultLat: number;
   defaultLong: number;
+  zoom: number;
   listings?: ListingType[];
 }
 
@@ -18,7 +19,7 @@ const MAPBOX_TOKEN =
 export const LocationPin = chakra(LocationPinSvg);
 
 function Map(props: MapProps) {
-  const { defaultLat, defaultLong, listings = [] } = props;
+  const { defaultLat, defaultLong, zoom, listings = [] } = props;
   const streetMap = "streets-v11";
   const darkMap = "dark-v10";
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -32,6 +33,14 @@ function Map(props: MapProps) {
   const toggleView = () => {
     setIsDarkMode(!isDarkMode);
   };
+
+  useEffect(() => {
+    setViewport({
+      latitude: defaultLat,
+      longitude: defaultLong,
+      zoom,
+    });
+  }, [defaultLat, defaultLong, zoom]);
 
   return (
     <Box w="100%" h="100%">

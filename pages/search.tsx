@@ -1,4 +1,5 @@
 import React, { ReactElement, useState } from "react";
+import { useRouter } from "next/router";
 import Header from "@/components/sections/Header";
 import Head from "next/head";
 import Map from "@/components/sections/Map";
@@ -34,11 +35,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { ListingType, testListing, Coordinate } from "@/src/types";
-
-interface SearchProps {
-  location: Coordinate;
-  listings: ListingType[];
-}
+import { cityToLatLong, getQueryValue } from "@/src/utils";
 
 interface FilterDisplay {
   childComp?: React.ReactNode;
@@ -48,7 +45,54 @@ interface FilterDisplay {
   onClose: () => any;
 }
 
-function Search(props: SearchProps): ReactElement {
+const FilterModals = ({ isOpen, onClose }: any) => {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Filters</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <FormControl id="more-filters">
+            <FormLabel>Amenities</FormLabel>
+          </FormControl>
+        </ModalBody>
+        <ModalFooter>
+          <ButtonSecondary>Apply</ButtonSecondary>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+};
+
+const SingleFilter = (props: FilterDisplay) => {
+  const { name, childComp, onOpen, onClose, isOpen } = props;
+
+  return (
+    <Popover isOpen={isOpen} onClose={onClose} onOpen={onOpen}>
+      <PopoverTrigger>
+        <ButtonSecondaryVariant
+          padding="9px"
+          display={["none", "none", "none", "block", "block"]}
+          maxW="140px"
+        >
+          {name}
+        </ButtonSecondaryVariant>
+      </PopoverTrigger>
+      <PopoverContent marginLeft="10px">
+        <PopoverArrow />
+        <PopoverHeader>{name}</PopoverHeader>
+        <PopoverCloseButton />
+        <PopoverBody>{childComp}</PopoverBody>
+        <PopoverFooter>
+          <ButtonSecondary padding="10px">Apply</ButtonSecondary>
+        </PopoverFooter>
+      </PopoverContent>
+    </Popover>
+  );
+};
+
+function SearchPage(): ReactElement {
   const {
     isOpen: isFilterOpen,
     onOpen: onFilterOpen,
@@ -73,58 +117,15 @@ function Search(props: SearchProps): ReactElement {
     isOpen: isOpenPrice,
   } = useDisclosure();
 
+  const router = useRouter();
+  const searchValue = getQueryValue(router.query, "value");
+
   const [priceFilter, setPriceFilter] = useState([0, 2150]);
   const [rooms, setRooms] = useState(1);
   const [bathrooms, setBathroom] = useState(1);
 
-  const { location, listings = [testListing] } = props;
-
-  const FilterModals = ({ isOpen, onClose }: any) => {
-    return (
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Filters</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl id="more-filters">
-              <FormLabel>Amenities</FormLabel>
-            </FormControl>
-          </ModalBody>
-          <ModalFooter>
-            <ButtonSecondary>Apply</ButtonSecondary>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    );
-  };
-
-  const SingleFilter = (props: FilterDisplay) => {
-    const { name, childComp, onOpen, onClose, isOpen } = props;
-
-    return (
-      <Popover isOpen={isOpen} onClose={onClose} onOpen={onOpen}>
-        <PopoverTrigger>
-          <ButtonSecondaryVariant
-            padding="9px"
-            display={["none", "none", "none", "block", "block"]}
-            maxW="140px"
-          >
-            {name}
-          </ButtonSecondaryVariant>
-        </PopoverTrigger>
-        <PopoverContent marginLeft="10px">
-          <PopoverArrow />
-          <PopoverHeader>{name}</PopoverHeader>
-          <PopoverCloseButton />
-          <PopoverBody>{childComp}</PopoverBody>
-          <PopoverFooter>
-            <ButtonSecondary padding="10px">Apply</ButtonSecondary>
-          </PopoverFooter>
-        </PopoverContent>
-      </Popover>
-    );
-  };
+  const location: Coordinate = cityToLatLong(searchValue?.toLowerCase() || "");
+  const listings: ListingType[] = [testListing];
 
   return (
     <>
@@ -132,12 +133,17 @@ function Search(props: SearchProps): ReactElement {
         <title>Yōkoso</title>
         <meta name="description" content="ようこそ. Discover your new home." />
       </Head>
+
       <Box height="100vh" overflow="hidden">
         <Header searchInput maxWidth="none" paddingX="4" />
         <Flex column={2} height="100%" bg="white">
           <Box flex={[1, 1, 1, 1, 0.9]} row={3} overflowY="auto" maxW="700px">
             <Box flex="1" p="5">
-              <Heading4>Listings in {location?.locationName}</Heading4>
+              <Heading4>
+                {location.locationName
+                  ? `Listings in ${location.locationName}`
+                  : "Location not found"}
+              </Heading4>
             </Box>
             <SimpleGrid flex="1" p="4" spacing={[0, 0, 1, 2, 2]} columns={4}>
               <SingleFilter
@@ -238,10 +244,9 @@ function Search(props: SearchProps): ReactElement {
             maxW="100%"
           >
             <Map
-              defaultLat={43.65107}
-              defaultLong={-79.347015}
-              // defaultLat={location.latitude}
-              // defaultLong={location.longitude}
+              defaultLat={location.latitude}
+              defaultLong={location.longitude}
+              zoom={12}
               listings={listings}
             />
           </Box>
@@ -250,4 +255,4 @@ function Search(props: SearchProps): ReactElement {
     </>
   );
 }
-export default Search;
+export default SearchPage;
