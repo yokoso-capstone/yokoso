@@ -96,6 +96,17 @@ export const ButtonSecondaryVariant = chakra(ButtonBase, {
   },
 });
 
+export const ButtonLink = chakra(
+  (props) => <Button variant="link" {...props} />,
+  {
+    baseStyle: {
+      fontWeight: "normal",
+      fontSize: "14px",
+      color: "text.primary",
+    },
+  }
+);
+
 export const SideBarButton = chakra(Button, {
   baseStyle: {
     paddingLeft: "8px",

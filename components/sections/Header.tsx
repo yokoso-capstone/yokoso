@@ -1,5 +1,6 @@
 import React, { ReactElement } from "react";
 import NextLink from "next/link";
+import { useRouter } from "next/router";
 import {
   useDisclosure,
   Box,
@@ -13,6 +14,12 @@ import { LogoWhite, LogoBlack } from "@/components/core/Branding";
 import { ContainerPrimary } from "@/components/core/Layout";
 import SearchInput from "@/components/core/SearchInput";
 import HamburgerMenu from "react-hamburger-menu";
+
+import Login from "@/components/sections/Login";
+import Signup from "@/components/sections/Signup";
+import { auth } from "@/src/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import RoutePath from "@/src/routes";
 
 const darkThemeSecondaryButtonProps: ButtonProps = {
   color: "white",
@@ -39,75 +46,125 @@ function Header(props: HeaderProps): ReactElement {
   const Logo = darkTheme ? LogoWhite : LogoBlack;
   const background = darkTheme ? "black" : "white";
 
+  const [user] = useAuthState(auth);
   const { isOpen, onToggle } = useDisclosure();
+  const {
+    isOpen: isOpenLogin,
+    onOpen: onOpenLogin,
+    onClose: onCloseLogin,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenSignUp,
+    onOpen: onOpenSignUp,
+    onClose: onCloseSignUp,
+  } = useDisclosure();
+  const router = useRouter();
+
+  const handleGetStarted = () => {
+    if (user) {
+      router.push(RoutePath.Dashboard);
+    } else {
+      onOpenLogin();
+    }
+  };
+
+  const handlePostListing = () => {
+    // TODO: go to create listing portion of dashboard after login
+    if (user) {
+      router.push(RoutePath.Dashboard);
+    } else {
+      onOpenLogin();
+    }
+  };
+
+  auth.signOut();
 
   return (
-    <Box
-      as="nav"
-      bg={background}
-      boxShadow="md"
-      width="100%"
-      zIndex={100}
-      position={position || "sticky"}
-      top={0}
-      paddingY="1rem"
-    >
-      <ContainerPrimary
-        {...(maxWidth && { maxWidth })}
-        {...(paddingX && { paddingX })}
+    <>
+      <Login
+        isOpen={isOpenLogin}
+        onClose={onCloseLogin}
+        onOpenSignUp={onOpenSignUp}
+      />
+      <Signup
+        isOpen={isOpenSignUp}
+        onClose={onCloseSignUp}
+        onOpenLogIn={onOpenLogin}
+      />
+
+      <Box
+        as="nav"
+        bg={background}
+        boxShadow="md"
+        width="100%"
+        zIndex={100}
+        position={position || "sticky"}
+        top={0}
+        paddingY="1rem"
       >
-        <Flex
-          marginX="auto"
-          direction="row"
-          align="center"
-          justify="space-between"
+        <ContainerPrimary
+          {...(maxWidth && { maxWidth })}
+          {...(paddingX && { paddingX })}
         >
-          <NextLink href="/" passHref>
-            <Link>
-              <Logo height="32px" />
-            </Link>
-          </NextLink>
-
-          <Box
-            display={["none", "none", "none", "block"]}
-            width={[300, 300, 275, 300, 400]}
-          >
-            {searchInput && (
-              <SearchInput
-                placeholder="Where are you staying?"
-                ariaLabel="Search for homes based on location"
-                onSubmit={() => undefined}
-              />
-            )}
-          </Box>
-
-          <Stack
-            spacing="12px"
+          <Flex
+            marginX="auto"
             direction="row"
-            display={["none", "none", "none", "block"]}
+            align="center"
+            justify="space-between"
           >
-            <ButtonSecondary {...(darkTheme && darkThemeSecondaryButtonProps)}>
-              Post Listing
-            </ButtonSecondary>
-            <ButtonPrimary {...(darkTheme && darkThemePrimaryButtonProps)}>
-              Get Started
-            </ButtonPrimary>
-          </Stack>
-          <Box display={["block", "block", "block", "none"]} cursor="pointer">
-            {/* TODO: show overlay with options (search, post listing, and get started) */}
-            <HamburgerMenu
-              isOpen={isOpen}
-              menuClicked={onToggle}
-              height={18}
-              width={28}
-              strokeWidth={3}
-              rotate={180}
-              color={darkTheme ? "white" : "black"}
-            />
-          </Box>
-        </Flex>
-      </ContainerPrimary>
-    </Box>
+            <NextLink href="/" passHref>
+              <Link>
+                <Logo height="32px" />
+              </Link>
+            </NextLink>
+
+            <Box
+              display={["none", "none", "none", "block"]}
+              width={[300, 300, 275, 300, 400]}
+            >
+              {searchInput && (
+                <SearchInput
+                  placeholder="Where are you staying?"
+                  ariaLabel="Search for homes based on location"
+                  onSubmit={() => undefined}
+                />
+              )}
+            </Box>
+
+            <Stack
+              spacing="12px"
+              direction="row"
+              display={["none", "none", "none", "block"]}
+            >
+              <ButtonSecondary
+                {...(darkTheme && darkThemeSecondaryButtonProps)}
+                onClick={handlePostListing}
+              >
+                Post Listing
+              </ButtonSecondary>
+              <ButtonPrimary
+                {...(darkTheme && darkThemePrimaryButtonProps)}
+                onClick={handleGetStarted}
+              >
+                Get Started
+              </ButtonPrimary>
+            </Stack>
+            <Box display={["block", "block", "block", "none"]} cursor="pointer">
+              {/* TODO: show overlay with options (search, post listing, and get started) */}
+              <HamburgerMenu
+                isOpen={isOpen}
+                menuClicked={onToggle}
+                height={18}
+                width={28}
+                strokeWidth={3}
+                rotate={180}
+                color={darkTheme ? "white" : "black"}
+              />
+            </Box>
+          </Flex>
+        </ContainerPrimary>
+      </Box>
+    </>
   );
 }
 
