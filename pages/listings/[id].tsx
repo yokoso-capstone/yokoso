@@ -5,7 +5,7 @@ import {
   GetServerSidePropsResult,
   InferGetServerSidePropsType,
 } from "next";
-import HeaderWhite from "@/components/sections/HeaderWhite";
+import Header from "@/components/sections/Header";
 import { ContainerPrimary } from "@/components/core/Layout";
 import { Body1, Caption, Heading4 } from "@/components/core/Text";
 import ImageCarousel from "@/components/sections/ImageCarousel";
@@ -75,7 +75,7 @@ function ListingPage(
         <title>{title}</title>
         <meta name="description" content={description} />
       </Head>
-      <HeaderWhite />
+      <Header searchInput />
       <ImageCarousel images={images} />
       <ContainerPrimary>
         <Grid
