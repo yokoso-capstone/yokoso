@@ -8,6 +8,12 @@ import {
 import { ButtonPrimary, SideBarButton } from "@/components/core/Button";
 import { LogoWhite } from "@/components/core/Branding";
 
+interface SidebarProps {
+  onClickTenant?: () => any;
+  onClickLandlord?: () => any;
+  onClickChat?: () => any;
+}
+
 const LogOutButton = chakra(ButtonPrimary, {
   baseStyle: {
     bg: "transparent",
@@ -18,41 +24,53 @@ const LogOutButton = chakra(ButtonPrimary, {
   },
 });
 
-const Sidebar = () => (
-  <Flex
-    as="nav"
-    paddingTop="32px"
-    bg="black"
-    color="white"
-    width="200px"
-    height="100%"
-    direction="column"
-    position="fixed"
-  >
-    <Flex justify="center" paddingBottom="32px">
-      <LogoWhite width="100px" background="black" />
-    </Flex>
-
+const Sidebar = (props: SidebarProps) => {
+  const { onClickTenant, onClickLandlord, onClickChat } = props;
+  return (
     <Flex
-      direction="column"
+      as="nav"
+      paddingTop="32px"
+      bg="black"
+      color="white"
+      width="200px"
       height="100%"
-      justify="space-between"
-      align="center"
+      direction="column"
+      position="fixed"
     >
-      <Stack direction="column" spacing={2} width="100%">
-        <SideBarButton leftIcon={<Icon as={BsFillHouseDoorFill} />}>
-          Listings
-        </SideBarButton>
-        <SideBarButton leftIcon={<Icon as={BsFillPersonFill} />}>
-          Tenants
-        </SideBarButton>
-        <SideBarButton leftIcon={<Icon as={BsFillChatDotsFill} />}>
-          Chat
-        </SideBarButton>
-      </Stack>
-      <LogOutButton borderColor="white">Log out</LogOutButton>
+      <Flex justify="center" paddingBottom="32px">
+        <LogoWhite width="100px" background="black" />
+      </Flex>
+
+      <Flex
+        direction="column"
+        height="100%"
+        justify="space-between"
+        align="center"
+      >
+        <Stack direction="column" spacing={2} width="100%">
+          <SideBarButton
+            onClick={onClickLandlord}
+            leftIcon={<Icon as={BsFillHouseDoorFill} />}
+          >
+            Listings
+          </SideBarButton>
+          <SideBarButton
+            onClick={onClickTenant}
+            leftIcon={<Icon as={BsFillPersonFill} />}
+          >
+            Tenants
+          </SideBarButton>
+          <SideBarButton
+            onClick={onClickChat}
+            leftIcon={<Icon as={BsFillChatDotsFill} />}
+          >
+            Chat
+          </SideBarButton>
+        </Stack>
+        <LogOutButton borderColor="white">Log out</LogOutButton>
+      </Flex>
     </Flex>
-  </Flex>
-);
+  );
+};
 
 export default Sidebar;

@@ -6,6 +6,12 @@ export interface ListingType {
   title: string;
   key: string;
   imageUrl: string;
+  status: ListingStatus;
+}
+
+export interface ListingStatus {
+  applicants: number;
+  isHidden: boolean;
 }
 
 export interface Coordinate {
@@ -41,5 +47,9 @@ export const testListing: ListingType = {
       latitude: 43.65107,
       longitude: -79.347015,
     },
+  },
+  status: {
+    applicants: 10,
+    isHidden: false,
   },
 };
