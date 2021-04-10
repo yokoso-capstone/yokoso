@@ -1,202 +1,29 @@
 import React, { useEffect, useState, ReactElement } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { ListingType, testListing } from "@/src/types";
 import { DashboardDisplay } from "@/src/enum";
-import { TabPrimary } from "@/components/core/Tabs";
 import Sidebar from "@/components/sections/Sidebar";
-import { ButtonSecondary } from "@/components/core/Button";
 import DashboardHeader from "@/components/sections/DashboardHeader";
-import DashboardSearchInput from "@/components/core/DashboardSearchInput";
-import {
-  Center,
-  Flex,
-  Tabs,
-  TabList,
-  TabPanels,
-  TabPanel,
-  Grid,
-  GridItem,
-  Table,
-  Thead,
-  Spacer,
-  Box,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-} from "@chakra-ui/react";
-import {
-  PropertyImage,
-  MultiWeightText,
-  PropertyDes,
-} from "@/components/sections/Listings";
+import { Center, Flex, Grid, GridItem } from "@chakra-ui/react";
 import withAuth from "@/components/withAuth";
 import RoutePath, { RoutePathDashboard } from "@/src/routes";
 
-const TenantListings = ({ isOpen, listingData }: any) => {
-  return (
-    <Tabs w="100%" h="100%" isLazy display={isOpen ? "block" : "none"}>
-      <TabList>
-        <TabPrimary>Past</TabPrimary>
-        <TabPrimary>Current</TabPrimary>
-        <TabPrimary>Upcoming</TabPrimary>
-        <Spacer />
-        <Box margin="15px">
-          <DashboardSearchInput />
-        </Box>
-      </TabList>
-      <TabPanels
-        overflowY="auto"
-        maxHeight={["75vh", "75vh", "80vh", "65vh", "65vh"]}
-        w="100%"
-      >
-        <TabPanel>
-          <TenantListingTable listings={listingData} />
-        </TabPanel>
-        <TabPanel>
-          <TenantListingTable listings={listingData} />
-        </TabPanel>
-        <TabPanel>
-          <TenantListingTable listings={listingData} />
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
-  );
+import ListingsView from "@/components/dashboard/ListingsView";
+import TenantsView from "@/components/dashboard/TenantsView";
+import ChatView from "@/components/dashboard/ChatView";
+
+const dashboardNameToComponent: {
+  [key in DashboardDisplay]: ReactElement;
+} = {
+  [DashboardDisplay.Listings]: <ListingsView />,
+  [DashboardDisplay.Tenants]: <TenantsView />,
+  [DashboardDisplay.Chat]: <ChatView />,
 };
-
-const LandlordListings = ({ isOpen, listingData }: any) => {
-  return (
-    <Tabs w="100%" h="100%" display={isOpen ? "block" : "none"}>
-      <TabList w="100%">
-        <TabPrimary>Listing</TabPrimary>
-        <TabPrimary>Draft</TabPrimary>
-        <TabPrimary>Hidden</TabPrimary>
-        <Spacer />
-        <Box margin="15px">
-          <DashboardSearchInput />
-        </Box>
-      </TabList>
-
-      <TabPanels
-        overflowY="auto"
-        maxHeight={["75vh", "75vh", "80vh", "65vh", "65vh"]}
-        w="100%"
-      >
-        <TabPanel>
-          <LandlordListingTable listings={listingData} />
-        </TabPanel>
-        <TabPanel>
-          <LandlordListingTable listings={listingData} />
-        </TabPanel>
-        <TabPanel>
-          <LandlordListingTable listings={listingData} />
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
-  );
-};
-
-const TenantListingTable = (props: ListingProps) => {
-  const { listings } = props;
-  return (
-    <Table>
-      <Thead>
-        <Tr>
-          <Th display={["none", "none", "none", "block", "block"]}>Image</Th>
-          <Th>Property</Th>
-          <Th>Price</Th>
-          <Th>Date</Th>
-          <Th />
-        </Tr>
-      </Thead>
-      <Tbody>
-        {listings.map((listing: ListingType, index) => (
-          <Tr key={index}>
-            <Td display={["none", "none", "none", "block", "block"]}>
-              <PropertyImage image={listing.imageUrl} size="150px" />
-            </Td>
-            <Td minWidth="250px">
-              <PropertyDes
-                location={listing.location.city}
-                title={`${listing.title.substring(0, 30)}...`}
-                numBeds={listing.numBeds}
-                numBaths={listing.numBaths}
-              />
-            </Td>
-            <Td>
-              <MultiWeightText
-                bold={listing.price.toString()}
-                normal="/month"
-              />
-            </Td>
-            <Td>
-              <Box>Date Placeholder</Box>
-            </Td>
-            <Td>
-              <ButtonSecondary>Cancel</ButtonSecondary>
-            </Td>
-          </Tr>
-        ))}
-      </Tbody>
-    </Table>
-  );
-};
-
-const LandlordListingTable = (props: ListingProps) => {
-  const { listings } = props;
-  return (
-    <Table>
-      <Thead>
-        <Tr>
-          <Th display={["none", "none", "none", "block", "block"]}>Image</Th>
-          <Th>Property</Th>
-          <Th>Price</Th>
-          <Th>Applicants</Th>
-          <Th />
-        </Tr>
-      </Thead>
-      <Tbody>
-        {listings.map((listing: ListingType, index) => (
-          <Tr key={index}>
-            <Td display={["none", "none", "none", "block", "block"]}>
-              <PropertyImage image={listing.imageUrl} size="150px" />
-            </Td>
-            <Td minWidth="250px">
-              <PropertyDes
-                location={listing.location.city}
-                title={`${listing.title.substring(0, 30)}...`}
-                numBeds={listing.numBeds}
-                numBaths={listing.numBaths}
-              />
-            </Td>
-            <Td>
-              <MultiWeightText
-                bold={listing.price.toString()}
-                normal="/month"
-              />
-            </Td>
-            <Td>
-              <Box>{listing.status.applicants}</Box>
-            </Td>
-            <Td>
-              <ButtonSecondary>Edit Listing</ButtonSecondary>
-            </Td>
-          </Tr>
-        ))}
-      </Tbody>
-    </Table>
-  );
-};
-
-interface ListingProps {
-  listings: ListingType[];
-}
 
 function DashboardPage(): ReactElement {
   const [dashboardType, setDashboardType] = useState(DashboardDisplay.Listings);
   const router = useRouter();
-  const listingData = [testListing, testListing, testListing];
+  const content = dashboardNameToComponent[dashboardType];
 
   useEffect(() => {
     const tab =
@@ -253,14 +80,7 @@ function DashboardPage(): ReactElement {
               bg="#FFFFFF"
               padding="1vh 4vh"
             >
-              <LandlordListings
-                listingData={listingData}
-                isOpen={dashboardType === DashboardDisplay.Listings}
-              />
-              <TenantListings
-                listingData={listingData}
-                isOpen={dashboardType === DashboardDisplay.Tenants}
-              />
+              {content}
             </Flex>
           </Center>
         </GridItem>
