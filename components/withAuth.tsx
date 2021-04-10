@@ -1,9 +1,9 @@
 import { useEffect, FunctionComponent } from "react";
 import { useRouter } from "next/router";
 import RoutePath from "@/src/routes";
-import { Center, CircularProgress } from "@chakra-ui/react";
 import { auth } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import LoadingScreen from "@/components/LoadingScreen";
 
 function withAuth(
   MyComponent: FunctionComponent,
@@ -20,11 +20,7 @@ function withAuth(
     }, [router, user, loading, error]);
 
     if (loading || error || !user) {
-      return (
-        <Center height="100vh">
-          <CircularProgress isIndeterminate color="gray.400" />
-        </Center>
-      );
+      return <LoadingScreen />;
     }
 
     return <MyComponent {...props} />;

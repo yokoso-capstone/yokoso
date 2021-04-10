@@ -230,7 +230,7 @@ function SearchPage(): ReactElement {
                 listings.map((listing, index) => (
                   <NextLink
                     key={listing.id || index}
-                    href={`${RoutePath.Listings}${listing.id}`}
+                    href={`${RoutePath.Listings}/${listing.id}`}
                     passHref
                   >
                     <Link textDecoration="none !important">
@@ -249,7 +249,7 @@ function SearchPage(): ReactElement {
                 listings.map((listing, index) => (
                   <NextLink
                     key={listing.id || index}
-                    href={`${RoutePath.Listings}${listing.id}`}
+                    href={`${RoutePath.Listings}/${listing.id}`}
                     passHref
                   >
                     <Link textDecoration="none !important">

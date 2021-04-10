@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 import NextLink from "next/link";
 import { chakra, Flex, Icon, Link } from "@chakra-ui/react";
 import {
@@ -9,13 +9,12 @@ import {
 import { IconType } from "react-icons/lib";
 import { ButtonPrimary, SideBarButton } from "@/components/core/Button";
 import { LogoWhite } from "@/components/core/Branding";
-import RoutePath from "@/src/routes";
+import RoutePath, { RoutePathDashboard } from "@/src/routes";
 import { DashboardDisplay } from "@/src/enum";
 import { auth } from "@/src/firebase";
 
 interface SidebarProps {
   activeDashboardType: DashboardDisplay;
-  setDashboardType: Dispatch<SetStateAction<DashboardDisplay>>;
 }
 
 const LogOutButton = chakra(ButtonPrimary, {
@@ -30,26 +29,30 @@ const LogOutButton = chakra(ButtonPrimary, {
 });
 
 const Sidebar = (props: SidebarProps) => {
-  const { activeDashboardType, setDashboardType } = props;
+  const { activeDashboardType } = props;
   const sideButtons: {
     dashboardType: DashboardDisplay;
     label: string;
     icon: IconType;
+    path: RoutePathDashboard;
   }[] = [
     {
       dashboardType: DashboardDisplay.Listings,
       label: "Listings",
       icon: BsFillHouseDoorFill,
+      path: RoutePathDashboard.Listings,
     },
     {
       dashboardType: DashboardDisplay.Tenants,
       label: "Tenants",
       icon: BsFillPersonFill,
+      path: RoutePathDashboard.Tenants,
     },
     {
       dashboardType: DashboardDisplay.Chat,
       label: "Chat",
       icon: BsFillChatDotsFill,
+      path: RoutePathDashboard.Chat,
     },
   ];
 
@@ -80,30 +83,36 @@ const Sidebar = (props: SidebarProps) => {
       >
         <Flex direction="column" width="100%">
           {sideButtons.map((sideButtonData) => (
-            <SideBarButton
-              key={sideButtonData.dashboardType}
-              borderLeftColor={
-                activeDashboardType === sideButtonData.dashboardType
-                  ? "brand.primary"
-                  : "transparent"
-              }
-              background={
-                activeDashboardType === sideButtonData.dashboardType
-                  ? "common.dark"
-                  : "transparent"
-              }
-              onClick={() => setDashboardType(sideButtonData.dashboardType)}
-              leftIcon={
-                <Icon
-                  as={sideButtonData.icon}
-                  width={4}
-                  height={4}
-                  marginRight="6px"
-                />
-              }
+            <NextLink
+              key={sideButtonData.path}
+              href={`${RoutePath.Dashboard}/${sideButtonData.path}`}
+              passHref
             >
-              {sideButtonData.label}
-            </SideBarButton>
+              <Link>
+                <SideBarButton
+                  borderLeftColor={
+                    activeDashboardType === sideButtonData.dashboardType
+                      ? "brand.primary"
+                      : "transparent"
+                  }
+                  background={
+                    activeDashboardType === sideButtonData.dashboardType
+                      ? "common.dark"
+                      : "transparent"
+                  }
+                  leftIcon={
+                    <Icon
+                      as={sideButtonData.icon}
+                      width={4}
+                      height={4}
+                      marginRight="6px"
+                    />
+                  }
+                >
+                  {sideButtonData.label}
+                </SideBarButton>
+              </Link>
+            </NextLink>
           ))}
         </Flex>
         <LogOutButton borderColor="white" onClick={() => auth.signOut()}>

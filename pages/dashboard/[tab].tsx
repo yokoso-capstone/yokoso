@@ -1,5 +1,6 @@
-import React, { ReactElement, useState } from "react";
+import React, { useEffect, useState, ReactElement } from "react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { ListingType, testListing } from "@/src/types";
 import { DashboardDisplay } from "@/src/enum";
 import { TabPrimary } from "@/components/core/Tabs";
@@ -31,6 +32,7 @@ import {
   PropertyDes,
 } from "@/components/sections/Listings";
 import withAuth from "@/components/withAuth";
+import RoutePath, { RoutePathDashboard } from "@/src/routes";
 
 const TenantListings = ({ isOpen, listingData }: any) => {
   return (
@@ -193,8 +195,32 @@ interface ListingProps {
 
 function DashboardPage(): ReactElement {
   const [dashboardType, setDashboardType] = useState(DashboardDisplay.Listings);
-
+  const router = useRouter();
   const listingData = [testListing, testListing, testListing];
+
+  useEffect(() => {
+    const tab =
+      typeof router.query.tab === "string" ? router.query.tab : undefined;
+
+    if (tab) {
+      const paths = Object.values(RoutePathDashboard);
+
+      // TODO: clean up coupling between dashboard name and active tab/path
+      const pathToName: { [key in RoutePathDashboard]: DashboardDisplay } = {
+        [RoutePathDashboard.Listings]: DashboardDisplay.Listings,
+        [RoutePathDashboard.Tenants]: DashboardDisplay.Tenants,
+        [RoutePathDashboard.Chat]: DashboardDisplay.Chat,
+      };
+
+      if (paths.includes(tab as RoutePathDashboard)) {
+        setDashboardType(pathToName[tab as RoutePathDashboard]);
+      } else if (paths.includes(tab.toLowerCase() as RoutePathDashboard)) {
+        router.push(`${RoutePath.Dashboard}/${tab.toLowerCase()}`);
+      } else {
+        router.push(`${RoutePath.Dashboard}/${RoutePathDashboard.Listings}`);
+      }
+    }
+  }, [router, router.query]);
 
   return (
     <>
@@ -212,10 +238,7 @@ function DashboardPage(): ReactElement {
           rowSpan={[0, 0, 0, 3, 3]}
           display={["none", "none", "none", "none", "grid"]}
         >
-          <Sidebar
-            activeDashboardType={dashboardType}
-            setDashboardType={setDashboardType}
-          />
+          <Sidebar activeDashboardType={dashboardType} />
         </GridItem>
         <GridItem rowSpan="auto">
           <DashboardHeader title={dashboardType} />
