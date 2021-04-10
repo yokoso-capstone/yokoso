@@ -7,7 +7,8 @@ import "rc-slider/assets/index.css";
 import "focus-visible/dist/focus-visible";
 import "react-datepicker/dist/react-datepicker.css";
 import "../styling/date-picker.css";
-
+import "../styling/mapbox-gl-geocoder.css";
+// import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import firebase from "firebase/app";
 import "firebase/analytics";
 import firebaseConfig from "@/src/firebaseConfig";
