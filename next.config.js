@@ -8,7 +8,7 @@ module.exports = {
     appId: process.env.appId,
     measurementId: process.env.measurementId,
   },
-  target: "serverless",
+  target: "experimental-serverless-trace",
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
