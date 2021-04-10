@@ -28,6 +28,7 @@ export type UserPrivate = {
 };
 
 export type Listing = {
+  id?: string;
   owner: UserPublic & { uid: string };
   visibility: "public" | "private";
   location: {
@@ -35,9 +36,14 @@ export type Listing = {
     unitNumber?: string;
     hideUnitNumber: boolean;
     postalCode: string;
-    city: string;
+    cityKey: string;
+    cityName: string;
     province: string;
     country: string;
+    coordinate: {
+      latitude: number;
+      longitude: number;
+    };
   };
   details: {
     title: string;
@@ -86,6 +92,7 @@ export type Listing = {
     additional: string;
   };
   images: string[];
+  applicants: number;
   createdAt: timestamp;
 };
 

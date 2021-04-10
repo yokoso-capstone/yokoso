@@ -4,8 +4,8 @@ import { Caption, Body1 } from "@/components/core/Text";
 interface DescriptionProps {
   location: string;
   title: string;
-  numBeds: string;
-  numBaths: string;
+  numBeds: number;
+  numBaths: number;
 }
 
 interface TextProps {
@@ -32,7 +32,7 @@ export function MultiWeightText(props: TextProps) {
   return (
     <Box>
       <Body1 display="inline" fontWeight="700">
-        {bold}
+        ${bold}
       </Body1>
       <Body1 display="inline">&nbsp;{normal}</Body1>
     </Box>

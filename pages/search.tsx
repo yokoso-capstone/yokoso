@@ -1,4 +1,5 @@
-import React, { ReactElement, useState } from "react";
+import React, { useMemo, useState, ReactElement } from "react";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 import Header from "@/components/sections/Header";
 import Head from "next/head";
@@ -12,6 +13,7 @@ import {
 } from "@/components/core/Button";
 import {
   Divider,
+  Link,
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -34,8 +36,12 @@ import {
   FormLabel,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ListingType, testListing, Coordinate } from "@/src/types";
+import { Coordinate } from "@/src/types";
 import { cityToLatLong, getQueryValue } from "@/src/utils";
+import { listings as listingsCollection } from "@/src/api/collections";
+import { useCollectionOnce } from "react-firebase-hooks/firestore";
+import { Listing } from "@/src/api/types";
+import RoutePath from "@/src/routes";
 
 interface FilterDisplay {
   childComp?: React.ReactNode;
@@ -118,14 +124,29 @@ function SearchPage(): ReactElement {
   } = useDisclosure();
 
   const router = useRouter();
-  const searchValue = getQueryValue(router.query, "value");
+  const searchValue = getQueryValue(router.query, "value")?.toLowerCase();
 
   const [priceFilter, setPriceFilter] = useState([0, 2150]);
   const [rooms, setRooms] = useState(1);
   const [bathrooms, setBathroom] = useState(1);
 
-  const location: Coordinate = cityToLatLong(searchValue?.toLowerCase() || "");
-  const listings: ListingType[] = [testListing];
+  const location: Coordinate = cityToLatLong(searchValue || "");
+
+  const query = useMemo(
+    () =>
+      searchValue
+        ? listingsCollection.where("location.cityKey", "==", searchValue)
+        : undefined,
+    [searchValue]
+  );
+  const [snapshot] = useCollectionOnce(query);
+  const listings = snapshot?.docs.map(
+    (doc) =>
+      (({
+        ...doc.data(),
+        id: doc.id,
+      } as unknown) as Listing)
+  );
 
   return (
     <>
@@ -205,36 +226,42 @@ function SearchPage(): ReactElement {
             </SimpleGrid>
             <Divider />
             <Box flex="1" overflow="auto" w="100%">
-              {listings.map((listing: ListingType, index) => (
-                <LgSearchResult
-                  key={index}
-                  imageUrl={listing.imageUrl}
-                  location={listing.location.city}
-                  price={listing.price}
-                  numBaths={listing.numBaths}
-                  numBeds={listing.numBeds}
-                  id={listing.key}
-                  title={listing.title}
-                  display={["none", "block", "none", "block", "block"]}
-                  width="100%"
-                />
-              ))}
+              {listings &&
+                listings.map((listing, index) => (
+                  <NextLink
+                    key={listing.id || index}
+                    href={`${RoutePath.Listings}${listing.id}`}
+                    passHref
+                  >
+                    <Link textDecoration="none !important">
+                      <LgSearchResult
+                        listing={listing}
+                        num={index + 1}
+                        display={["none", "block", "none", "block", "block"]}
+                        width="100%"
+                      />
+                    </Link>
+                  </NextLink>
+                ))}
             </Box>
             <Box flex="1" paddingTop={4} overflow="auto" w="100%">
-              {listings.map((listing: ListingType, index) => (
-                <SmSearchResult
-                  key={index}
-                  imageUrl={listing.imageUrl}
-                  location={listing.location.city}
-                  price={listing.price}
-                  numBaths={listing.numBaths}
-                  numBeds={listing.numBeds}
-                  id={listing.key}
-                  title={listing.title}
-                  display={["block", "none", "block", "none", "none"]}
-                  width="100%"
-                />
-              ))}
+              {listings &&
+                listings.map((listing, index) => (
+                  <NextLink
+                    key={listing.id || index}
+                    href={`${RoutePath.Listings}${listing.id}`}
+                    passHref
+                  >
+                    <Link textDecoration="none !important">
+                      <SmSearchResult
+                        listing={listing}
+                        num={index + 1}
+                        display={["block", "none", "block", "none", "none"]}
+                        width="100%"
+                      />
+                    </Link>
+                  </NextLink>
+                ))}
             </Box>
           </Box>
           <Box

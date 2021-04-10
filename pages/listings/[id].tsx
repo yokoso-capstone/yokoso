@@ -42,7 +42,7 @@ export const getServerSideProps = async (
       props.createdAt = (props.createdAt as FirestoreTimestamp).toMillis();
     }
 
-    if (props.owner.createdAt) {
+    if (props.owner && props.owner.createdAt) {
       props.owner.createdAt = (props.owner
         .createdAt as FirestoreTimestamp).toMillis();
     }
@@ -61,7 +61,7 @@ function ListingPage(
 ): ReactElement {
   const {
     owner: { firstName, lastName, profilePicture, createdAt },
-    location: { city },
+    location: { cityName },
     details: { title, description, numBedrooms, numBeds, numBaths },
     lease: { price },
     images,
@@ -91,7 +91,7 @@ function ListingPage(
             paddingBottom={["0.5in", "0.5in", "0.5in", "1in"]}
           >
             <Box>
-              <Caption>{city}</Caption>
+              <Caption>{cityName}</Caption>
               <Heading4 marginBottom="8px">{title}</Heading4>
               <HStack>
                 <Caption>

@@ -56,5 +56,8 @@ export function cityToLatLong(city: string) {
     },
   };
 
-  return cityMapping[city] || ({ latitude: 0, longitude: 0 } as Coordinate);
+  return (
+    cityMapping[city.toLowerCase()] ||
+    ({ latitude: 0, longitude: 0 } as Coordinate)
+  );
 }

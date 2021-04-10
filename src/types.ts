@@ -1,7 +1,7 @@
 export interface ListingType {
   location: Location;
-  numBeds: string;
-  numBaths: string;
+  numBeds: number;
+  numBaths: number;
   price: string;
   title: string;
   key: string;
@@ -30,8 +30,8 @@ export interface Location {
 }
 
 export const testListing: ListingType = {
-  numBeds: "2",
-  numBaths: "1",
+  numBeds: 2,
+  numBaths: 1,
   price: "$2000",
   title: "Beautiful home in the heart of Toronto",
   key: "1",
