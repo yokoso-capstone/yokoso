@@ -5,22 +5,18 @@ export const SearchIcon = chakra(SearchSvg);
 
 const DashboardSearchInput = () => (
   <>
-    <InputGroup height="48px">
+    <InputGroup height="40px">
       <Input
         type="search"
-        paddingLeft="36px"
-        paddingRight="56px"
         placeholder="Search"
         height="100%"
         fontSize="16px"
-        background="white"
         color="text.primary"
         borderWidth="0 0 3px 0"
         borderRadius="1px"
-        _hover={{}}
-        _focus={{ borderColor: "brand.primary" }}
+        _focus={{ borderColor: "common.dark" }}
       />
-      <InputLeftElement height="100%" paddingRight="5px" paddingLeft="5px">
+      <InputLeftElement>
         <SearchIcon />
       </InputLeftElement>
     </InputGroup>
