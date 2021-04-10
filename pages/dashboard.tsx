@@ -30,180 +30,171 @@ import {
   MultiWeightText,
   PropertyDes,
 } from "@/components/sections/Listings";
+import withAuth from "@/components/withAuth";
+
+const TenantListings = ({ isOpen, listingData }: any) => {
+  return (
+    <Tabs w="100%" h="100%" isLazy display={isOpen ? "block" : "none"}>
+      <TabList>
+        <TabPrimary>Past</TabPrimary>
+        <TabPrimary>Current</TabPrimary>
+        <TabPrimary>Upcoming</TabPrimary>
+        <Spacer />
+        <Box margin="15px">
+          <DashboardSearchInput />
+        </Box>
+      </TabList>
+      <TabPanels
+        overflowY="auto"
+        maxHeight={["75vh", "75vh", "80vh", "65vh", "65vh"]}
+        w="100%"
+      >
+        <TabPanel>
+          <TenantListingTable listings={listingData} />
+        </TabPanel>
+        <TabPanel>
+          <TenantListingTable listings={listingData} />
+        </TabPanel>
+        <TabPanel>
+          <TenantListingTable listings={listingData} />
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
+  );
+};
+
+const LandlordListings = ({ isOpen, listingData }: any) => {
+  return (
+    <Tabs w="100%" h="100%" display={isOpen ? "block" : "none"}>
+      <TabList w="100%">
+        <TabPrimary>Listing</TabPrimary>
+        <TabPrimary>Draft</TabPrimary>
+        <TabPrimary>Hidden</TabPrimary>
+        <Spacer />
+        <Box margin="15px">
+          <DashboardSearchInput />
+        </Box>
+      </TabList>
+
+      <TabPanels
+        overflowY="auto"
+        maxHeight={["75vh", "75vh", "80vh", "65vh", "65vh"]}
+        w="100%"
+      >
+        <TabPanel>
+          <LandlordListingTable listings={listingData} />
+        </TabPanel>
+        <TabPanel>
+          <LandlordListingTable listings={listingData} />
+        </TabPanel>
+        <TabPanel>
+          <LandlordListingTable listings={listingData} />
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
+  );
+};
+
+const TenantListingTable = (props: ListingProps) => {
+  const { listings } = props;
+  return (
+    <Table>
+      <Thead>
+        <Tr>
+          <Th display={["none", "none", "none", "block", "block"]}>Image</Th>
+          <Th>Property</Th>
+          <Th>Price</Th>
+          <Th>Date</Th>
+          <Th />
+        </Tr>
+      </Thead>
+      <Tbody>
+        {listings.map((listing: ListingType, index) => (
+          <Tr key={index}>
+            <Td display={["none", "none", "none", "block", "block"]}>
+              <PropertyImage image={listing.imageUrl} size="150px" />
+            </Td>
+            <Td minWidth="250px">
+              <PropertyDes
+                location={listing.location.city}
+                title={`${listing.title.substring(0, 30)}...`}
+                numBeds={listing.numBeds}
+                numBaths={listing.numBaths}
+              />
+            </Td>
+            <Td>
+              <MultiWeightText
+                bold={listing.price.toString()}
+                normal="/month"
+              />
+            </Td>
+            <Td>
+              <Box>Date Placeholder</Box>
+            </Td>
+            <Td>
+              <ButtonSecondary>Cancel</ButtonSecondary>
+            </Td>
+          </Tr>
+        ))}
+      </Tbody>
+    </Table>
+  );
+};
+
+const LandlordListingTable = (props: ListingProps) => {
+  const { listings } = props;
+  return (
+    <Table>
+      <Thead>
+        <Tr>
+          <Th display={["none", "none", "none", "block", "block"]}>Image</Th>
+          <Th>Property</Th>
+          <Th>Price</Th>
+          <Th>Applicants</Th>
+          <Th />
+        </Tr>
+      </Thead>
+      <Tbody>
+        {listings.map((listing: ListingType, index) => (
+          <Tr key={index}>
+            <Td display={["none", "none", "none", "block", "block"]}>
+              <PropertyImage image={listing.imageUrl} size="150px" />
+            </Td>
+            <Td minWidth="250px">
+              <PropertyDes
+                location={listing.location.city}
+                title={`${listing.title.substring(0, 30)}...`}
+                numBeds={listing.numBeds}
+                numBaths={listing.numBaths}
+              />
+            </Td>
+            <Td>
+              <MultiWeightText
+                bold={listing.price.toString()}
+                normal="/month"
+              />
+            </Td>
+            <Td>
+              <Box>{listing.status.applicants}</Box>
+            </Td>
+            <Td>
+              <ButtonSecondary>Edit Listing</ButtonSecondary>
+            </Td>
+          </Tr>
+        ))}
+      </Tbody>
+    </Table>
+  );
+};
 
 interface ListingProps {
   listings: ListingType[];
 }
 
 function DashboardPage(): ReactElement {
-  const [dashboardType, setDashboardType] = useState<DashboardDisplay>(
-    DashboardDisplay.Listings
-  );
+  const [dashboardType, setDashboardType] = useState(DashboardDisplay.Listings);
 
   const listingData = [testListing, testListing, testListing];
-
-  // const [listingData, setListingsData] = useState([]);
-
-  const openLandlordListing = () => {
-    setDashboardType(DashboardDisplay.Listings);
-  };
-
-  const openTenantListing = () => {
-    setDashboardType(DashboardDisplay.Tenants);
-  };
-
-  const openChatListing = () => {
-    setDashboardType(DashboardDisplay.Chat);
-  };
-
-  const TenantListings = ({ isOpen }: any) => {
-    return (
-      <Tabs w="100%" h="100%" isLazy display={isOpen ? "block" : "none"}>
-        <TabList>
-          <TabPrimary>Past</TabPrimary>
-          <TabPrimary>Current</TabPrimary>
-          <TabPrimary>Upcoming</TabPrimary>
-          <Spacer />
-          <Box margin="15px">
-            <DashboardSearchInput />
-          </Box>
-        </TabList>
-        <TabPanels
-          overflowY="auto"
-          maxHeight={["75vh", "75vh", "80vh", "65vh", "65vh"]}
-          w="100%"
-        >
-          <TabPanel>
-            <TenantListingTable listings={listingData} />
-          </TabPanel>
-          <TabPanel>
-            <TenantListingTable listings={listingData} />
-          </TabPanel>
-          <TabPanel>
-            <TenantListingTable listings={listingData} />
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-    );
-  };
-
-  const LandlordListings = ({ isOpen }: any) => {
-    return (
-      <Tabs w="100%" h="100%" display={isOpen ? "block" : "none"}>
-        <TabList w="100%">
-          <TabPrimary>Listing</TabPrimary>
-          <TabPrimary>Draft</TabPrimary>
-          <TabPrimary>Hidden</TabPrimary>
-          <Spacer />
-          <Box margin="15px">
-            <DashboardSearchInput />
-          </Box>
-        </TabList>
-
-        <TabPanels
-          overflowY="auto"
-          maxHeight={["75vh", "75vh", "80vh", "65vh", "65vh"]}
-          w="100%"
-        >
-          <TabPanel>
-            <LandlordListingTable listings={listingData} />
-          </TabPanel>
-          <TabPanel>
-            <LandlordListingTable listings={listingData} />
-          </TabPanel>
-          <TabPanel>
-            <LandlordListingTable listings={listingData} />
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-    );
-  };
-
-  const TenantListingTable = (props: ListingProps) => {
-    const { listings } = props;
-    return (
-      <Table>
-        <Thead>
-          <Tr>
-            <Th display={["none", "none", "none", "block", "block"]}>Image</Th>
-            <Th>Property</Th>
-            <Th>Price</Th>
-            <Th>Date</Th>
-            <Th />
-          </Tr>
-        </Thead>
-        <Tbody>
-          {listings.map((listing: ListingType, index) => (
-            <Tr key={index}>
-              <Td display={["none", "none", "none", "block", "block"]}>
-                <PropertyImage image={listing.imageUrl} size="150px" />
-              </Td>
-              <Td minWidth="250px">
-                <PropertyDes
-                  location={listing.location.city}
-                  title={`${listing.title.substring(0, 30)}...`}
-                  numBeds={listing.numBeds}
-                  numBaths={listing.numBaths}
-                />
-              </Td>
-              <Td>
-                <MultiWeightText bold={listing.price} normal="/month" />
-              </Td>
-              <Td>
-                <Box>Date Placeholder</Box>
-              </Td>
-              <Td>
-                <ButtonSecondary>Cancel</ButtonSecondary>
-              </Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
-    );
-  };
-
-  const LandlordListingTable = (props: ListingProps) => {
-    const { listings } = props;
-    return (
-      <Table>
-        <Thead>
-          <Tr>
-            <Th display={["none", "none", "none", "block", "block"]}>Image</Th>
-            <Th>Property</Th>
-            <Th>Price</Th>
-            <Th>Applicants</Th>
-            <Th />
-          </Tr>
-        </Thead>
-        <Tbody>
-          {listings.map((listing: ListingType, index) => (
-            <Tr key={index}>
-              <Td display={["none", "none", "none", "block", "block"]}>
-                <PropertyImage image={listing.imageUrl} size="150px" />
-              </Td>
-              <Td minWidth="250px">
-                <PropertyDes
-                  location={listing.location.city}
-                  title={`${listing.title.substring(0, 30)}...`}
-                  numBeds={listing.numBeds}
-                  numBaths={listing.numBaths}
-                />
-              </Td>
-              <Td>
-                <MultiWeightText bold={listing.price} normal="/month" />
-              </Td>
-              <Td>
-                <Box>{listing.status.applicants}</Box>
-              </Td>
-              <Td>
-                <ButtonSecondary>Edit Listing</ButtonSecondary>
-              </Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
-    );
-  };
 
   return (
     <>
@@ -222,9 +213,8 @@ function DashboardPage(): ReactElement {
           display={["none", "none", "none", "none", "grid"]}
         >
           <Sidebar
-            onClickLandlord={openLandlordListing}
-            onClickTenant={openTenantListing}
-            onClickChat={openChatListing}
+            activeDashboardType={dashboardType}
+            setDashboardType={setDashboardType}
           />
         </GridItem>
         <GridItem rowSpan="auto">
@@ -241,9 +231,11 @@ function DashboardPage(): ReactElement {
               padding="1vh 4vh"
             >
               <LandlordListings
+                listingData={listingData}
                 isOpen={dashboardType === DashboardDisplay.Listings}
               />
               <TenantListings
+                listingData={listingData}
                 isOpen={dashboardType === DashboardDisplay.Tenants}
               />
             </Flex>
@@ -254,4 +246,4 @@ function DashboardPage(): ReactElement {
   );
 }
 
-export default DashboardPage;
+export default withAuth(DashboardPage);

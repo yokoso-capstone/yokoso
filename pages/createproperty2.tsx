@@ -12,7 +12,6 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { Heading6 } from "@/components/core/Text";
-import Sidebar from "@/components/sections/Sidebar";
 import { ButtonSecondary } from "@/components/core/Button";
 import { Formik, Form, Field } from "formik";
 import DatePicker from "@/components/core/DatePicker";
@@ -85,9 +84,6 @@ function CreateProperty(): ReactElement {
       </Head>
 
       <Flex direction="row">
-        <Box display={["none", "none", "none", "block", "block"]}>
-          <Sidebar />
-        </Box>
         <Flex
           width="full"
           align="center"

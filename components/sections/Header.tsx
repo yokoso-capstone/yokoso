@@ -77,8 +77,6 @@ function Header(props: HeaderProps): ReactElement {
     }
   };
 
-  auth.signOut();
-
   return (
     <>
       <Login

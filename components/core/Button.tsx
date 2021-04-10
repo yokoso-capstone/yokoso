@@ -109,14 +109,17 @@ export const ButtonLink = chakra(
 
 export const SideBarButton = chakra(Button, {
   baseStyle: {
-    paddingLeft: "8px",
+    paddingLeft: "16px",
     width: "100%",
+    height: "52px",
     bg: "transparent",
     rounded: "none",
+    fontSize: "14px",
     fontWeight: "bold",
     justifyContent: "start",
     borderLeft: "4px",
     borderLeftColor: "transparent",
-    _hover: { bg: "gray", borderLeftColor: "red" },
+    _hover: { background: "gray.700" },
+    _active: { background: "common.dark" },
   },
 });
