@@ -17,3 +17,14 @@ export const Card = chakra(Box, {
     borderColor: "gray.200",
   },
 });
+
+export const DashboardCard = chakra(Box, {
+  baseStyle: {
+    borderRadius: "8px",
+    border: "1px solid #E9EEF4",
+    boxShadow: "md",
+    background: "white",
+    paddingX: "2rem",
+    paddingY: "1rem",
+  },
+});

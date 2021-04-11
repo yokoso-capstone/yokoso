@@ -1,5 +1,6 @@
 import { ReactElement } from "react";
 import { ButtonSecondary } from "@/components/core/Button";
+import { DashboardCard } from "@/components/core/Layout";
 import { TabPrimary } from "@/components/core/Tabs";
 import { ListingType, testListing } from "@/src/types";
 import DashboardSearchInput from "@/components/core/DashboardSearchInput";
@@ -77,32 +78,31 @@ const listingData = [testListing, testListing, testListing];
 
 function TenantsView(): ReactElement {
   return (
-    <Tabs w="100%" h="100%" isLazy>
-      <TabList>
-        <TabPrimary>Past</TabPrimary>
-        <TabPrimary>Current</TabPrimary>
-        <TabPrimary>Upcoming</TabPrimary>
-        <Spacer />
-        <Box margin="15px">
-          <DashboardSearchInput />
-        </Box>
-      </TabList>
-      <TabPanels
-        overflowY="auto"
-        maxHeight={["75vh", "75vh", "80vh", "65vh", "65vh"]}
-        w="100%"
-      >
-        <TabPanel>
-          <TenantListingTable listings={listingData} />
-        </TabPanel>
-        <TabPanel>
-          <TenantListingTable listings={listingData} />
-        </TabPanel>
-        <TabPanel>
-          <TenantListingTable listings={listingData} />
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+    <DashboardCard>
+      <Tabs isLazy>
+        <TabList>
+          <TabPrimary>Past</TabPrimary>
+          <TabPrimary>Current</TabPrimary>
+          <TabPrimary>Upcoming</TabPrimary>
+          <Spacer />
+          <Box marginTop="8px" marginBottom="16px">
+            <DashboardSearchInput />
+          </Box>
+        </TabList>
+
+        <TabPanels>
+          <TabPanel>
+            <TenantListingTable listings={listingData} />
+          </TabPanel>
+          <TabPanel>
+            <TenantListingTable listings={listingData} />
+          </TabPanel>
+          <TabPanel>
+            <TenantListingTable listings={listingData} />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </DashboardCard>
   );
 }
 

@@ -13,25 +13,26 @@ function DashboardHeader(props: DashboardHeaderProps): ReactElement {
   const { title } = props;
 
   return (
-    <Box maxWidth="100%">
+    <Box
+      bg="white"
+      height="78px"
+      position="sticky"
+      boxShadow="md"
+      paddingX="4rem"
+      paddingY="1rem"
+    >
       <Flex
         as="nav"
+        maxWidth="1640px"
+        marginX="auto"
         align="center"
         justify="space-between"
-        wrap="wrap"
-        padding={["8px", "8px", "8px", "1rem", "1rem"]}
-        bg="white"
-        height="78px"
-        position="sticky"
-        boxShadow="md"
       >
-        <Flex align="center" direction="row" display="block">
-          <Heading4 marginLeft="36px">{title}</Heading4>
-        </Flex>
+        <Heading4>{title}</Heading4>
 
-        <Stack spacing={8} direction="row" display="block" marginRight="36px">
+        <Stack spacing={8} direction="row" align="center">
           <IconButton
-            aria-label="Search database"
+            aria-label="Notifications"
             width="40px"
             height="40px"
             isRound
@@ -47,7 +48,7 @@ function DashboardHeader(props: DashboardHeaderProps): ReactElement {
           />
 
           <IconButton
-            aria-label="Search database"
+            aria-label="Profile"
             width="44px"
             height="44px"
             isRound

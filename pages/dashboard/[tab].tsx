@@ -4,13 +4,20 @@ import { useRouter } from "next/router";
 import { DashboardDisplay } from "@/src/enum";
 import Sidebar from "@/components/sections/Sidebar";
 import DashboardHeader from "@/components/sections/DashboardHeader";
-import { Center, Flex, Grid, GridItem } from "@chakra-ui/react";
+import { Box, Grid, GridItem } from "@chakra-ui/react";
 import withAuth from "@/components/withAuth";
 import RoutePath, { RoutePathDashboard } from "@/src/routes";
 
 import ListingsView from "@/components/dashboard/ListingsView";
 import TenantsView from "@/components/dashboard/TenantsView";
 import ChatView from "@/components/dashboard/ChatView";
+
+// TODO: clean up coupling between dashboard name and active tab/path
+const pathToName: { [key in RoutePathDashboard]: DashboardDisplay } = {
+  [RoutePathDashboard.Listings]: DashboardDisplay.Listings,
+  [RoutePathDashboard.Tenants]: DashboardDisplay.Tenants,
+  [RoutePathDashboard.Chat]: DashboardDisplay.Chat,
+};
 
 const dashboardNameToComponent: {
   [key in DashboardDisplay]: ReactElement;
@@ -32,13 +39,6 @@ function DashboardPage(): ReactElement {
     if (tab) {
       const paths = Object.values(RoutePathDashboard);
 
-      // TODO: clean up coupling between dashboard name and active tab/path
-      const pathToName: { [key in RoutePathDashboard]: DashboardDisplay } = {
-        [RoutePathDashboard.Listings]: DashboardDisplay.Listings,
-        [RoutePathDashboard.Tenants]: DashboardDisplay.Tenants,
-        [RoutePathDashboard.Chat]: DashboardDisplay.Chat,
-      };
-
       if (paths.includes(tab as RoutePathDashboard)) {
         setDashboardType(pathToName[tab as RoutePathDashboard]);
       } else if (paths.includes(tab.toLowerCase() as RoutePathDashboard)) {
@@ -57,7 +57,7 @@ function DashboardPage(): ReactElement {
       </Head>
 
       <Grid
-        height="100vh"
+        minHeight="100vh"
         gridTemplateRows="78px 1fr"
         templateColumns={["1fr", "1fr", "1fr", " 1fr", "200px 1fr"]}
       >
@@ -67,22 +67,15 @@ function DashboardPage(): ReactElement {
         >
           <Sidebar activeDashboardType={dashboardType} />
         </GridItem>
+
         <GridItem rowSpan="auto">
           <DashboardHeader title={dashboardType} />
         </GridItem>
-        <GridItem rowSpan={3} h="100%">
-          <Center bg="#F9FBFD" h="100%">
-            <Flex
-              borderRadius="8px"
-              boxShadow="base"
-              w={["100%", "100%", "100%", "95%", "95%"]}
-              h={["100%", "100%", "100%", "80vh", "80vh"]}
-              bg="#FFFFFF"
-              padding="1vh 4vh"
-            >
-              {content}
-            </Flex>
-          </Center>
+
+        <GridItem rowSpan={3} height="100%" background="#F9FBFD" padding="4rem">
+          <Box maxWidth="1640px" marginX="auto">
+            {content}
+          </Box>
         </GridItem>
       </Grid>
     </>
