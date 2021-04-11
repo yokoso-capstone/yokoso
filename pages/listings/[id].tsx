@@ -14,6 +14,8 @@ import { Box, Button, Divider, Grid, HStack, Stack } from "@chakra-ui/react";
 import { firestoreAdmin } from "@/src/firebaseAdmin";
 import { CollectionName } from "@/src/api/collections";
 import { FirestoreTimestamp, Listing } from "@/src/api/types";
+import { auth } from "@/src/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -68,6 +70,7 @@ function ListingPage(
   } = props;
   const maxDescriptionCharacters = 300;
   const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [user, loading, error] = useAuthState(auth);
 
   return (
     <>
@@ -162,6 +165,7 @@ function ListingPage(
                 lastName={lastName}
                 profilePicture={profilePicture}
                 joined={createdAt as number}
+                disabled={error !== undefined || (!loading && !user)}
               />
             </Box>
           </Box>

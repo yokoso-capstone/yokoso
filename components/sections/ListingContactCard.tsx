@@ -22,10 +22,18 @@ interface ListingCardProps {
   lastName: string;
   profilePicture: string;
   joined: number;
+  disabled?: boolean;
 }
 
 function ListingCard(props: ListingCardProps): ReactElement {
-  const { price, firstName, lastName, profilePicture, joined } = props;
+  const {
+    price,
+    firstName,
+    lastName,
+    profilePicture,
+    joined,
+    disabled,
+  } = props;
   const joinedDate = new Date(joined);
   const [value, setValue] = useState("");
   const placeholderText = `Hi ${firstName}, I am interested in your listing. Is it still available? When would be a good time to view it?`;
@@ -82,6 +90,7 @@ function ListingCard(props: ListingCardProps): ReactElement {
         <Stack spacing="16px">
           <Heading5>Contact</Heading5>
           <Textarea
+            disabled={disabled}
             placeholder={placeholderText}
             size="sm"
             borderRadius="4px"
@@ -95,7 +104,11 @@ function ListingCard(props: ListingCardProps): ReactElement {
           <Tooltip
             isDisabled={Boolean(value)}
             hasArrow
-            label="Enter a message to send"
+            label={
+              disabled
+                ? "Create an account or log in to get started"
+                : "Enter a message to send"
+            }
           >
             <Box>
               <ButtonPrimary isDisabled={!value} isFullWidth>
