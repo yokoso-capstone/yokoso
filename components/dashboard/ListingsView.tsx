@@ -1,5 +1,6 @@
 import { ReactElement } from "react";
-import { ButtonSecondary } from "@/components/core/Button";
+import { useRouter } from "next/router";
+import { ButtonPrimary, ButtonSecondary } from "@/components/core/Button";
 import { DashboardCard } from "@/components/core/Layout";
 import { TabPrimary } from "@/components/core/Tabs";
 import { ListingType, testListing } from "@/src/types";
@@ -23,6 +24,7 @@ import {
   MultiWeightText,
   PropertyDes,
 } from "@/components/sections/Listings";
+import RoutePath, { RoutePathDashboard } from "@/src/routes";
 
 interface ListingProps {
   listings: ListingType[];
@@ -30,6 +32,7 @@ interface ListingProps {
 
 const LandlordListingTable = (props: ListingProps) => {
   const { listings } = props;
+
   return (
     <Table>
       <Thead>
@@ -38,7 +41,7 @@ const LandlordListingTable = (props: ListingProps) => {
           <Th>Property</Th>
           <Th>Price</Th>
           <Th>Applicants</Th>
-          <Th />
+          <Th width={0} />
         </Tr>
       </Thead>
       <Tbody>
@@ -77,6 +80,8 @@ const LandlordListingTable = (props: ListingProps) => {
 const listingData = [testListing, testListing, testListing];
 
 function ListingsView(): ReactElement {
+  const router = useRouter();
+
   return (
     <DashboardCard>
       <Tabs isLazy>
@@ -85,13 +90,24 @@ function ListingsView(): ReactElement {
           <TabPrimary>Draft</TabPrimary>
           <TabPrimary>Hidden</TabPrimary>
           <Spacer />
-          <Box marginTop="8px" marginBottom="16px">
+          <Box marginTop="8px" marginBottom="8px" width="2.5in">
             <DashboardSearchInput />
+          </Box>
+          <Box marginY="auto" marginLeft="64px" marginRight="24px">
+            <ButtonPrimary
+              onClick={() =>
+                router.push(
+                  `${RoutePath.Dashboard}/${RoutePathDashboard.Create}`
+                )
+              }
+            >
+              Create Listing
+            </ButtonPrimary>
           </Box>
         </TabList>
 
         <TabPanels>
-          <TabPanel>
+          <TabPanel paddingX={0}>
             <LandlordListingTable listings={listingData} />
           </TabPanel>
           <TabPanel>

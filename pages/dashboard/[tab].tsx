@@ -11,6 +11,7 @@ import RoutePath, { RoutePathDashboard } from "@/src/routes";
 import ListingsView from "@/components/dashboard/ListingsView";
 import TenantsView from "@/components/dashboard/TenantsView";
 import ChatView from "@/components/dashboard/ChatView";
+import CreateListingView from "@/components/dashboard/CreateListingView";
 
 const pathData: {
   [key in RoutePathDashboard]: {
@@ -29,6 +30,10 @@ const pathData: {
   [RoutePathDashboard.Chat]: {
     label: DashboardLabel.Chat,
     content: <ChatView />,
+  },
+  [RoutePathDashboard.Create]: {
+    label: DashboardLabel.Create,
+    content: <CreateListingView />,
   },
 };
 
@@ -75,7 +80,7 @@ function DashboardPage(): ReactElement {
           <Sidebar activeDashboardPath={dashboardPath} />
         </GridItem>
 
-        <GridItem rowSpan="auto">
+        <GridItem rowSpan="auto" position="sticky" top={0} zIndex={100}>
           <DashboardHeader title={label} />
         </GridItem>
 
