@@ -88,7 +88,7 @@ const Sidebar = (props: SidebarProps) => {
               href={`${RoutePath.Dashboard}/${sideButtonData.path}`}
               passHref
             >
-              <Link>
+              <Link _hover={{ textDecoration: "none" }}>
                 <SideBarButton
                   borderLeftColor={
                     activeDashboardType === sideButtonData.dashboardType
