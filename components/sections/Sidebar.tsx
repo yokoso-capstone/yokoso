@@ -10,11 +10,11 @@ import { IconType } from "react-icons/lib";
 import { ButtonPrimary, SideBarButton } from "@/components/core/Button";
 import { LogoWhite } from "@/components/core/Branding";
 import RoutePath, { RoutePathDashboard } from "@/src/routes";
-import { DashboardDisplay } from "@/src/enum";
 import { auth } from "@/src/firebase";
+import { DashboardLabel } from "@/src/enum";
 
 interface SidebarProps {
-  activeDashboardType: DashboardDisplay;
+  activeDashboardPath: RoutePathDashboard;
 }
 
 const LogOutButton = chakra(ButtonPrimary, {
@@ -28,33 +28,30 @@ const LogOutButton = chakra(ButtonPrimary, {
   },
 });
 
+const sideButtonData: {
+  label: DashboardLabel;
+  icon: IconType;
+  path: RoutePathDashboard;
+}[] = [
+  {
+    label: DashboardLabel.Listings,
+    icon: BsFillHouseDoorFill,
+    path: RoutePathDashboard.Listings,
+  },
+  {
+    label: DashboardLabel.Tenants,
+    icon: BsFillPersonFill,
+    path: RoutePathDashboard.Tenants,
+  },
+  {
+    label: DashboardLabel.Chat,
+    icon: BsFillChatDotsFill,
+    path: RoutePathDashboard.Chat,
+  },
+];
+
 const Sidebar = (props: SidebarProps) => {
-  const { activeDashboardType } = props;
-  const sideButtons: {
-    dashboardType: DashboardDisplay;
-    label: string;
-    icon: IconType;
-    path: RoutePathDashboard;
-  }[] = [
-    {
-      dashboardType: DashboardDisplay.Listings,
-      label: "Listings",
-      icon: BsFillHouseDoorFill,
-      path: RoutePathDashboard.Listings,
-    },
-    {
-      dashboardType: DashboardDisplay.Tenants,
-      label: "Tenants",
-      icon: BsFillPersonFill,
-      path: RoutePathDashboard.Tenants,
-    },
-    {
-      dashboardType: DashboardDisplay.Chat,
-      label: "Chat",
-      icon: BsFillChatDotsFill,
-      path: RoutePathDashboard.Chat,
-    },
-  ];
+  const { activeDashboardPath } = props;
 
   return (
     <Flex
@@ -82,7 +79,7 @@ const Sidebar = (props: SidebarProps) => {
         align="center"
       >
         <Flex direction="column" width="100%">
-          {sideButtons.map((sideButtonData) => (
+          {sideButtonData.map((sideButtonData) => (
             <NextLink
               key={sideButtonData.path}
               href={`${RoutePath.Dashboard}/${sideButtonData.path}`}
@@ -91,12 +88,12 @@ const Sidebar = (props: SidebarProps) => {
               <Link _hover={{ textDecoration: "none" }}>
                 <SideBarButton
                   borderLeftColor={
-                    activeDashboardType === sideButtonData.dashboardType
+                    activeDashboardPath === sideButtonData.path
                       ? "brand.primary"
                       : "transparent"
                   }
                   background={
-                    activeDashboardType === sideButtonData.dashboardType
+                    activeDashboardPath === sideButtonData.path
                       ? "common.dark"
                       : "transparent"
                   }

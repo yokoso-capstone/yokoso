@@ -1,4 +1,4 @@
-export enum DashboardDisplay {
+export enum DashboardLabel {
   Listings = "Listings",
   Tenants = "Tenants",
   Chat = "Chat",

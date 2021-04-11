@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactElement } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { DashboardDisplay } from "@/src/enum";
+import { DashboardLabel } from "@/src/enum";
 import Sidebar from "@/components/sections/Sidebar";
 import DashboardHeader from "@/components/sections/DashboardHeader";
 import { Box, Grid, GridItem } from "@chakra-ui/react";
@@ -12,36 +12,43 @@ import ListingsView from "@/components/dashboard/ListingsView";
 import TenantsView from "@/components/dashboard/TenantsView";
 import ChatView from "@/components/dashboard/ChatView";
 
-// TODO: clean up coupling between dashboard name and active tab/path
-const pathToName: { [key in RoutePathDashboard]: DashboardDisplay } = {
-  [RoutePathDashboard.Listings]: DashboardDisplay.Listings,
-  [RoutePathDashboard.Tenants]: DashboardDisplay.Tenants,
-  [RoutePathDashboard.Chat]: DashboardDisplay.Chat,
+const pathData: {
+  [key in RoutePathDashboard]: {
+    label: DashboardLabel;
+    content: ReactElement;
+  };
+} = {
+  [RoutePathDashboard.Listings]: {
+    label: DashboardLabel.Listings,
+    content: <ListingsView />,
+  },
+  [RoutePathDashboard.Tenants]: {
+    label: DashboardLabel.Tenants,
+    content: <TenantsView />,
+  },
+  [RoutePathDashboard.Chat]: {
+    label: DashboardLabel.Chat,
+    content: <ChatView />,
+  },
 };
 
-const dashboardNameToComponent: {
-  [key in DashboardDisplay]: ReactElement;
-} = {
-  [DashboardDisplay.Listings]: <ListingsView />,
-  [DashboardDisplay.Tenants]: <TenantsView />,
-  [DashboardDisplay.Chat]: <ChatView />,
-};
+const pathList = Object.values(RoutePathDashboard);
 
 function DashboardPage(): ReactElement {
-  const [dashboardType, setDashboardType] = useState(DashboardDisplay.Listings);
+  const [dashboardPath, setDashboardPath] = useState(
+    RoutePathDashboard.Listings
+  );
   const router = useRouter();
-  const content = dashboardNameToComponent[dashboardType];
+  const { content, label } = pathData[dashboardPath];
 
   useEffect(() => {
     const tab =
       typeof router.query.tab === "string" ? router.query.tab : undefined;
 
     if (tab) {
-      const paths = Object.values(RoutePathDashboard);
-
-      if (paths.includes(tab as RoutePathDashboard)) {
-        setDashboardType(pathToName[tab as RoutePathDashboard]);
-      } else if (paths.includes(tab.toLowerCase() as RoutePathDashboard)) {
+      if (pathList.includes(tab as RoutePathDashboard)) {
+        setDashboardPath(tab as RoutePathDashboard);
+      } else if (pathList.includes(tab.toLowerCase() as RoutePathDashboard)) {
         router.push(`${RoutePath.Dashboard}/${tab.toLowerCase()}`);
       } else {
         router.push(`${RoutePath.Dashboard}/${RoutePathDashboard.Listings}`);
@@ -65,11 +72,11 @@ function DashboardPage(): ReactElement {
           rowSpan={[0, 0, 0, 3, 3]}
           display={["none", "none", "none", "none", "grid"]}
         >
-          <Sidebar activeDashboardType={dashboardType} />
+          <Sidebar activeDashboardPath={dashboardPath} />
         </GridItem>
 
         <GridItem rowSpan="auto">
-          <DashboardHeader title={dashboardType} />
+          <DashboardHeader title={label} />
         </GridItem>
 
         <GridItem rowSpan={3} height="100%" background="#F9FBFD" padding="4rem">
