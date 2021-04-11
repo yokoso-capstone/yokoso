@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { Heading6 } from "@/components/core/Text";
-import { ButtonSecondary } from "@/components/core/Button";
+import { ButtonPrimary } from "@/components/core/Button";
 import { Formik, Form, Field } from "formik";
 import {
   RadioGroupControl,
@@ -94,20 +94,19 @@ function CreateProperty(): ReactElement {
         <meta name="description" content="ようこそ. Discover your new home." />
       </Head>
 
-      <Flex direction="row">
-        <Flex
-          width="full"
-          align="center"
-          justifyContent="center"
-          marginLeft={["0px", "0px", "0px", "200px", "200px"]}
-          marginTop="10px"
+      <Flex width="full" justifyContent="center">
+        <Box
+          border="1px solid #E9EEF4"
+          borderRadius="8px"
+          boxShadow="md"
+          background="white"
         >
-          <Box borderWidth={1} boxShadow="lg">
-            <Box my={4} textAlign="left">
-              <Formik initialValues={initialValues} onSubmit={onSubmit}>
-                <Form>
+          <Box textAlign="left" padding={8}>
+            <Formik initialValues={initialValues} onSubmit={onSubmit}>
+              <Form>
+                <Stack spacing={8}>
                   {/* Property Type Radio Buttons */}
-                  <Heading6 textAlign="center" mb={4}>
+                  <Heading6 textAlign="center" marginTop={8}>
                     First select a property type
                   </Heading6>
                   <Box
@@ -115,48 +114,31 @@ function CreateProperty(): ReactElement {
                     borderWidth={1}
                     borderRadius={8}
                     boxShadow="md"
-                    margin={8}
+                    marginBottom={8}
                   >
                     <RadioGroupControl name="propertyType">
-                      <HStack>
-                        <Stack
-                          direction="column"
-                          // I had to use padding here because radiogroupcontrol not
-                          // working with justify, if you make it work tell me how lmao
-                          paddingLeft={["10%", "15%", "33%", "33%", "33%"]}
-                          paddingRight={["5%", "5%", "25%", "25%", "25%"]}
-                        >
-                          <Icon
-                            as={BiBuilding}
-                            alignSelf="center"
-                            boxSize={16}
-                          />
-                          <Text textAlign="center">Apartment</Text>
-                          <Radio value="Apartment" justifyContent="center" />
+                      <HStack spacing="6rem" width="100%" justify="center">
+                        <Stack align="center">
+                          <Icon as={BiBuilding} boxSize={16} />
+                          <Text>Apartment</Text>
+                          <Radio value="Apartment" />
                         </Stack>
-                        <Stack direction="column">
-                          <Icon as={BiHome} alignSelf="center" boxSize={16} />
-                          <Text textAlign="center">House</Text>
-                          <Radio value="House" justifyContent="center" />
+                        <Stack align="center">
+                          <Icon as={BiHome} boxSize={16} />
+                          <Text>House</Text>
+                          <Radio value="House" />
                         </Stack>
-                        <Stack
-                          direction="column"
-                          paddingLeft={["5%", "5%", "25%", "25%", "25%"]}
-                          paddingRight={["10%", "15%", "33%", "33%", "33%"]}
-                        >
-                          <Icon
-                            as={BiBuildingHouse}
-                            alignSelf="center"
-                            boxSize={16}
-                          />
-                          <Text textAlign="center">Townhouse</Text>
-                          <Radio value="Townhouse" justifyContent="center" />
+                        <Stack align="center">
+                          <Icon as={BiBuildingHouse} boxSize={16} />
+                          <Text>Townhouse</Text>
+                          <Radio value="Townhouse" />
                         </Stack>
                       </HStack>
                     </RadioGroupControl>
                   </Box>
+
                   {/* Rental Type Radio Buttons */}
-                  <Heading6 textAlign="center" mb={4}>
+                  <Heading6 textAlign="center">
                     Then select your rental space
                   </Heading6>
                   <Box
@@ -164,56 +146,30 @@ function CreateProperty(): ReactElement {
                     borderWidth={1}
                     borderRadius={8}
                     boxShadow="md"
-                    margin={8}
+                    marginBottom={8}
                   >
                     <RadioGroupControl name="rentalType">
-                      <HStack spacing={8}>
-                        <Stack
-                          direction="column"
-                          paddingLeft={["0%", "0%", "18%", "18%", "18%"]}
-                          paddingRight={["5%", "5%", "20%", "20%", "20%"]}
-                        >
-                          <Icon
-                            as={BsCircleFill}
-                            alignSelf="center"
-                            boxSize={16}
-                          />
-                          <Text textAlign="center">Entire Building</Text>
-                          <Radio
-                            value="Entire Building"
-                            justifyContent="center"
-                          />
+                      <HStack spacing="5rem" width="100%" justify="center">
+                        <Stack align="center">
+                          <Icon as={BsCircleFill} boxSize={16} />
+                          <Text>Entire Building</Text>
+                          <Radio value="Entire Building" />
                         </Stack>
-                        <Stack direction="column">
-                          <Icon
-                            as={BsCircleHalf}
-                            alignSelf="center"
-                            boxSize={16}
-                          />
-                          <Text textAlign="center">Partial Building</Text>
-                          <Radio
-                            value="Partial Building"
-                            justifyContent="center"
-                          />
+                        <Stack align="center">
+                          <Icon as={BsCircleHalf} boxSize={16} />
+                          <Text>Partial Building</Text>
+                          <Radio value="Partial Building" />
                         </Stack>
-                        <Stack
-                          direction="column"
-                          paddingLeft={["5%", "5%", "20%", "20%", "20%"]}
-                          paddingRight={["0%", "0%", "18%", "18%", "18%"]}
-                        >
-                          <Icon
-                            as={BiDoorOpen}
-                            alignSelf="center"
-                            boxSize={16}
-                          />
-                          <Text textAlign="center">Single Room</Text>
-                          <Radio value="Single Room" justifyContent="center" />
+                        <Stack align="center">
+                          <Icon as={BiDoorOpen} boxSize={16} />
+                          <Text>Single Room</Text>
+                          <Radio value="Single Room" />
                         </Stack>
                       </HStack>
                     </RadioGroupControl>
                   </Box>
 
-                  <Heading6 textAlign="center" mb={4}>
+                  <Heading6 textAlign="center">
                     Tell us where it is located
                   </Heading6>
                   <Box
@@ -221,8 +177,7 @@ function CreateProperty(): ReactElement {
                     borderWidth={1}
                     borderRadius={8}
                     boxShadow="md"
-                    margin={8}
-                    justifyContent="center"
+                    marginBottom={8}
                   >
                     <Stack spacing={3}>
                       <Field name="address" validate={validateLetterString}>
@@ -358,16 +313,12 @@ function CreateProperty(): ReactElement {
                       </Field>
                     </Stack>
                   </Box>
-                  <Box display="flex" justifyContent="center">
-                    <ButtonSecondary type="submit" width="50%">
-                      Next
-                    </ButtonSecondary>
-                  </Box>
-                </Form>
-              </Formik>
-            </Box>
+                  <ButtonPrimary type="submit">Next</ButtonPrimary>
+                </Stack>
+              </Form>
+            </Formik>
           </Box>
-        </Flex>
+        </Box>
       </Flex>
     </>
   );

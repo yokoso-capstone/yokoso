@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { Heading6 } from "@/components/core/Text";
-import { ButtonSecondary } from "@/components/core/Button";
+import { ButtonPrimary } from "@/components/core/Button";
 import { Formik, Form, Field } from "formik";
 import DatePicker from "@/components/core/DatePicker";
 import {
@@ -75,7 +75,7 @@ const onSubmit = (values: any) => {
 };
 
 function CreateProperty(): ReactElement {
-  const [availabilityDate, setAvailabilityDate] = useState(undefined);
+  const [availabilityDate, setAvailabilityDate] = useState<Date>();
   return (
     <>
       <Head>
@@ -83,20 +83,19 @@ function CreateProperty(): ReactElement {
         <meta name="description" content="ようこそ. Discover your new home." />
       </Head>
 
-      <Flex direction="row">
-        <Flex
-          width="full"
-          align="center"
-          justifyContent="center"
-          marginLeft={["0px", "0px", "0px", "200px", "200px"]}
-          marginTop="10px"
+      <Flex width="full" justifyContent="center">
+        <Box
+          border="1px solid #E9EEF4"
+          borderRadius="8px"
+          boxShadow="md"
+          background="white"
         >
-          <Box borderWidth={1} boxShadow="lg">
-            <Box my={4} textAlign="left">
-              <Formik initialValues={initialValues} onSubmit={onSubmit}>
-                {({ setFieldValue }) => (
-                  <Form>
-                    <Heading6 textAlign="center" mb={4}>
+          <Box textAlign="left" padding={8}>
+            <Formik initialValues={initialValues} onSubmit={onSubmit}>
+              {({ setFieldValue, isSubmitting }) => (
+                <Form>
+                  <Stack spacing={8}>
+                    <Heading6 textAlign="center" marginTop={8}>
                       Enter Details
                     </Heading6>
                     <Box
@@ -104,7 +103,7 @@ function CreateProperty(): ReactElement {
                       borderWidth={1}
                       borderRadius={8}
                       boxShadow="md"
-                      margin={8}
+                      marginBottom={8}
                     >
                       <Stack spacing={5}>
                         <Stack direction="row" spacing={5}>
@@ -202,16 +201,14 @@ function CreateProperty(): ReactElement {
                         </Stack>
                       </Stack>
                     </Box>
-                    <Heading6 textAlign="center" mb={4}>
-                      Define Lease Terms
-                    </Heading6>
+
+                    <Heading6 textAlign="center">Define Lease Terms</Heading6>
                     <Box
                       p={8}
                       borderWidth={1}
                       borderRadius={8}
                       boxShadow="md"
-                      margin={8}
-                      justifyContent="center"
+                      marginBottom={8}
                     >
                       <Stack spacing={5}>
                         <Stack direction="row" spacing={5}>
@@ -282,7 +279,7 @@ function CreateProperty(): ReactElement {
                                 <DatePicker
                                   {...field}
                                   selectedDate={availabilityDate}
-                                  onChange={(d: any) => {
+                                  onChange={(d: Date) => {
                                     setAvailabilityDate(d);
                                     setFieldValue("availabilityDate", d);
                                   }}
@@ -316,7 +313,8 @@ function CreateProperty(): ReactElement {
                         </Box>
                       </Stack>
                     </Box>
-                    <Heading6 textAlign="center" mb={4}>
+
+                    <Heading6 textAlign="center">
                       Select All Features Included
                     </Heading6>
                     <Box
@@ -324,8 +322,7 @@ function CreateProperty(): ReactElement {
                       borderWidth={1}
                       borderRadius={8}
                       boxShadow="md"
-                      margin={8}
-                      justifyContent="center"
+                      marginBottom={8}
                     >
                       <Stack direction="row">
                         <CheckboxContainer
@@ -394,7 +391,8 @@ function CreateProperty(): ReactElement {
                         </Field>
                       </Stack>
                     </Box>
-                    <Heading6 textAlign="center" mb={4}>
+
+                    <Heading6 textAlign="center">
                       Select All Utilities Included
                     </Heading6>
                     <Box
@@ -402,8 +400,7 @@ function CreateProperty(): ReactElement {
                       borderWidth={1}
                       borderRadius={8}
                       boxShadow="md"
-                      margin={8}
-                      justifyContent="center"
+                      marginBottom={8}
                     >
                       <Stack direction="row">
                         <CheckboxContainer
@@ -457,7 +454,8 @@ function CreateProperty(): ReactElement {
                         </Field>
                       </Stack>
                     </Box>
-                    <Heading6 textAlign="center" mb={4}>
+
+                    <Heading6 textAlign="center">
                       Describe Your Property
                     </Heading6>
                     <Box
@@ -465,8 +463,7 @@ function CreateProperty(): ReactElement {
                       borderWidth={1}
                       borderRadius={8}
                       boxShadow="md"
-                      margin={8}
-                      justifyContent="center"
+                      marginBottom={8}
                     >
                       <Field name="propertyDescription">
                         {({ field, form }: any) => (
@@ -486,7 +483,8 @@ function CreateProperty(): ReactElement {
                         )}
                       </Field>
                     </Box>
-                    <Heading6 textAlign="center" mb={4}>
+
+                    <Heading6 textAlign="center">
                       Upload Your Property Photos
                     </Heading6>
                     <Dropzone
@@ -501,8 +499,7 @@ function CreateProperty(): ReactElement {
                           borderWidth={1}
                           borderRadius={8}
                           boxShadow="md"
-                          margin={8}
-                          justifyContent="center"
+                          marginBottom={8}
                           borderColor="green"
                         >
                           <input {...getInputProps()} />
@@ -512,23 +509,15 @@ function CreateProperty(): ReactElement {
                         </Box>
                       )}
                     </Dropzone>
-                    <Box display="flex" justifyContent="center">
-                      <ButtonSecondary type="submit" width="50%">
-                        Next
-                      </ButtonSecondary>
-                    </Box>
-                    {/* Debugging tools
-                    <Box as="pre" marginY={10}>
-                      {JSON.stringify(values, null, 2)}
-                      <br />
-                      {JSON.stringify(errors, null, 2)}
-                    </Box> */}
-                  </Form>
-                )}
-              </Formik>
-            </Box>
+                    <ButtonPrimary type="submit" isLoading={isSubmitting}>
+                      Submit Listing
+                    </ButtonPrimary>
+                  </Stack>
+                </Form>
+              )}
+            </Formik>
           </Box>
-        </Flex>
+        </Box>
       </Flex>
     </>
   );
