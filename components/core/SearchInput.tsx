@@ -20,16 +20,14 @@ const geocoder = new MapboxGeocoder({
 function SearchInput(props: SearchInputProps): ReactElement {
   const [searchCoordinates, setSearchCoordinates] = useState();
 
-  const {
-    placeholder,
-    ariaLabel,
-    onSubmit = () => window.alert(JSON.stringify(searchCoordinates, null, 2)),
-  } = props;
+  const { placeholder, ariaLabel, onSubmit } = props;
 
   useEffect(() => {
     geocoder.addTo("#location");
+    geocoder.setPlaceholder(placeholder);
     geocoder.on("result", function ({ result }) {
-      setSearchCoordinates(result.center);
+      setSearchCoordinates(result);
+      console.log(searchCoordinates);
     });
   }, []);
 

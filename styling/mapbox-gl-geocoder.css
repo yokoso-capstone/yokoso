@@ -6,9 +6,10 @@ Basics .mapboxgl-ctrl-geocoder,
 }
 
 .mapboxgl-ctrl-geocoder {
-  font-size: 16px;
+  font-size: 18px;
   line-height: 24px;
-  font-family: "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
+  font-family: Helvetica, sans-serif;
+  fontweight: "extrabold";
   position: relative;
   background-color: transparent;
   min-width: 100%;
@@ -23,7 +24,7 @@ Basics .mapboxgl-ctrl-geocoder,
   height: 100%;
   background-color: transparent;
   margin: 0;
-  color: rgba(0, 0, 0, 0.75);
+  color: black;
   padding: 6px 45px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -37,7 +38,7 @@ Basics .mapboxgl-ctrl-geocoder,
 
 .mapboxgl-ctrl-geocoder--input:focus {
   color: #fff; /* fallback */
-  color: rgba(0, 0, 0, 0.75);
+  color: black;
   outline: 0;
   box-shadow: none;
 }
