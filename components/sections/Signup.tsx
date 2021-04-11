@@ -20,7 +20,8 @@ import {
 } from "@chakra-ui/react";
 import { Body2, Heading5 } from "@/components/core/Text";
 import { auth, firestoreTimestamp, serverTimestamp } from "@/src/firebase";
-import { usersPrivate } from "@/src/api/collections";
+import { usersPrivate, usersPublic } from "@/src/api/collections";
+import { UserPrivate, UserPublic } from "@/src/api/types";
 
 const helperMsg =
   "Password must contain 1 number, 1 uppercase character, 1 lowercase character and be 8 characters or more.";
@@ -126,10 +127,24 @@ function Signup(props: SignupProps) {
               const uid = userCredential.user?.uid;
 
               if (uid) {
-                usersPrivate.doc(uid).set({
-                  dob: dob && firestoreTimestamp.fromDate(dob),
+                const userPublicData: UserPublic = {
+                  firstName: values.firstName,
+                  lastName: values.lastName,
+                  // TODO:
+                  profilePicture: "https://placekitten.com/400/400",
                   createdAt: serverTimestamp,
-                });
+                };
+
+                const userPrivateData: UserPrivate = {
+                  // TODO: improve dob handling
+                  dob: firestoreTimestamp.fromDate(dob || new Date()),
+                  createdAt: serverTimestamp,
+                };
+
+                await Promise.all([
+                  usersPublic.doc(uid).set(userPublicData),
+                  usersPrivate.doc(uid).set(userPrivateData),
+                ]);
 
                 actions.setSubmitting(false);
                 onClose();

@@ -1,5 +1,7 @@
 import React, { useEffect, useState, ReactElement } from "react";
+import { useRouter } from "next/router";
 import {
+  useToast,
   FormLabel,
   FormControl,
   Input,
@@ -33,14 +35,62 @@ import {
 import { BsCircleFill, BsCircleHalf } from "react-icons/bs";
 import DatePicker from "@/components/core/DatePicker";
 import Dropzone from "react-dropzone";
+import {
+  Listing,
+  UserPublic,
+  PropertyType,
+  RentalSpace,
+  LeaseType,
+  FurnishedStatus,
+  Frequency,
+} from "@/src/api/types";
+import { listings, usersPublic } from "@/src/api/collections";
+import { auth, firestoreTimestamp, serverTimestamp } from "@/src/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import RoutePath from "@/src/routes";
+
+type Part0DataType = {
+  propertyType: PropertyType;
+  rentalType: RentalSpace;
+  address: string;
+  unitNum: string;
+  hideUnit: boolean;
+  country: string;
+  province: string;
+  postalCode: string;
+  city: string;
+};
+
+type Part1DataType = {
+  size: number | string;
+  privateBathrooms: string;
+  sharedBathrooms: string;
+  occupancy: string;
+  furnishedStatus: FurnishedStatus | "";
+  smokingAllowed: boolean;
+  petsAllowed: boolean;
+  rentalPrice: string;
+  paymentFrequency: Frequency | "";
+  leaseType: LeaseType | "";
+  availabilityDate: string;
+  minLeaseDuration: Frequency | "";
+  features: string[];
+  featureDescription: string;
+  utilities: string[];
+  utilitiesDescription: string;
+  propertyTitle: string;
+  propertyDescription: string;
+  files: File[];
+};
 
 function CreateListingView(): ReactElement {
   const [partNum, setPartNum] = useState(0);
-  // @ts-ignore
-  const [part0Data, setPart0Data] = useState({});
-  // @ts-ignore
-  const [part1Data, setPart1Data] = useState({});
+  const [part0Data, setPart0Data] = useState<Part0DataType>();
+  const [part1Data, setPart1Data] = useState<Part1DataType>();
   const [availabilityDate, setAvailabilityDate] = useState<Date>();
+  const [user] = useAuthState(auth);
+  const router = useRouter();
+  const toast = useToast();
 
   const content = [
     <Part0 key={0} setPartNum={setPartNum} setPart0Data={setPart0Data} />,
@@ -56,6 +106,93 @@ function CreateListingView(): ReactElement {
     window.scrollTo(0, 0);
   }, [partNum]);
 
+  useEffect(() => {
+    const submit = async () => {
+      // TODO: handle user state (if still loading or some error)
+      if (
+        user &&
+        part0Data &&
+        part1Data &&
+        part1Data.furnishedStatus &&
+        part1Data.paymentFrequency &&
+        part1Data.leaseType &&
+        part1Data.minLeaseDuration &&
+        availabilityDate
+      ) {
+        const userPublic = (await (
+          await usersPublic.doc(user.uid).get()
+        ).data()) as UserPublic;
+
+        const listing: Listing = {
+          owner: { ...userPublic, uid: user.uid },
+          visibility: "public",
+          location: {
+            address: part0Data.address,
+            unitNumber: part0Data.unitNum,
+            hideUnitNumber: part0Data.hideUnit,
+            postalCode: part0Data.postalCode,
+            cityKey: part0Data.city.toLowerCase(),
+            cityName: part0Data.city,
+            province: part0Data.province,
+            country: part0Data.country,
+            // TODO: do for real (and use geolocation type)
+            coordinate: {
+              latitude: 0,
+              longitude: 0,
+            },
+          },
+          details: {
+            title: part1Data.propertyTitle,
+            description: part1Data.propertyDescription,
+            propertyType: part0Data.propertyType,
+            rentalSpace: part0Data.rentalType,
+            rentalSize: Number(part1Data.size),
+            privateBathrooms: part1Data.privateBathrooms,
+            sharedBathrooms: part1Data.sharedBathrooms,
+            maxOccupancy: part1Data.occupancy,
+            furnished: part1Data.furnishedStatus,
+            smokingAllowed: part1Data.smokingAllowed,
+            petsAllowed: part1Data.petsAllowed,
+            numBedrooms: 69, // TODO:
+            numBaths: 420, // TODO:
+            numBeds: 7, // TODO:
+          },
+          lease: {
+            price: Number(part1Data.rentalPrice),
+            paymentFrequency: part1Data.paymentFrequency,
+            type: part1Data.leaseType,
+            availability: firestoreTimestamp.fromDate(availabilityDate),
+            minDuration: part1Data.minLeaseDuration,
+          },
+          features: part1Data.features,
+          utilities: part1Data.utilities,
+          // TODO:
+          images: [
+            "https://placekitten.com/400/400",
+            "https://placekitten.com/800/800",
+          ],
+          applicants: 0,
+          createdAt: serverTimestamp,
+        };
+
+        try {
+          const { id: listingId } = await listings.add(listing);
+          router.push(`${RoutePath.Listings}/${listingId}`);
+        } catch (error) {
+          toast({
+            title: "Something went wrong",
+            description: "An error occurred. Please try again later.",
+            status: "error",
+            duration: 4000,
+            isClosable: true,
+          });
+        }
+      }
+    };
+
+    submit();
+  }, [router, toast, availabilityDate, user, part0Data, part1Data]);
+
   return content;
 }
 
@@ -66,6 +203,16 @@ function validateLetterString(string: any) {
 
   if (!string || !re.test(string)) {
     error = "Please enter a valid input - no numbers.";
+  }
+
+  return error;
+}
+
+function validateCompletedString(string: any) {
+  let error;
+
+  if (!string) {
+    error = "Please fill in this field.";
   }
 
   return error;
@@ -104,7 +251,7 @@ function validateAvailabilityDate(date: any) {
   return error;
 }
 
-const initialValuesPart0 = {
+const initialValuesPart0: Part0DataType = {
   propertyType: "Apartment",
   rentalType: "Entire Building",
   address: "",
@@ -116,7 +263,7 @@ const initialValuesPart0 = {
   city: "",
 };
 
-const initialValuesPart1 = {
+const initialValuesPart1: Part1DataType = {
   size: "",
   privateBathrooms: "",
   sharedBathrooms: "",
@@ -129,17 +276,18 @@ const initialValuesPart1 = {
   leaseType: "",
   availabilityDate: "",
   minLeaseDuration: "",
-  features: [],
+  features: [] as string[],
   featureDescription: "",
-  utilities: [],
+  utilities: [] as string[],
   utilitiesDescription: "",
+  propertyTitle: "",
   propertyDescription: "",
-  files: [] as any,
+  files: [] as File[],
 };
 
 const Part0 = (props: {
   setPartNum: React.Dispatch<React.SetStateAction<number>>;
-  setPart0Data: React.Dispatch<React.SetStateAction<Record<string, unknown>>>;
+  setPart0Data: React.Dispatch<React.SetStateAction<Part0DataType | undefined>>;
 }) => {
   const { setPartNum, setPart0Data } = props;
 
@@ -382,7 +530,7 @@ const Part0 = (props: {
 const Part1 = (props: {
   availabilityDate: Date | undefined;
   setAvailabilityDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
-  setPart1Data: React.Dispatch<React.SetStateAction<Record<string, unknown>>>;
+  setPart1Data: React.Dispatch<React.SetStateAction<Part1DataType | undefined>>;
 }) => {
   const { availabilityDate, setAvailabilityDate, setPart1Data } = props;
 
@@ -397,10 +545,8 @@ const Part1 = (props: {
         <Box textAlign="left" padding={8}>
           <Formik
             initialValues={initialValuesPart1}
-            onSubmit={(values, actions) => {
+            onSubmit={(values) => {
               setPart1Data(values);
-              // TODO: submit to db
-              actions.setSubmitting(false);
             }}
           >
             {({ setFieldValue, isSubmitting }) => (
@@ -748,13 +894,38 @@ const Part1 = (props: {
                   </Box>
 
                   <Heading6 textAlign="center">Describe Your Property</Heading6>
-                  <Box
+                  <Stack
+                    spacing={5}
                     p={8}
                     borderWidth={1}
                     borderRadius={8}
                     boxShadow="md"
                     marginBottom={8}
                   >
+                    <Field
+                      name="propertyTitle"
+                      validate={validateCompletedString}
+                    >
+                      {({ field, form }: any) => (
+                        <FormControl
+                          isInvalid={
+                            form.errors.propertyTitle &&
+                            form.touched.propertyTitle
+                          }
+                        >
+                          <FormLabel>Listing title</FormLabel>
+                          <Input
+                            {...field}
+                            variant="flushed"
+                            borderBottomColor="gray"
+                            isRequired
+                          />
+                          <FormErrorMessage>
+                            {form.errors.propertyTitle}
+                          </FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
                     <Field name="propertyDescription">
                       {({ field, form }: any) => (
                         <FormControl>
@@ -772,7 +943,7 @@ const Part1 = (props: {
                         </FormControl>
                       )}
                     </Field>
-                  </Box>
+                  </Stack>
 
                   <Heading6 textAlign="center">
                     Upload Your Property Photos

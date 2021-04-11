@@ -10,6 +10,25 @@ export type FirestoreFieldValue = firebase.firestore.FieldValue;
 
 export type FirestoreTimestamp = firebase.firestore.Timestamp;
 
+export type Visibility = "public" | "private";
+
+export type PropertyType = "Apartment" | "House" | "Townhouse";
+
+export type Frequency =
+  | "Monthly"
+  | "Semester (4 Months)"
+  | "Two Semesters (8 Months)"
+  | "Yearly";
+
+export type LeaseType = "Sublet" | "Lease";
+
+export type RentalSpace =
+  | "Entire Building"
+  | "Partial Building"
+  | "Single Room";
+
+export type FurnishedStatus = "Unfurnished" | "Furnished" | "Semi-Furnished";
+
 export type UserPublic = {
   firstName: string;
   lastName: string;
@@ -20,8 +39,8 @@ export type UserPublic = {
 
 export type UserPrivate = {
   address?: string;
-  dob: string;
-  documents: {
+  dob: timestamp;
+  documents?: {
     [title: string]: string;
   };
   createdAt: timestamp;
@@ -30,7 +49,7 @@ export type UserPrivate = {
 export type Listing = {
   id?: string;
   owner: UserPublic & { uid: string };
-  visibility: "public" | "private";
+  visibility: Visibility;
   location: {
     address: string;
     unitNumber?: string;
@@ -48,13 +67,13 @@ export type Listing = {
   details: {
     title: string;
     description: string;
-    propertyType: "apartment" | "house" | "townhouse";
-    rentalSpace: "entire-building" | "partial-building" | "single-room";
+    propertyType: PropertyType;
+    rentalSpace: RentalSpace;
     rentalSize: number;
     privateBathrooms: string;
     sharedBathrooms: string;
     maxOccupancy: string;
-    furnished: "unfurnished" | "furnished" | "semi-furnished";
+    furnished: FurnishedStatus;
     smokingAllowed: boolean;
     petsAllowed: boolean;
     numBedrooms: number;
@@ -63,34 +82,13 @@ export type Listing = {
   };
   lease: {
     price: number;
-    paymentFrequency: "monthly" | "4-months" | "8-months" | "yearly";
-    type: "sublet" | "lease";
+    paymentFrequency: Frequency;
+    type: LeaseType;
     availability: timestamp;
-    minDuration: "monthly" | "4-months" | "8-months" | "yearly";
+    minDuration: Frequency;
   };
-  features: {
-    bathtub: boolean;
-    bbq: boolean;
-    carpets: boolean;
-    laundry: boolean;
-    dishwasher: boolean;
-    fridge: boolean;
-    jacuzzi: boolean;
-    microwave: boolean;
-    showRemoval: boolean;
-    tv: boolean;
-    wheelchairAccessible: boolean;
-    additional: string;
-  };
-  utilities: {
-    cable: boolean;
-    electricity: boolean;
-    heating: boolean;
-    hydro: boolean;
-    internet: boolean;
-    naturalGas: boolean;
-    additional: string;
-  };
+  features: string[];
+  utilities: string[];
   images: string[];
   applicants: number;
   createdAt: timestamp;

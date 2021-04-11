@@ -44,9 +44,14 @@ export const getServerSideProps = async (
       props.createdAt = (props.createdAt as FirestoreTimestamp).toMillis();
     }
 
-    if (props.owner && props.owner.createdAt) {
+    if (props.owner?.createdAt) {
       props.owner.createdAt = (props.owner
         .createdAt as FirestoreTimestamp).toMillis();
+    }
+
+    if (props.lease?.availability) {
+      props.lease.availability = (props.lease
+        .availability as FirestoreTimestamp).toMillis();
     }
 
     const result: GetServerSidePropsResult<typeof props> = { props };
