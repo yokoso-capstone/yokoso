@@ -1,4 +1,4 @@
-Basics .mapboxgl-ctrl-geocoder,
+.mapboxgl-ctrl-geocoder,
 .mapboxgl-ctrl-geocoder *,
 .mapboxgl-ctrl-geocoder *:after,
 .mapboxgl-ctrl-geocoder *:before {
@@ -8,7 +8,7 @@ Basics .mapboxgl-ctrl-geocoder,
 .mapboxgl-ctrl-geocoder {
   font-size: 16px;
   line-height: 24px;
-  font-family: Helvetica, sans-serif;
+  font-family: "Inter", Arial, Helvetica, sans-serif;
   position: relative;
   background-color: transparent;
   min-width: 100%;
@@ -24,7 +24,7 @@ Basics .mapboxgl-ctrl-geocoder,
   margin: 0;
   color: black;
   width: 100%;
-  padding: 6px 20px;
+  padding: 6px 48px 6px 24px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
@@ -134,10 +134,7 @@ Basics .mapboxgl-ctrl-geocoder,
 }
 
 .mapboxgl-ctrl-geocoder--icon-close {
-  width: 20px;
-  height: 20px;
-  margin-top: 8px;
-  margin-right: 3px;
+  display: none;
 }
 
 .mapboxgl-ctrl-geocoder--button:hover .mapboxgl-ctrl-geocoder--icon-close {
@@ -211,10 +208,6 @@ Basics .mapboxgl-ctrl-geocoder,
     height: 20px;
     top: 12px;
     margin-left: 2px;
-  }
-
-  .mapboxgl-ctrl-geocoder--input {
-    padding: 6px 35px;
   }
 
   .mapboxgl-ctrl-geocoder--icon-loading {
