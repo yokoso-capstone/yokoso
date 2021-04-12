@@ -926,7 +926,10 @@ const Part1 = (props: {
                         </FormControl>
                       )}
                     </Field>
-                    <Field name="propertyDescription">
+                    <Field
+                      name="propertyDescription"
+                      validate={validateCompletedString}
+                    >
                       {({ field, form }: any) => (
                         <FormControl>
                           <FormLabel>Add Description</FormLabel>
@@ -936,6 +939,7 @@ const Part1 = (props: {
                             placeholder="Include additional information on your property."
                             maxLength="2000"
                             height="200px"
+                            isRequired
                           />
                           <FormErrorMessage>
                             {form.errors.propertyDescription}
