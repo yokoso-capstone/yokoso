@@ -34,7 +34,7 @@ function SearchInput(props: SearchInputProps): ReactElement {
   return (
     <>
       <Flex
-        borderRadius="20px"
+        borderRadius="50px"
         height="48px"
         bg="white"
         border="1px"
