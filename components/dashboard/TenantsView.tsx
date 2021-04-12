@@ -1,10 +1,10 @@
-import { ReactElement } from "react";
+import { useMemo, useState, ReactElement } from "react";
 import { ButtonSecondary } from "@/components/core/Button";
 import { DashboardCard } from "@/components/core/Layout";
 import { TabPrimary } from "@/components/core/Tabs";
-import { ListingType, testListing } from "@/src/types";
 import DashboardSearchInput from "@/components/core/DashboardSearchInput";
 import {
+  Image,
   Tabs,
   TabList,
   TabPanels,
@@ -18,72 +18,55 @@ import {
   Th,
   Td,
 } from "@chakra-ui/react";
-import {
-  PropertyImage,
-  MultiWeightText,
-  PropertyDes,
-} from "@/components/sections/Listings";
+import { TenantEntry } from "@/src/api/types";
+import { auth } from "@/src/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { usersPrivate, CollectionName } from "@/src/api/collections";
+import { useCollectionOnce } from "react-firebase-hooks/firestore";
 
-interface ListingProps {
-  listings: ListingType[];
+enum TimePeriod {
+  Past = "past",
+  Current = "current",
+  Upcoming = "upcoming",
 }
 
-const TenantListingTable = (props: ListingProps) => {
-  const { listings } = props;
-  return (
-    <Table>
-      <Thead>
-        <Tr>
-          <Th display={["none", "none", "none", "block", "block"]}>Image</Th>
-          <Th>Property</Th>
-          <Th>Price</Th>
-          <Th>Date</Th>
-          <Th />
-        </Tr>
-      </Thead>
-      <Tbody>
-        {listings.map((listing: ListingType, index) => (
-          <Tr key={index}>
-            <Td display={["none", "none", "none", "block", "block"]}>
-              <PropertyImage image={listing.imageUrl} size="150px" />
-            </Td>
-            <Td minWidth="250px">
-              <PropertyDes
-                location={listing.location.city}
-                title={`${listing.title.substring(0, 30)}...`}
-                numBeds={listing.numBeds}
-                numBaths={listing.numBaths}
-              />
-            </Td>
-            <Td>
-              <MultiWeightText
-                bold={listing.price.toString()}
-                normal="/month"
-              />
-            </Td>
-            <Td>
-              <Box>Date Placeholder</Box>
-            </Td>
-            <Td>
-              <ButtonSecondary>Cancel</ButtonSecondary>
-            </Td>
-          </Tr>
-        ))}
-      </Tbody>
-    </Table>
-  );
-};
-
-const listingData = [testListing, testListing, testListing];
-
 function TenantsView(): ReactElement {
+  // @ts-ignore
+  const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>(
+    TimePeriod.Past
+  );
+
+  const [user] = useAuthState(auth);
+  // TODO: query based on time period
+  const query = useMemo(
+    () =>
+      user
+        ? usersPrivate.doc(user.uid).collection(CollectionName.Tenants)
+        : undefined,
+    [user]
+  );
+  const [snapshot] = useCollectionOnce(query);
+  const tenants = snapshot?.docs.map(
+    (doc) =>
+      (({
+        ...doc.data(),
+        id: doc.id,
+      } as unknown) as TenantEntry)
+  );
+
   return (
     <DashboardCard>
       <Tabs isLazy>
         <TabList>
-          <TabPrimary>Past</TabPrimary>
-          <TabPrimary>Current</TabPrimary>
-          <TabPrimary>Upcoming</TabPrimary>
+          <TabPrimary onClick={() => setSelectedPeriod(TimePeriod.Past)}>
+            Past
+          </TabPrimary>
+          <TabPrimary onClick={() => setSelectedPeriod(TimePeriod.Current)}>
+            Current
+          </TabPrimary>
+          <TabPrimary onClick={() => setSelectedPeriod(TimePeriod.Upcoming)}>
+            Upcoming
+          </TabPrimary>
           <Spacer />
           <Box marginTop="8px" marginBottom="16px">
             <DashboardSearchInput />
@@ -92,18 +75,54 @@ function TenantsView(): ReactElement {
 
         <TabPanels>
           <TabPanel>
-            <TenantListingTable listings={listingData} />
+            <TenantTable tenants={tenants} />
           </TabPanel>
           <TabPanel>
-            <TenantListingTable listings={listingData} />
+            <TenantTable tenants={tenants} />
           </TabPanel>
           <TabPanel>
-            <TenantListingTable listings={listingData} />
+            <TenantTable tenants={tenants} />
           </TabPanel>
         </TabPanels>
       </Tabs>
     </DashboardCard>
   );
 }
+
+const TenantTable = (props: { tenants?: TenantEntry[] }) => {
+  const { tenants } = props;
+
+  return (
+    <Table>
+      <Thead>
+        <Tr>
+          <Th>Photo</Th>
+          <Th>First name</Th>
+          <Th>Last name</Th>
+          <Th>Rentals and durations</Th>
+        </Tr>
+      </Thead>
+      <Tbody>
+        {tenants?.map((tenant, index) => (
+          <Tr key={index}>
+            <Td>
+              <Image
+                src={tenant.profilePicture}
+                boxSize="64px"
+                objectFit="cover"
+                borderRadius="full"
+              />
+            </Td>
+            <Td>{tenant.firstName}</Td>
+            <Td>{tenant.lastName}</Td>
+            <Td>
+              <ButtonSecondary>View Details</ButtonSecondary>
+            </Td>
+          </Tr>
+        ))}
+      </Tbody>
+    </Table>
+  );
+};
 
 export default TenantsView;

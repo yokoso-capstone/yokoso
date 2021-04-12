@@ -4,6 +4,7 @@ export enum CollectionName {
   ChatRooms = "chat-rooms",
   Listings = "listings",
   Messages = "messages",
+  Tenants = "tenants",
   UsersPrivate = "users-private",
   UsersPublic = "users-public",
 }

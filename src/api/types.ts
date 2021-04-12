@@ -29,6 +29,15 @@ export type RentalSpace =
 
 export type FurnishedStatus = "Unfurnished" | "Furnished" | "Semi-Furnished";
 
+export type TenantEntry = UserPublic & {
+  rentals: {
+    [listingId: string]: {
+      start: timestamp;
+      end: timestamp;
+    };
+  };
+};
+
 export type UserPublic = {
   firstName: string;
   lastName: string;
@@ -42,6 +51,9 @@ export type UserPrivate = {
   dob: timestamp;
   documents?: {
     [title: string]: string;
+  };
+  tenants?: {
+    [userId: string]: TenantEntry;
   };
   createdAt: timestamp;
 };

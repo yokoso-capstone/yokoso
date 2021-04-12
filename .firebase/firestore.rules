@@ -39,6 +39,10 @@ service cloud.firestore {
         request.resource.data["createdAt"] == request.time;
       allow update: if verifyUser(userId) &&
         !request.resource.data.keys().hasAny(["createdAt"]);
+
+      match /tenants/{tenantId} {
+        allow read: if verifyUser(userId);
+      }
     }
 
     match /listings/{listingId} {
