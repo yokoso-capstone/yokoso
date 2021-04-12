@@ -264,8 +264,8 @@ function SearchPage(): ReactElement {
             maxW="100%"
           >
             <Map
-              defaultLat={center ? Number(center[0]) : 0}
-              defaultLong={center ? Number(center[1]) : 0}
+              defaultLat={center ? Number(center[1]) : 0}
+              defaultLong={center ? Number(center[0]) : 0}
               zoom={12}
               listings={listings}
             />
