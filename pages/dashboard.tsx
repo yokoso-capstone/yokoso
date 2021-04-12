@@ -234,7 +234,8 @@ function DashboardPage(): ReactElement {
           <Center bg="#F9FBFD" h="100%">
             <Flex
               borderRadius="8px"
-              boxShadow="base"
+              border="1px solid #E9EEF4"
+              boxShadow="2xl"
               w={["100%", "100%", "100%", "95%", "95%"]}
               h={["100%", "100%", "100%", "80vh", "80vh"]}
               bg="#FFFFFF"
