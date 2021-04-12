@@ -19,7 +19,12 @@ import {
   FormErrorMessage,
 } from "@chakra-ui/react";
 import { Body2, Heading5 } from "@/components/core/Text";
-import { auth, firestoreTimestamp, serverTimestamp } from "@/src/firebase";
+import {
+  auth,
+  firestore,
+  firestoreTimestamp,
+  serverTimestamp,
+} from "@/src/firebase";
 import { usersPrivate, usersPublic } from "@/src/api/collections";
 import { UserPrivate, UserPublic } from "@/src/api/types";
 
@@ -141,10 +146,12 @@ function Signup(props: SignupProps) {
                   createdAt: serverTimestamp,
                 };
 
-                await Promise.all([
-                  usersPublic.doc(uid).set(userPublicData),
-                  usersPrivate.doc(uid).set(userPrivateData),
-                ]);
+                const batch = firestore.batch();
+
+                batch.set(usersPublic.doc(uid), userPublicData);
+                batch.set(usersPrivate.doc(uid), userPrivateData);
+
+                await batch.commit();
 
                 actions.setSubmitting(false);
                 onClose();
