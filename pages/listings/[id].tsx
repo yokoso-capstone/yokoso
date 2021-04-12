@@ -10,7 +10,16 @@ import { ContainerPrimary } from "@/components/core/Layout";
 import { Body1, Caption, Heading4 } from "@/components/core/Text";
 import ImageCarousel from "@/components/sections/ImageCarousel";
 import ListingContactCard from "@/components/sections/ListingContactCard";
-import { Box, Button, Divider, Grid, HStack, Stack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Divider,
+  Grid,
+  HStack,
+  ListItem,
+  Stack,
+  UnorderedList,
+} from "@chakra-ui/react";
 import { firestoreAdmin } from "@/src/firebaseAdmin";
 import { CollectionName } from "@/src/api/collections";
 import { FirestoreTimestamp, Listing } from "@/src/api/types";
@@ -69,8 +78,20 @@ function ListingPage(
   const {
     owner: { firstName, lastName, profilePicture, createdAt },
     location: { cityName },
-    details: { title, description, numBedrooms, numBeds, numBaths },
+    details: {
+      title,
+      description,
+      propertyType,
+      rentalSpace,
+      rentalSize,
+      maxOccupancy,
+      numBedrooms,
+      numBeds,
+      numBaths,
+    },
+    features,
     lease: { price },
+    utilities,
     images,
   } = props;
   const maxDescriptionCharacters = 300;
@@ -145,12 +166,38 @@ function ListingPage(
               )}
             </Box>
             <Divider />
-            <Box height="3in">
-              <Heading4>Lease details</Heading4>
+            <Box>
+              <Heading4 marginBottom="2rem">Lease details</Heading4>
+              <UnorderedList>
+                <Stack>
+                  <ListItem>Property type: {propertyType}</ListItem>
+                  <ListItem>Space: {rentalSpace}</ListItem>
+                  <ListItem>Area: {rentalSize} sq ft</ListItem>
+                  <ListItem>Max occupancy: {maxOccupancy}</ListItem>
+                </Stack>
+              </UnorderedList>
             </Box>
             <Divider />
-            <Box height="3in">
-              <Heading4>Amenities</Heading4>
+            <Box>
+              <Heading4 marginBottom="2rem">Amenities</Heading4>
+              <UnorderedList>
+                <Stack>
+                  {features.map((feature, index) => (
+                    <ListItem key={index}>{camelToSentence(feature)}</ListItem>
+                  ))}
+                </Stack>
+              </UnorderedList>
+            </Box>
+            <Divider />
+            <Box>
+              <Heading4 marginBottom="2rem">Utilities</Heading4>
+              <UnorderedList>
+                <Stack>
+                  {utilities.map((utility, index) => (
+                    <ListItem key={index}>{camelToSentence(utility)}</ListItem>
+                  ))}
+                </Stack>
+              </UnorderedList>
             </Box>
             <Divider />
             <Box height="3in">
@@ -178,6 +225,14 @@ function ListingPage(
       </ContainerPrimary>
     </>
   );
+}
+
+// TODO: use less hacky workaround
+function camelToSentence(str: string) {
+  const result = str.replace(/([A-Z])/g, " $1");
+  const final = result.charAt(0).toUpperCase() + result.slice(1);
+
+  return final;
 }
 
 export default ListingPage;

@@ -164,9 +164,9 @@ function CreateListingView(): ReactElement {
               furnished: part1Data.furnishedStatus,
               smokingAllowed: part1Data.smokingAllowed,
               petsAllowed: part1Data.petsAllowed,
-              numBedrooms: 69, // TODO:
-              numBaths: 420, // TODO:
-              numBeds: 7, // TODO:
+              numBedrooms: 2, // TODO:
+              numBaths: 1, // TODO:
+              numBeds: 2, // TODO:
             },
             lease: {
               price: Number(part1Data.rentalPrice),
