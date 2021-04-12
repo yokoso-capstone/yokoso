@@ -1,11 +1,12 @@
-import { ReactElement } from "react";
+import { useMemo, useState, ReactElement } from "react";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { ButtonPrimary, ButtonSecondary } from "@/components/core/Button";
 import { DashboardCard } from "@/components/core/Layout";
 import { TabPrimary } from "@/components/core/Tabs";
-import { ListingType, testListing } from "@/src/types";
 import DashboardSearchInput from "@/components/core/DashboardSearchInput";
 import {
+  Link,
   Tabs,
   TabList,
   TabPanels,
@@ -25,9 +26,14 @@ import {
   PropertyDes,
 } from "@/components/sections/Listings";
 import RoutePath, { RoutePathDashboard } from "@/src/routes";
+import { Listing, Visibility } from "@/src/api/types";
+import { auth } from "@/src/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { listings as listingsCollection } from "@/src/api/collections";
+import { useCollectionOnce } from "react-firebase-hooks/firestore";
 
 interface ListingProps {
-  listings: ListingType[];
+  listings?: Listing[];
 }
 
 const LandlordListingTable = (props: ListingProps) => {
@@ -45,30 +51,34 @@ const LandlordListingTable = (props: ListingProps) => {
         </Tr>
       </Thead>
       <Tbody>
-        {listings.map((listing: ListingType, index) => (
+        {listings?.map((listing, index) => (
           <Tr key={index}>
             <Td display={["none", "none", "none", "block", "block"]}>
-              <PropertyImage image={listing.imageUrl} size="150px" />
+              <PropertyImage image={listing.images[0]} size="150px" />
             </Td>
             <Td minWidth="250px">
               <PropertyDes
-                location={listing.location.city}
-                title={`${listing.title.substring(0, 30)}...`}
-                numBeds={listing.numBeds}
-                numBaths={listing.numBaths}
+                location={listing.location.cityName}
+                title={`${listing.details.title.substring(0, 30)}...`}
+                numBeds={listing.details.numBeds}
+                numBaths={listing.details.numBaths}
               />
             </Td>
             <Td>
               <MultiWeightText
-                bold={listing.price.toString()}
+                bold={listing.lease.price.toString()}
                 normal="/month"
               />
             </Td>
             <Td>
-              <Box>{listing.status.applicants}</Box>
+              <Box>{listing.applicants}</Box>
             </Td>
             <Td>
-              <ButtonSecondary>Edit Listing</ButtonSecondary>
+              <NextLink href={`${RoutePath.Listings}/${listing.id}`} passHref>
+                <Link _hover={{ textDecoration: "none" }}>
+                  <ButtonSecondary>View Listing</ButtonSecondary>
+                </Link>
+              </NextLink>
             </Td>
           </Tr>
         ))}
@@ -77,18 +87,39 @@ const LandlordListingTable = (props: ListingProps) => {
   );
 };
 
-const listingData = [testListing, testListing, testListing];
-
 function ListingsView(): ReactElement {
   const router = useRouter();
+  const [user] = useAuthState(auth);
+  const [visibility, setVisibility] = useState<Visibility>("public");
+  const query = useMemo(
+    () =>
+      user
+        ? listingsCollection
+            .where("owner.uid", "==", user.uid)
+            .where("visibility", "==", visibility)
+        : undefined,
+    [user, visibility]
+  );
+  const [snapshot] = useCollectionOnce(query);
+  const listings = snapshot?.docs.map(
+    (doc) =>
+      (({
+        ...doc.data(),
+        id: doc.id,
+      } as unknown) as Listing)
+  );
 
   return (
     <DashboardCard>
       <Tabs isLazy>
         <TabList>
-          <TabPrimary>Listing</TabPrimary>
-          <TabPrimary>Draft</TabPrimary>
-          <TabPrimary>Hidden</TabPrimary>
+          <TabPrimary onClick={() => setVisibility("public")}>
+            Listings
+          </TabPrimary>
+          <TabPrimary onClick={() => setVisibility("draft")}>Draft</TabPrimary>
+          <TabPrimary onClick={() => setVisibility("hidden")}>
+            Hidden
+          </TabPrimary>
           <Spacer />
           <Box marginTop="8px" marginBottom="8px" width="2.5in">
             <DashboardSearchInput />
@@ -108,13 +139,13 @@ function ListingsView(): ReactElement {
 
         <TabPanels>
           <TabPanel paddingX={0}>
-            <LandlordListingTable listings={listingData} />
+            <LandlordListingTable listings={listings} />
           </TabPanel>
           <TabPanel>
-            <LandlordListingTable listings={listingData} />
+            <LandlordListingTable listings={listings} />
           </TabPanel>
           <TabPanel>
-            <LandlordListingTable listings={listingData} />
+            <LandlordListingTable listings={listings} />
           </TabPanel>
         </TabPanels>
       </Tabs>
