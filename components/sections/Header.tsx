@@ -19,7 +19,7 @@ import Login from "@/components/sections/Login";
 import Signup from "@/components/sections/Signup";
 import { auth } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import RoutePath from "@/src/routes";
+import RoutePath, { RoutePathDashboard } from "@/src/routes";
 
 const darkThemeSecondaryButtonProps: ButtonProps = {
   color: "white",
@@ -69,9 +69,8 @@ function Header(props: HeaderProps): ReactElement {
   };
 
   const handlePostListing = () => {
-    // TODO: go to create listing portion of dashboard after login
     if (user) {
-      router.push(RoutePath.Dashboard);
+      router.push(`${RoutePath.Dashboard}/${RoutePathDashboard.Create}`);
     } else {
       onOpenLogin();
     }
