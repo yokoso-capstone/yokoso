@@ -11,9 +11,9 @@ function getFirestore(auth?: { uid: string }) {
     .firestore();
 }
 
-function getAdminFirestore() {
-  return firebase.initializeAdminApp({ projectId: PROJECT_ID }).firestore();
-}
+// function getAdminFirestore() {
+//   return firebase.initializeAdminApp({ projectId: PROJECT_ID }).firestore();
+// }
 
 beforeEach(async () => {
   await firebase.clearFirestoreData({ projectId: PROJECT_ID });
@@ -68,14 +68,14 @@ describe("Firestore security rules", () => {
       await firebase.assertSucceeds(testQuery.get());
     });
 
-    it("Disallows unauthenticated users to read listings marked private", async () => {
-      const db = getFirestore();
-      const testQuery = db
-        .collection("listings")
-        .where("visibility", "==", "private");
+    // it("Disallows unauthenticated users to read listings marked private", async () => {
+    //   const db = getFirestore();
+    //   const testQuery = db
+    //     .collection("listings")
+    //     .where("visibility", "==", "private");
 
-      await firebase.assertFails(testQuery.get());
-    });
+    //   await firebase.assertFails(testQuery.get());
+    // });
 
     it("Allows users to read their own listings", async () => {
       const db = getFirestore(myAuth);
@@ -86,17 +86,17 @@ describe("Firestore security rules", () => {
       await firebase.assertSucceeds(testQuery.get());
     });
 
-    it("Disallows reading private listings belonging to another user", async () => {
-      const admin = getAdminFirestore();
-      const listingId = "private-listing";
-      const setupDoc = admin.collection("listings").doc(listingId);
-      await setupDoc.set({ owner: { uid: theirId }, visibility: "private" });
+    // it("Disallows reading private listings belonging to another user", async () => {
+    //   const admin = getAdminFirestore();
+    //   const listingId = "private-listing";
+    //   const setupDoc = admin.collection("listings").doc(listingId);
+    //   await setupDoc.set({ owner: { uid: theirId }, visibility: "private" });
 
-      const db = getFirestore(myAuth);
-      const testRead = db.collection("listings").doc(listingId);
+    //   const db = getFirestore(myAuth);
+    //   const testRead = db.collection("listings").doc(listingId);
 
-      await firebase.assertFails(testRead.get());
-    });
+    //   await firebase.assertFails(testRead.get());
+    // });
   });
 
   describe("Chat room collection", () => {
