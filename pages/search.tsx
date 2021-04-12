@@ -36,8 +36,7 @@ import {
   FormLabel,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Coordinate } from "@/src/types";
-import { cityToLatLong, getQueryValue } from "@/src/utils";
+import { getQueryValue } from "@/src/utils";
 import { listings as listingsCollection } from "@/src/api/collections";
 import { useCollectionOnce } from "react-firebase-hooks/firestore";
 import { Listing } from "@/src/api/types";
@@ -123,21 +122,21 @@ function SearchPage(): ReactElement {
     isOpen: isOpenPrice,
   } = useDisclosure();
 
-  const router = useRouter();
-  const searchValue = getQueryValue(router.query, "value")?.toLowerCase();
-
   const [priceFilter, setPriceFilter] = useState([0, 2150]);
   const [rooms, setRooms] = useState(1);
   const [bathrooms, setBathroom] = useState(1);
 
-  const location: Coordinate = cityToLatLong(searchValue || "");
+  const router = useRouter();
+  const { center } = router.query;
+  const place = getQueryValue(router.query, "place");
+  const text = getQueryValue(router.query, "text")?.toLowerCase();
 
   const query = useMemo(
     () =>
-      searchValue
-        ? listingsCollection.where("location.cityKey", "==", searchValue)
+      text
+        ? listingsCollection.where("location.cityKey", "==", text)
         : undefined,
-    [searchValue]
+    [text]
   );
   const [snapshot] = useCollectionOnce(query);
   const listings = snapshot?.docs.map(
@@ -160,11 +159,7 @@ function SearchPage(): ReactElement {
         <Flex column={2} height="100%" bg="white">
           <Box flex={[1, 1, 1, 1, 0.9]} row={3} overflowY="auto" maxW="700px">
             <Box flex="1" p="5">
-              <Heading4>
-                {location.locationName
-                  ? `Listings in ${location.locationName}`
-                  : "Location not found"}
-              </Heading4>
+              <Heading4>{place || "Location not found"}</Heading4>
             </Box>
             <SimpleGrid flex="1" p="4" spacing={[0, 0, 1, 2, 2]} columns={4}>
               <SingleFilter
@@ -226,42 +221,40 @@ function SearchPage(): ReactElement {
             </SimpleGrid>
             <Divider />
             <Box flex="1" overflow="auto" w="100%">
-              {listings &&
-                listings.map((listing, index) => (
-                  <NextLink
-                    key={listing.id || index}
-                    href={`${RoutePath.Listings}/${listing.id}`}
-                    passHref
-                  >
-                    <Link textDecoration="none !important">
-                      <LgSearchResult
-                        listing={listing}
-                        num={index + 1}
-                        display={["none", "block", "none", "block", "block"]}
-                        width="100%"
-                      />
-                    </Link>
-                  </NextLink>
-                ))}
+              {listings?.map((listing, index) => (
+                <NextLink
+                  key={listing.id || index}
+                  href={`${RoutePath.Listings}/${listing.id}`}
+                  passHref
+                >
+                  <Link textDecoration="none !important">
+                    <LgSearchResult
+                      listing={listing}
+                      num={index + 1}
+                      display={["none", "block", "none", "block", "block"]}
+                      width="100%"
+                    />
+                  </Link>
+                </NextLink>
+              ))}
             </Box>
             <Box flex="1" paddingTop={4} overflow="auto" w="100%">
-              {listings &&
-                listings.map((listing, index) => (
-                  <NextLink
-                    key={listing.id || index}
-                    href={`${RoutePath.Listings}/${listing.id}`}
-                    passHref
-                  >
-                    <Link textDecoration="none !important">
-                      <SmSearchResult
-                        listing={listing}
-                        num={index + 1}
-                        display={["block", "none", "block", "none", "none"]}
-                        width="100%"
-                      />
-                    </Link>
-                  </NextLink>
-                ))}
+              {listings?.map((listing, index) => (
+                <NextLink
+                  key={listing.id || index}
+                  href={`${RoutePath.Listings}/${listing.id}`}
+                  passHref
+                >
+                  <Link textDecoration="none !important">
+                    <SmSearchResult
+                      listing={listing}
+                      num={index + 1}
+                      display={["block", "none", "block", "none", "none"]}
+                      width="100%"
+                    />
+                  </Link>
+                </NextLink>
+              ))}
             </Box>
           </Box>
           <Box
@@ -271,8 +264,8 @@ function SearchPage(): ReactElement {
             maxW="100%"
           >
             <Map
-              defaultLat={location.latitude}
-              defaultLong={location.longitude}
+              defaultLat={center ? Number(center[0]) : 0}
+              defaultLong={center ? Number(center[1]) : 0}
               zoom={12}
               listings={listings}
             />

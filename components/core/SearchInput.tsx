@@ -1,8 +1,9 @@
-import { useEffect, useState, ReactElement } from "react";
-// import { useRouter } from "next/router";
+import { useEffect, ReactElement } from "react";
+import { useRouter } from "next/router";
 import { Box, Flex, IconButton } from "@chakra-ui/react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
-import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import MapboxGeocoder, { Result } from "@mapbox/mapbox-gl-geocoder";
+import RoutePath from "@/src/routes";
 
 interface SearchInputProps {
   placeholder: string;
@@ -19,29 +20,20 @@ const geocoder = new MapboxGeocoder({
 
 function SearchInput(props: SearchInputProps): ReactElement {
   const { placeholder, ariaLabel, onSubmit } = props;
-
-  // @ts-ignore
-  const [searchCoordinates, setSearchCoordinates] = useState();
-
-  // const router = useRouter();
-  // const [value, setValue] = useState("");
-
-  // useEffect(() => {
-  //   const queryValue = router.query.value;
-
-  //   if (queryValue) {
-  //     if (typeof queryValue === "string") {
-  //       setValue(queryValue);
-  //     } else {
-  //       setValue(queryValue[0]);
-  //     }
-  //   }
-  // }, [router.query]);
+  const router = useRouter();
 
   useEffect(() => {
-    const handleResult = ({ result }: any) => {
-      setSearchCoordinates(result);
-      console.log(result);
+    const handleResult = (events: { result: Result }) => {
+      const { result } = events;
+
+      router.push({
+        pathname: RoutePath.Search,
+        query: {
+          center: result.center,
+          place: result.place_name,
+          text: result.text,
+        },
+      });
     };
 
     geocoder.addTo("#location");
