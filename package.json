@@ -30,6 +30,7 @@
     "formik": "^2.2.6",
     "formik-chakra-ui": "^1.4.6",
     "framer-motion": "^3.3.0",
+    "nanoid": "^3.1.22",
     "next": "^10.1.2",
     "rc-slider": "^9.7.2",
     "rc-tooltip": "^5.1.0",

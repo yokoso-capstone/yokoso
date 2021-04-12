@@ -49,6 +49,12 @@ import { auth, firestoreTimestamp, serverTimestamp } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import RoutePath from "@/src/routes";
 
+import { nanoid } from "nanoid";
+import firebase from "firebase/app";
+import "firebase/storage";
+
+const storageRef = firebase.storage().ref();
+
 type Part0DataType = {
   propertyType: PropertyType;
   rentalType: RentalSpace;
@@ -119,64 +125,65 @@ function CreateListingView(): ReactElement {
         part1Data.minLeaseDuration &&
         availabilityDate
       ) {
-        const userPublic = (await (
-          await usersPublic.doc(user.uid).get()
-        ).data()) as UserPublic;
-
-        const listing: Listing = {
-          owner: { ...userPublic, uid: user.uid },
-          visibility: "public",
-          location: {
-            address: part0Data.address,
-            unitNumber: part0Data.unitNum,
-            hideUnitNumber: part0Data.hideUnit,
-            postalCode: part0Data.postalCode,
-            cityKey: part0Data.city.toLowerCase(),
-            cityName: part0Data.city,
-            province: part0Data.province,
-            country: part0Data.country,
-            // TODO: do for real (and use geolocation type)
-            coordinate: {
-              latitude: 0,
-              longitude: 0,
-            },
-          },
-          details: {
-            title: part1Data.propertyTitle,
-            description: part1Data.propertyDescription,
-            propertyType: part0Data.propertyType,
-            rentalSpace: part0Data.rentalType,
-            rentalSize: Number(part1Data.size),
-            privateBathrooms: part1Data.privateBathrooms,
-            sharedBathrooms: part1Data.sharedBathrooms,
-            maxOccupancy: part1Data.occupancy,
-            furnished: part1Data.furnishedStatus,
-            smokingAllowed: part1Data.smokingAllowed,
-            petsAllowed: part1Data.petsAllowed,
-            numBedrooms: 69, // TODO:
-            numBaths: 420, // TODO:
-            numBeds: 7, // TODO:
-          },
-          lease: {
-            price: Number(part1Data.rentalPrice),
-            paymentFrequency: part1Data.paymentFrequency,
-            type: part1Data.leaseType,
-            availability: firestoreTimestamp.fromDate(availabilityDate),
-            minDuration: part1Data.minLeaseDuration,
-          },
-          features: part1Data.features,
-          utilities: part1Data.utilities,
-          // TODO:
-          images: [
-            "https://placekitten.com/400/400",
-            "https://placekitten.com/800/800",
-          ],
-          applicants: 0,
-          createdAt: serverTimestamp,
-        };
-
         try {
+          const userPublic = (await (
+            await usersPublic.doc(user.uid).get()
+          ).data()) as UserPublic;
+
+          const fileUrls = await Promise.all(
+            part1Data.files.map((file) => uploadListingImage(file, user.uid))
+          );
+
+          const listing: Listing = {
+            owner: { ...userPublic, uid: user.uid },
+            visibility: "public",
+            location: {
+              address: part0Data.address,
+              unitNumber: part0Data.unitNum,
+              hideUnitNumber: part0Data.hideUnit,
+              postalCode: part0Data.postalCode,
+              cityKey: part0Data.city.toLowerCase(),
+              cityName: part0Data.city,
+              province: part0Data.province,
+              country: part0Data.country,
+              // TODO: do for real (and use geolocation type)
+              coordinate: {
+                latitude: 0,
+                longitude: 0,
+              },
+            },
+            details: {
+              title: part1Data.propertyTitle,
+              description: part1Data.propertyDescription,
+              propertyType: part0Data.propertyType,
+              rentalSpace: part0Data.rentalType,
+              rentalSize: Number(part1Data.size),
+              privateBathrooms: part1Data.privateBathrooms,
+              sharedBathrooms: part1Data.sharedBathrooms,
+              maxOccupancy: part1Data.occupancy,
+              furnished: part1Data.furnishedStatus,
+              smokingAllowed: part1Data.smokingAllowed,
+              petsAllowed: part1Data.petsAllowed,
+              numBedrooms: 69, // TODO:
+              numBaths: 420, // TODO:
+              numBeds: 7, // TODO:
+            },
+            lease: {
+              price: Number(part1Data.rentalPrice),
+              paymentFrequency: part1Data.paymentFrequency,
+              type: part1Data.leaseType,
+              availability: firestoreTimestamp.fromDate(availabilityDate),
+              minDuration: part1Data.minLeaseDuration,
+            },
+            features: part1Data.features,
+            utilities: part1Data.utilities,
+            images: fileUrls,
+            applicants: 0,
+            createdAt: serverTimestamp,
+          };
+
           const { id: listingId } = await listings.add(listing);
+
           router.push(`${RoutePath.Listings}/${listingId}`);
         } catch (error) {
           toast({
@@ -194,6 +201,26 @@ function CreateListingView(): ReactElement {
   }, [router, toast, availabilityDate, user, part0Data, part1Data]);
 
   return content;
+}
+
+function uploadListingImage(file: File, uid: string) {
+  return new Promise<string>((resolve, reject) => {
+    const uploadTask = storageRef
+      .child(`listing-images/${uid}/${nanoid()}${file.name}`)
+      .put(file);
+
+    uploadTask.on(
+      firebase.storage.TaskEvent.STATE_CHANGED,
+      undefined,
+      (error) => {
+        reject(error);
+      },
+      async () => {
+        const imgURL = await uploadTask.snapshot.ref.getDownloadURL();
+        resolve(imgURL);
+      }
+    );
+  });
 }
 
 // Any string with only letters
@@ -952,6 +979,7 @@ const Part1 = (props: {
                   <Heading6 textAlign="center">
                     Upload Your Property Photos
                   </Heading6>
+                  {/* TODO: make uploading at least one file mandatory */}
                   <Dropzone
                     onDrop={(acceptedFiles) =>
                       setFieldValue("files", acceptedFiles)
