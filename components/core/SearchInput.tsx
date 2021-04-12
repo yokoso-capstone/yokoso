@@ -1,15 +1,8 @@
-import { useEffect, useState, ChangeEvent, ReactElement } from "react";
-import { useRouter } from "next/router";
-import {
-  FormControl,
-  IconButton,
-  Input,
-  InputGroup,
-  InputRightElement,
-} from "@chakra-ui/react";
+import { useEffect, useState, ReactElement } from "react";
+// import { useRouter } from "next/router";
+import { Box, Flex, IconButton } from "@chakra-ui/react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
-import RoutePath from "@/src/routes";
-import { Formik, Form } from "formik";
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 
 interface SearchInputProps {
   placeholder: string;
@@ -17,79 +10,73 @@ interface SearchInputProps {
   onSubmit?: () => void;
 }
 
+const MAPBOX_TOKEN =
+  "pk.eyJ1IjoibWVnYW4taG5nIiwiYSI6ImNrbW50cmZ5NTB1cDYyb24zZHZocGl0dnUifQ.k0A3CyrtFjv-Gj7k7E9_9A";
+
+const geocoder = new MapboxGeocoder({
+  accessToken: MAPBOX_TOKEN,
+});
+
 function SearchInput(props: SearchInputProps): ReactElement {
+  const [searchCoordinates, setSearchCoordinates] = useState();
+
   const { placeholder, ariaLabel, onSubmit } = props;
-  const router = useRouter();
-  const [value, setValue] = useState("");
+  // const router = useRouter();
+  // const [value, setValue] = useState("");
+
+  // useEffect(() => {
+  //   const queryValue = router.query.value;
+
+  //   if (queryValue) {
+  //     if (typeof queryValue === "string") {
+  //       setValue(queryValue);
+  //     } else {
+  //       setValue(queryValue[0]);
+  //     }
+  //   }
+  // }, [router.query]);
 
   useEffect(() => {
-    const queryValue = router.query.value;
+    geocoder.setPlaceholder(placeholder);
+  }, [placeholder]);
 
-    if (queryValue) {
-      if (typeof queryValue === "string") {
-        setValue(queryValue);
-      } else {
-        setValue(queryValue[0]);
-      }
-    }
-  }, [router.query]);
+  useEffect(() => {
+    geocoder.addTo("#location");
+    geocoder.on("result", ({ result }) => {
+      setSearchCoordinates(result);
+      console.log(searchCoordinates);
+    });
+  }, []);
 
   return (
-    <Formik
-      initialValues={{ value }}
-      enableReinitialize
-      onSubmit={() => {
-        if (onSubmit) {
-          onSubmit();
-        } else {
-          router.push({
-            pathname: RoutePath.Search,
-            query: { value },
-          });
-        }
-      }}
-    >
-      <Form>
-        <FormControl>
-          <InputGroup height="48px">
-            <Input
-              type="search"
-              value={value}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                setValue(event.target.value)
-              }
-              paddingLeft="32px"
-              paddingRight="56px"
-              placeholder={placeholder}
-              rounded="full"
-              height="100%"
-              fontSize="16px"
-              background="white"
-              color="text.primary"
-              borderColor="common.dark"
-              _hover={{}}
-            />
-            <InputRightElement height="100%" marginRight="8px">
-              <IconButton
-                type="submit"
-                aria-label={ariaLabel}
-                icon={<ArrowForwardIcon w={5} h={5} />}
-                isRound
-                backgroundColor="common.dark"
-                color="white"
-                size="sm"
-                _hover={{
-                  backgroundColor: "brand.primary_hover",
-                }}
-                _active={{
-                  backgroundColor: "brand.primary_active",
-                }}
-              />
-            </InputRightElement>
-          </InputGroup>
-        </FormControl>
-      </Form>
-    </Formik>
+    <>
+      <Flex
+        borderRadius="50px"
+        height="48px"
+        bg="white"
+        border="1px"
+        borderColor="common.dark"
+      >
+        <Box flex="1" id="location" w="100%" height="100%" />
+
+        <IconButton
+          aria-label={ariaLabel}
+          margin="8px 8px 0 8px"
+          icon={<ArrowForwardIcon w={5} h={5} />}
+          isRound
+          backgroundColor="common.dark"
+          color="white"
+          size="sm"
+          _hover={{
+            backgroundColor: "brand.primary_hover",
+          }}
+          _active={{
+            backgroundColor: "brand.primary_active",
+          }}
+          onClick={onSubmit}
+        />
+      </Flex>
+    </>
   );
 }
 
