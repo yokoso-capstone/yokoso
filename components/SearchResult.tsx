@@ -43,7 +43,9 @@ export function LgSearchResult(props: ResultProps) {
           <PropertyDes
             numBaths={numBaths}
             numBeds={numBeds}
-            title={`${title.substring(0, LgMaxTitleCharacters)}...`}
+            title={`${title.substring(0, LgMaxTitleCharacters)}${
+              title.length > LgMaxTitleCharacters ? "..." : ""
+            }`}
             location={cityName}
           />
         </GridItem>
@@ -110,7 +112,7 @@ export function SmSearchResult(props: ResultProps) {
               <Body1 fontSize="18px">{`${title.substring(
                 0,
                 SmMaxTitleCharacters
-              )}...`}</Body1>
+              )}${title.length > SmMaxTitleCharacters ? "..." : ""}`}</Body1>
             </Box>
             <Box>
               <Caption fontSize="14px">
@@ -159,7 +161,7 @@ export function XsSearchResult(props: ResultProps) {
               <Body1 fontSize="18px">{`${title.substring(
                 0,
                 XsMaxTitleCharacters
-              )}...`}</Body1>
+              )}${title.length > XsMaxTitleCharacters ? "..." : ""}`}</Body1>
             </Box>
           </Box>
           <Box>

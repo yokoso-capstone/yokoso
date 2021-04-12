@@ -59,7 +59,9 @@ const LandlordListingTable = (props: ListingProps) => {
             <Td minWidth="250px">
               <PropertyDes
                 location={listing.location.cityName}
-                title={`${listing.details.title.substring(0, 30)}...`}
+                title={`${listing.details.title.substring(0, 30)}${
+                  listing.details.title.length > 30 ? "..." : ""
+                }`}
                 numBeds={listing.details.numBeds}
                 numBaths={listing.details.numBaths}
               />
