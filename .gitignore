@@ -31,3 +31,7 @@ yarn-error.log*
 
 # firebase
 .firebase/emulators
+
+# serverless framework
+.serverless
+.serverless_nextjs

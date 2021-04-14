@@ -39,8 +39,6 @@ jobs:
 
       - name: Deploy to AWS
         run: npx serverless
-        env:
-          FIREBASE_ADMINSDK_SA_KEY: ${{ secrets.FIREBASE_ADMINSDK_SA_KEY_STAGING }}
 
       - name: Upload `.serverless` state to S3
         run: aws s3 sync .serverless s3://yokoso-serverless-state-bucket/yokoso/staging/.serverless --delete

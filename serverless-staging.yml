@@ -15,4 +15,3 @@ yokoso-staging:
     runtime:
       defaultLambda: "nodejs12.x"
       apiLambda: "nodejs12.x"
-    useServerlessTraceTarget: true

@@ -20,11 +20,10 @@ import {
   Stack,
   UnorderedList,
 } from "@chakra-ui/react";
-import { firestoreAdmin } from "@/src/firebaseAdmin";
-import { CollectionName } from "@/src/api/collections";
-import { FirestoreTimestamp, Listing } from "@/src/api/types";
+import { Listing } from "@/src/api/types";
 import { auth } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import FireStoreParser from "firestore-parser";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -38,29 +37,15 @@ export const getServerSideProps = async (
     const { id } = context.params;
     const documentId = typeof id === "string" ? id : id[0];
 
-    const ref = firestoreAdmin
-      .collection(CollectionName.Listings)
-      .doc(documentId);
-    const document = await ref.get();
-    const props = document.data() as Listing;
+    const response = await fetch(
+      `https://firestore.googleapis.com/v1/projects/yokoso-staging/databases/(default)/documents/listings/${documentId}`
+    );
+    const { fields } = await response.json();
+    const props: Listing = FireStoreParser(fields);
 
     // TODO: pass user token and display private listings belonging to them
     if (props.visibility !== "public") {
       throw Error("Listing is not public");
-    }
-
-    if (props.createdAt) {
-      props.createdAt = (props.createdAt as FirestoreTimestamp).toMillis();
-    }
-
-    if (props.owner?.createdAt) {
-      props.owner.createdAt = (props.owner
-        .createdAt as FirestoreTimestamp).toMillis();
-    }
-
-    if (props.lease?.availability) {
-      props.lease.availability = (props.lease
-        .availability as FirestoreTimestamp).toMillis();
     }
 
     const result: GetServerSidePropsResult<typeof props> = { props };
