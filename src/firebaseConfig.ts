@@ -8,4 +8,8 @@ const firebaseConfig = {
   measurementId: process.env.measurementId,
 };
 
+if (Object.values(firebaseConfig).some((value) => !value)) {
+  throw Error("Missing Firebase config environment variables");
+}
+
 export default firebaseConfig;

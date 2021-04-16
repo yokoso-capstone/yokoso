@@ -53,7 +53,10 @@ function DashboardHeader(props: DashboardHeaderProps): ReactElement {
             height="44px"
             isRound
             icon={
-              <Image borderRadius="full" src="http://placekitten.com/300/300" />
+              <Image
+                borderRadius="full"
+                src="https://placekitten.com/300/300"
+              />
             }
           />
         </Stack>

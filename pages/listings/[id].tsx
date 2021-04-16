@@ -24,6 +24,7 @@ import { Listing } from "@/src/api/types";
 import { auth } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import FireStoreParser from "firestore-parser";
+import { listingsRest } from "@/src/api/collections";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -37,9 +38,7 @@ export const getServerSideProps = async (
     const { id } = context.params;
     const documentId = typeof id === "string" ? id : id[0];
 
-    const response = await fetch(
-      `https://firestore.googleapis.com/v1/projects/yokoso-staging/databases/(default)/documents/listings/${documentId}`
-    );
+    const response = await fetch(`${listingsRest}/${documentId}`);
     const { fields } = await response.json();
     const props: Listing = FireStoreParser(fields);
 
