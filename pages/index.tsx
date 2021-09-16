@@ -16,7 +16,7 @@ function HomePage(): ReactElement {
       </Head>
 
       <Flex
-        minHeight="100vh"
+        height="100vh"
         bgImage="url('/bg1.jpg')"
         bgRepeat="no-repeat"
         bgSize="cover"
@@ -24,7 +24,7 @@ function HomePage(): ReactElement {
       >
         <Header darkTheme />
 
-        <ContainerPrimary marginY="auto" paddingTop="4rem" paddingBottom="2in">
+        <ContainerPrimary marginY="auto">
           <Flex justify="center">
             <Box width={[300, 400, 500, 550, 600, 650]}>
               <SearchInput
