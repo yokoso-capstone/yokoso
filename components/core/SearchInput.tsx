@@ -39,22 +39,19 @@ function SearchInput(props: SearchInputProps): ReactElement {
   };
 
   const handleError = () => {
-    if (!toast.isActive("error")) {
-      toast({
-        id: "error",
-        title: "Location Not Found",
-        description: "Location entered couldn't be found, please try again.",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-    }
+    toast({
+      id: "error",
+      title: "Location Not Found",
+      description: "Location entered couldn't be found, please try again.",
+      status: "error",
+      duration: 9000,
+      isClosable: true,
+    });
   };
 
   const onSubmit = () => {
     geocoder.query(searchInput);
     geocoder.on("result", handleResult);
-    geocoder.on("error", handleError);
   };
 
   useEffect(() => {
@@ -62,6 +59,7 @@ function SearchInput(props: SearchInputProps): ReactElement {
     geocoder.setPlaceholder(placeholder);
     geocoder.on("loading", ({ query }) => setSearchInput(query));
     geocoder.on("result", handleResult);
+    geocoder.on("error", handleError);
 
     return () => {
       geocoder.off("result", handleResult);
