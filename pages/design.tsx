@@ -39,7 +39,6 @@ function DesignPage(): ReactElement {
         <SearchInput
           placeholder="Where are you staying?"
           ariaLabel="Search for homes based on location"
-          onSubmit={() => undefined}
         />
         <LogoBlack width="150px" />
         <LogoWhite width="150px" background="black" />
