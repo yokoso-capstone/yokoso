@@ -1,6 +1,6 @@
 import { useEffect, ReactElement, useState } from "react";
 import { useRouter } from "next/router";
-import { Box, Flex, IconButton } from "@chakra-ui/react";
+import { Box, Flex, IconButton, useToast } from "@chakra-ui/react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import MapboxGeocoder, { Result } from "@mapbox/mapbox-gl-geocoder";
 import RoutePath from "@/src/routes";
@@ -21,9 +21,12 @@ function SearchInput(props: SearchInputProps): ReactElement {
   const { placeholder, ariaLabel } = props;
   const router = useRouter();
   const [searchInput, setSearchInput] = useState("");
+  const toast = useToast();
 
   const handleResult = (events: { result: Result }) => {
     const { result } = events;
+
+    toast.closeAll();
 
     router.push({
       pathname: RoutePath.Search,
@@ -35,9 +38,23 @@ function SearchInput(props: SearchInputProps): ReactElement {
     });
   };
 
+  const handleError = () => {
+    if (!toast.isActive("error")) {
+      toast({
+        id: "error",
+        title: "Location Not Found",
+        description: "Location entered couldn't be found, please try again.",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
+  };
+
   const onSubmit = () => {
     geocoder.query(searchInput);
     geocoder.on("result", handleResult);
+    geocoder.on("error", handleError);
   };
 
   useEffect(() => {
