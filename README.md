@@ -8,6 +8,10 @@
 
 <br>
 
+## Wiki 
+
+For more information about the project click [here](https://github.com/yokoso-capstone/yokoso/wiki/Y%C5%8Dkoso-Overview#general)
+
 ## Preview
 
 Yōkoso is deployed to separate production and staging environments, based off the `main` and `develop` branches respectively.
