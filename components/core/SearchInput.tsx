@@ -1,6 +1,6 @@
-import { useEffect, ReactElement } from "react";
+import { useEffect, ReactElement, useState } from "react";
 import { useRouter } from "next/router";
-import { Box, Flex, IconButton } from "@chakra-ui/react";
+import { Box, Flex, IconButton, useToast } from "@chakra-ui/react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import MapboxGeocoder, { Result } from "@mapbox/mapbox-gl-geocoder";
 import RoutePath from "@/src/routes";
@@ -8,7 +8,6 @@ import RoutePath from "@/src/routes";
 interface SearchInputProps {
   placeholder: string;
   ariaLabel: string;
-  onSubmit?: () => void;
 }
 
 const MAPBOX_TOKEN =
@@ -19,26 +18,52 @@ const geocoder = new MapboxGeocoder({
 });
 
 function SearchInput(props: SearchInputProps): ReactElement {
-  const { placeholder, ariaLabel, onSubmit } = props;
+  const { placeholder, ariaLabel } = props;
   const router = useRouter();
+  const [searchInput, setSearchInput] = useState("");
+  const toast = useToast();
+
+  const handleResult = (events: { result: Result }) => {
+    const { result } = events;
+
+    toast.closeAll();
+
+    router.push({
+      pathname: RoutePath.Search,
+      query: {
+        center: result.center,
+        place: result.place_name,
+        text: result.text,
+      },
+    });
+  };
+
+  const handleLoading = (events: { query: string }) => {
+    const { query } = events;
+    setSearchInput(query);
+  };
+
+  const handleError = () => {
+    toast({
+      id: "error",
+      title: "Location Not Found",
+      description: "Location entered couldn't be found, please try again.",
+      status: "error",
+      duration: 9000,
+      isClosable: true,
+    });
+  };
+
+  const onSubmit = () => {
+    geocoder.query(searchInput);
+  };
 
   useEffect(() => {
-    const handleResult = (events: { result: Result }) => {
-      const { result } = events;
-
-      router.push({
-        pathname: RoutePath.Search,
-        query: {
-          center: result.center,
-          place: result.place_name,
-          text: result.text,
-        },
-      });
-    };
-
     geocoder.addTo("#location");
     geocoder.setPlaceholder(placeholder);
+    geocoder.on("loading", handleLoading);
     geocoder.on("result", handleResult);
+    geocoder.on("error", handleError);
 
     return () => {
       geocoder.off("result", handleResult);
