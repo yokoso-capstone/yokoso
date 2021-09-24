@@ -38,6 +38,11 @@ function SearchInput(props: SearchInputProps): ReactElement {
     });
   };
 
+  const handleLoading = (events: { query: string }) => {
+    const { query } = events;
+    setSearchInput(query);
+  };
+
   const handleError = () => {
     toast({
       id: "error",
@@ -51,13 +56,12 @@ function SearchInput(props: SearchInputProps): ReactElement {
 
   const onSubmit = () => {
     geocoder.query(searchInput);
-    geocoder.on("result", handleResult);
   };
 
   useEffect(() => {
     geocoder.addTo("#location");
     geocoder.setPlaceholder(placeholder);
-    geocoder.on("loading", ({ query }) => setSearchInput(query));
+    geocoder.on("loading", handleLoading);
     geocoder.on("result", handleResult);
     geocoder.on("error", handleError);
 
