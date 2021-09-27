@@ -49,6 +49,9 @@ npm run lint
 # fix linting issues with ESLint
 npm run lint-fix
 
+# run Enzyme unit tests
+npm run test
+
 # run Firestore security rules unit tests
 npm run test:unit:firestore
 ```
@@ -58,7 +61,9 @@ npm run test:unit:firestore
 Yōkoso is deployed to separate production and staging environments, based off the `main` and `develop` branches respectively.
 
 Production:
+
 - https://d1qhziiies987t.cloudfront.net/
 
 Staging:
+
 - https://d2l3ad90rail6x.cloudfront.net/

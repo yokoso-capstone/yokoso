@@ -13,7 +13,13 @@
     "format:check": "prettier --check '**/*'.{js,ts,tsx,css} --ignore-path .gitignore",
     "lint": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore",
     "lint-fix": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore --fix",
-    "test:unit:firestore": "jest test/unit/firestore"
+    "test:unit:firestore": "jest test/unit/firestore",
+    "test": "jest"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "<rootDir>/setupTests.js"
+    ]
   },
   "license": "MIT",
   "dependencies": {
@@ -23,6 +29,8 @@
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
     "@mapbox/mapbox-gl-geocoder": "^4.7.0",
+    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.3",
+    "enzyme": "^3.11.0",
     "firebase": "^8.3.1",
     "firestore-parser": "^0.9.0",
     "focus-visible": "^5.2.0",
@@ -47,6 +55,7 @@
   "devDependencies": {
     "@firebase/rules-unit-testing": "^1.2.6",
     "@svgr/webpack": "^5.5.0",
+    "@types/enzyme": "^3.10.9",
     "@types/jest": "^26.0.22",
     "@types/mapbox__mapbox-gl-geocoder": "^4.7.0",
     "@types/node": "^14.14.28",
@@ -59,6 +68,7 @@
     "babel-eslint": "^10.1.0",
     "electron": "^12.0.2",
     "env-cmd": "^10.1.0",
+    "enzyme-to-json": "^3.6.2",
     "eslint": "^7.20.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^7.2.0",
