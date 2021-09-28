@@ -69,7 +69,6 @@ type Part0DataType = {
   province: string;
   postalCode: string;
   city: string;
-  coordinates: number[];
 };
 
 type Part1DataType = {
