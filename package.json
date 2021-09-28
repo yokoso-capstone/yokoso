@@ -16,11 +16,6 @@
     "test:unit:firestore": "jest test/unit/firestore",
     "test": "jest"
   },
-  "jest": {
-    "setupFilesAfterEnv": [
-      "<rootDir>/setupTests.js"
-    ]
-  },
   "license": "MIT",
   "dependencies": {
     "@chakra-ui/icons": "^1.0.6",
