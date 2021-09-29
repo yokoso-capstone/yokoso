@@ -98,6 +98,7 @@ export type Listing = {
     type: LeaseType;
     availability: timestamp;
     minDuration: Frequency;
+    depositPrice: number;
   };
   features: string[];
   utilities: string[];
