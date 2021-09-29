@@ -49,7 +49,6 @@ import { listings, usersPublic } from "@/src/api/collections";
 import { auth, firestoreTimestamp, serverTimestamp } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import RoutePath from "@/src/routes";
-import { Visibility } from "src/api/types";
 
 import { nanoid } from "nanoid";
 import firebase from "firebase/app";
@@ -135,9 +134,7 @@ function CreateListingView(): ReactElement {
   const [part1Data, setPart1Data] = useState<Part1DataType>(initialValuesPart1);
   const [coordinates, setCoordinates] = useState<number[]>([0, 0]);
   const [availabilityDate, setAvailabilityDate] = useState<Date>();
-  const [listingVisibility, setListingVisibility] = useState<Visibility>(
-    "public"
-  );
+
   const [user] = useAuthState(auth);
   const router = useRouter();
   const toast = useToast();
@@ -158,7 +155,6 @@ function CreateListingView(): ReactElement {
       setAvailabilityDate={setAvailabilityDate}
       setPart1Data={setPart1Data}
       setPartNum={setPartNum}
-      setListingVisibility={setListingVisibility}
     />,
   ][partNum];
 
@@ -190,7 +186,7 @@ function CreateListingView(): ReactElement {
 
           const listing: Listing = {
             owner: { ...userPublic, uid: user.uid },
-            visibility: listingVisibility,
+            visibility: "public",
             location: {
               address: part0Data.address,
               unitNumber: part0Data.unitNum,
@@ -260,7 +256,6 @@ function CreateListingView(): ReactElement {
     user,
     part0Data,
     part1Data,
-    listingVisibility,
     coordinates,
   ]);
 
@@ -347,7 +342,7 @@ const Part0 = (props: {
   setPartNum: React.Dispatch<React.SetStateAction<number>>;
   setPart0Data: React.Dispatch<React.SetStateAction<Part0DataType>>;
   setCoordinates: React.Dispatch<React.SetStateAction<number[]>>;
-  toast: React.FunctionComponent<IToast>;
+  toast: ReturnType<typeof useToast>;
 }) => {
   const { toast, setCoordinates, setPartNum, setPart0Data, value } = props;
 
@@ -615,7 +610,6 @@ const Part1 = (props: {
   setAvailabilityDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setPart1Data: React.Dispatch<React.SetStateAction<Part1DataType>>;
   setPartNum: React.Dispatch<React.SetStateAction<number>>;
-  setListingVisibility: React.Dispatch<React.SetStateAction<Visibility>>;
 }) => {
   const {
     value,
@@ -623,7 +617,6 @@ const Part1 = (props: {
     setAvailabilityDate,
     setPart1Data,
     setPartNum,
-    setListingVisibility,
   } = props;
 
   return (

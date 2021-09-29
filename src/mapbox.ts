@@ -1,22 +1,17 @@
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import addressBuilder from "./utils/addressBuilder";
 
 
-const MAPBOX_TOKEN = "pk.eyJ1IjoibWVnYW4taG5nIiwiYSI6ImNrbW50cmZ5NTB1cDYyb24zZHZocGl0dnUifQ.k0A3CyrtFjv-Gj7k7E9_9A";
+const MAPBOX_TOKEN =
+  "pk.eyJ1IjoibWVnYW4taG5nIiwiYSI6ImNrbW50cmZ5NTB1cDYyb24zZHZocGl0dnUifQ.k0A3CyrtFjv-Gj7k7E9_9A";
 
 const Geocoder = new MapboxGeocoder({
   accessToken: MAPBOX_TOKEN,
 })
 
-const urlAddressBuilder = (
-  unitNumber: string,
-  street: string,
-  city: string,
-  province: string,
-  postalCode: string,
-  country: string,
-) => {
-  const fullAddress = `${unitNumber}%20${street}%20${city}%20${province}%20${postalCode}%20${country}`
-  const urlAddress = fullAddress.split(" ").join("%20");
+const urlAddressBuilder = (address: string) => {
+  const urlAddress = address.split(" ").join("%20").split(",").join("%2C");
+
   return urlAddress;
 }
 
@@ -57,7 +52,7 @@ export const fetchCoordinates = async (values: {
   country: string;
 }) => {
   const { unitNum, address, city, province, postalCode, country } = values;
-  const urlAddress = urlAddressBuilder(
+  const fullAddress = addressBuilder(
     unitNum,
     address,
     city,
@@ -65,6 +60,9 @@ export const fetchCoordinates = async (values: {
     postalCode,
     country,
   );
+
+  const urlAddress = urlAddressBuilder(fullAddress);
+
   const apiURL = mapboxURLBuilder(urlAddress, MAPBOX_TOKEN);
   const addressResponse = await getAddressInfo(apiURL);
 
