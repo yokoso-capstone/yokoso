@@ -1,9 +1,18 @@
-import { ReactElement } from "react";
+import {
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { DashboardCard } from "@/components/core/Layout";
 import { TextBase, Body2 } from "@/components/core/Text";
 import { IconButtonSecondary } from "@/components/core/Button";
 import { Box, Flex, Grid, Image, Stack } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
+import firebase from "firebase/app";
+import { ChatRoom, UserPublic } from "@/src/api/types";
+import { usersPublic } from "@/src/api/collections";
 
 const Header = () => (
   <Flex
@@ -32,12 +41,6 @@ const ContactPreview = (props: {
       alignItems="center"
       padding="1rem 2rem"
       gap="1rem"
-      borderBottomWidth="1px"
-      borderBottomStyle="solid"
-      borderBottomColor="gray.200"
-      _hover={{
-        background: "gray.50",
-      }}
     >
       <Box width="40px">
         <Image src={photoUrl} borderRadius="full" />
@@ -73,7 +76,67 @@ const ContactPreview = (props: {
   );
 };
 
-function ChatContactsList(): ReactElement {
+function ChatContactsList(props: {
+  user?: firebase.User | null;
+  chatRoomsCollection?: firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>;
+  currentChatRoomIdx: number | undefined;
+  setCurrentChatRoomIdx: Dispatch<SetStateAction<number | undefined>>;
+  setCurrentContact: Dispatch<SetStateAction<UserPublic | undefined>>;
+}): ReactElement {
+  const {
+    user,
+    chatRoomsCollection,
+    currentChatRoomIdx,
+    setCurrentChatRoomIdx,
+    setCurrentContact,
+  } = props;
+  const [contactPreviewData, setContactPreviewData] = useState<UserPublic[]>(
+    []
+  );
+
+  const handleContactClick = (idx: number) => {
+    setCurrentChatRoomIdx(idx);
+    setCurrentContact(contactPreviewData[idx]);
+  };
+
+  useEffect(() => {
+    if (chatRoomsCollection?.size) {
+      setCurrentChatRoomIdx(0);
+      setCurrentContact(contactPreviewData[0]);
+    }
+  }, [
+    chatRoomsCollection,
+    setCurrentChatRoomIdx,
+    setCurrentContact,
+    contactPreviewData,
+  ]);
+
+  useEffect(() => {
+    if (user && chatRoomsCollection) {
+      const chatRoomsData = chatRoomsCollection.docs.map(
+        (doc) => doc.data() as ChatRoom
+      );
+
+      const contactUidList: string[] = chatRoomsData
+        .map((data) => data.members)
+        .flat()
+        .filter((member) => member !== user.uid);
+
+      const loadContactPreviewData = async () => {
+        const contactListSnapshot = await Promise.all(
+          contactUidList.map((uid) => usersPublic.doc(uid).get())
+        );
+        const contactListData = contactListSnapshot.map(
+          (userData) => ({ ...userData.data(), uid: userData.id } as UserPublic)
+        );
+
+        setContactPreviewData(contactListData);
+      };
+
+      loadContactPreviewData();
+    }
+  }, [user, chatRoomsCollection]);
+
   return (
     <DashboardCard padding={0} overflow="hidden" position="relative">
       <Flex direction="column" height="100%">
@@ -92,21 +155,30 @@ function ChatContactsList(): ReactElement {
             "::-webkit-scrollbar-track": { backgroundColor: "transparent" },
           }}
         >
-          <ContactPreview
-            photoUrl="https://placekitten.com/300/300"
-            name="Tommy Deng"
-            message="message"
-          />
-          <ContactPreview
-            photoUrl="https://placekitten.com/300/300"
-            name="Personwith Longname ThatOverflows"
-            message="message"
-          />
-          <ContactPreview
-            photoUrl="https://placekitten.com/300/300"
-            name="Tommy Deng"
-            message="A long message that overflows"
-          />
+          {contactPreviewData.map((contact, idx) => (
+            <Box
+              key={contact.uid}
+              onClick={() => handleContactClick(idx)}
+              borderBottomWidth="1px"
+              borderBottomStyle="solid"
+              borderBottomColor="gray.200"
+              borderLeftWidth="4px"
+              borderLeftStyle="solid"
+              borderLeftColor={
+                idx === currentChatRoomIdx ? "brand.primary" : "transparent"
+              }
+              cursor="pointer"
+              _hover={{
+                background: "gray.50",
+              }}
+            >
+              <ContactPreview
+                photoUrl={contact.profilePicture}
+                name={`${contact.firstName} ${contact.lastName}`}
+                message=""
+              />
+            </Box>
+          ))}
         </Flex>
       </Flex>
     </DashboardCard>

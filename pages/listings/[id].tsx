@@ -60,7 +60,7 @@ function ListingPage(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ): ReactElement {
   const {
-    owner: { firstName, lastName, profilePicture, createdAt },
+    owner: { firstName, lastName, profilePicture, createdAt, uid },
     location: { cityName },
     details: {
       title,
@@ -202,6 +202,8 @@ function ListingPage(
                 profilePicture={profilePicture}
                 joined={createdAt as number}
                 disabled={error !== undefined || (!loading && !user)}
+                userUid={user?.uid || ""}
+                ownerUid={uid}
               />
             </Box>
           </Box>

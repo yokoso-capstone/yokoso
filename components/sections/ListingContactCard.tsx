@@ -12,9 +12,13 @@ import {
   Stack,
   Textarea,
   Tooltip,
+  useToast,
 } from "@chakra-ui/react";
 import { FaCheckCircle } from "react-icons/fa";
 import { getUTCMonthString } from "@/src/utils";
+import { CollectionName, chatRooms } from "@/src/api/collections";
+import { ChatRoom, Message } from "@/src/api/types";
+import { serverTimestamp } from "@/src/firebase";
 
 interface ListingCardProps {
   price: number;
@@ -22,7 +26,9 @@ interface ListingCardProps {
   lastName: string;
   profilePicture: string;
   joined: number;
-  disabled?: boolean;
+  disabled: boolean;
+  userUid: string;
+  ownerUid: string;
 }
 
 function ListingCard(props: ListingCardProps): ReactElement {
@@ -33,9 +39,13 @@ function ListingCard(props: ListingCardProps): ReactElement {
     profilePicture,
     joined,
     disabled,
+    userUid,
+    ownerUid,
   } = props;
   const joinedDate = new Date(joined);
   const [value, setValue] = useState("");
+  const [loading, setLoading] = useState(false);
+  const toast = useToast();
   const placeholderText = `Hi ${firstName}, I am interested in your listing. Is it still available? When would be a good time to view it?`;
 
   const handleFocus = () => {
@@ -47,6 +57,46 @@ function ListingCard(props: ListingCardProps): ReactElement {
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const inputValue = e.target?.value;
     setValue(inputValue);
+  };
+
+  const handleSend = async () => {
+    setLoading(true);
+
+    const members = [userUid, ownerUid].sort();
+    const chatId = members.join("-");
+
+    try {
+      const chatRoomRef = chatRooms.doc(chatId);
+      const chatRoomDoc = await chatRoomRef.get();
+
+      if (!chatRoomDoc.exists) {
+        const chatRoomData: ChatRoom = {
+          members,
+          createdAt: serverTimestamp,
+        };
+        await chatRoomRef.set(chatRoomData);
+      }
+
+      const messagesRef = chatRoomRef.collection(CollectionName.Messages);
+
+      const messageData: Message = {
+        uid: userUid,
+        members,
+        text: value,
+        createdAt: serverTimestamp,
+      };
+      await messagesRef.add(messageData);
+    } catch (err) {
+      toast({
+        title: "Something went wrong",
+        description: "An error occurred. Please try again later.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -111,7 +161,12 @@ function ListingCard(props: ListingCardProps): ReactElement {
             }
           >
             <Box>
-              <ButtonPrimary isDisabled={!value} isFullWidth>
+              <ButtonPrimary
+                isDisabled={!value}
+                isFullWidth
+                onClick={handleSend}
+                isLoading={loading}
+              >
                 Send
               </ButtonPrimary>
             </Box>

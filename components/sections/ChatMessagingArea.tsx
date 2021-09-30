@@ -1,13 +1,18 @@
-import { ReactElement } from "react";
+import { ChangeEvent, ReactElement, useEffect, useRef, useState } from "react";
 import {
   IconButtonPrimary,
   IconButtonSecondary,
 } from "@/components/core/Button";
 import { DashboardCard } from "@/components/core/Layout";
 import { Body2 } from "@/components/core/Text";
-import { Box, Grid, Flex, Image, Stack, Textarea } from "@chakra-ui/react";
+import { Box, Grid, Flex, Image, Input, Stack } from "@chakra-ui/react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { GoKebabVertical } from "react-icons/go";
+import firebase from "firebase/app";
+import { Message, UserPublic } from "@/src/api/types";
+import { CollectionName, chatRooms } from "@/src/api/collections";
+import { serverTimestamp } from "@/src/firebase";
+import { useCollection } from "react-firebase-hooks/firestore";
 
 const Header = (props: {
   photoUrl: string;
@@ -99,82 +104,191 @@ const LightChatMessage = (props: { message: string }) => {
   );
 };
 
-const Body = () => (
-  <Stack
-    overflowY="auto"
-    paddingX="2rem"
-    paddingY="1rem"
-    marginTop="80px"
-    marginBottom="73px"
-    height="calc(100% - 80px - 73px)"
-    style={{ scrollbarColor: "#ccc transparent" }}
-    sx={{
-      "::-webkit-scrollbar": { width: "8px" },
-      "::-webkit-scrollbar-thumb": {
-        backgroundColor: "#ccc",
-        borderRadius: "8px",
-      },
-      "::-webkit-scrollbar-track": { backgroundColor: "transparent" },
-    }}
-  >
-    <Body2 textAlign="center" color="text.variant">
-      Beginning of conversation
-    </Body2>
-    <DarkChatMessage message="hi" />
-    <LightChatMessage message="hello!" />
-    <DarkChatMessage message="this is me testing some longer text that makes this message reach the maximum width, so that it wraps onto new lines" />
-    <DarkChatMessage message="another message from the same person" />
-    <LightChatMessage message="i want to have enough messages here to show what the scrolling looks like" />
-    <DarkChatMessage message="ok" />
-    <LightChatMessage message=":)" />
-    <DarkChatMessage message=":D" />
-    <LightChatMessage message=":))" />
-    <DarkChatMessage message=":DD" />
-    <LightChatMessage message="yayy" />
-    <DarkChatMessage message="something i should work on is making this scrolled to be bottom by after initial message loading" />
-  </Stack>
-);
+const Body = (props: { user?: firebase.User | null; messages: Message[] }) => {
+  const { user, messages } = props;
+  const ref = useRef<HTMLDivElement>(null);
 
-const Footer = () => (
-  <Grid
-    templateColumns="1fr min-content"
-    gap={2}
-    position="absolute"
-    width="100%"
-    bottom={0}
-    background="white"
-    paddingX="2rem"
-    paddingY="1rem"
-    borderTopWidth="1px"
-    borderTopStyle="solid"
-    borderTopColor="gray.200"
-  >
-    <Box height="40px">
-      <Textarea
-        placeholder="Type your message..."
-        resize="none"
-        fontSize="14px"
-        rows={1}
-        height="100%"
+  useEffect(() => {
+    const elem = ref.current;
+
+    if (elem) {
+      elem.scrollTop = elem.scrollHeight;
+    }
+  }, [ref, messages]);
+
+  return (
+    <Stack
+      ref={ref}
+      overflowY="auto"
+      paddingX="2rem"
+      paddingY="1rem"
+      marginTop="80px"
+      marginBottom="73px"
+      height="calc(100% - 80px - 73px)"
+      style={{ scrollbarColor: "#ccc transparent" }}
+      sx={{
+        "::-webkit-scrollbar": { width: "8px" },
+        "::-webkit-scrollbar-thumb": {
+          backgroundColor: "#ccc",
+          borderRadius: "8px",
+        },
+        "::-webkit-scrollbar-track": { backgroundColor: "transparent" },
+      }}
+    >
+      <Body2 textAlign="center" color="text.variant">
+        {messages.length ? "Beginning of conversation" : ""}
+      </Body2>
+      {messages.map((message) =>
+        message.uid === user?.uid ? (
+          <DarkChatMessage key={message.id} message={message.text} />
+        ) : (
+          <LightChatMessage key={message.id} message={message.text} />
+        )
+      )}
+    </Stack>
+  );
+};
+
+const Footer = (props: {
+  user?: firebase.User | null;
+  messagesCollection?: firebase.firestore.CollectionReference<firebase.firestore.DocumentData>;
+  currentContact?: UserPublic;
+}) => {
+  const { user, messagesCollection, currentContact } = props;
+
+  const [messageValue, setMessageValue] = useState("");
+  const [isLoading, setLoading] = useState(false);
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    setMessageValue(inputValue);
+  };
+
+  const handleSend = async () => {
+    setLoading(true);
+
+    try {
+      if (user && currentContact?.uid !== undefined && messagesCollection) {
+        const messageData: Message = {
+          uid: user.uid,
+          members: [user.uid, currentContact.uid],
+          text: messageValue,
+          createdAt: serverTimestamp,
+        };
+
+        await messagesCollection.add(messageData);
+        setMessageValue("");
+      }
+    } catch (err) {
+      // TODO: handle error
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: { key: string }) => {
+    if (e.key === "Enter") {
+      handleSend();
+    }
+  };
+
+  return (
+    <Grid
+      templateColumns="1fr min-content"
+      gap={2}
+      position="absolute"
+      width="100%"
+      bottom={0}
+      background="white"
+      paddingX="2rem"
+      paddingY="1rem"
+      borderTopWidth="1px"
+      borderTopStyle="solid"
+      borderTopColor="gray.200"
+    >
+      <Box height="40px">
+        <Input
+          disabled={currentContact === undefined}
+          value={messageValue}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          placeholder="Type your message..."
+          resize="none"
+          fontSize="14px"
+          rows={1}
+          height="100%"
+        />
+      </Box>
+      <IconButtonPrimary
+        aria-label="Send"
+        icon={<ArrowForwardIcon w={5} h={5} />}
+        isLoading={isLoading}
+        onClick={handleSend}
       />
-    </Box>
-    <IconButtonPrimary
-      aria-label="Send"
-      icon={<ArrowForwardIcon w={5} h={5} />}
-    />
-  </Grid>
-);
+    </Grid>
+  );
+};
 
-function ChatMessagingArea(): ReactElement {
+function ChatMessagingArea(props: {
+  user?: firebase.User | null;
+  chatRoomsCollection?: firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>;
+  currentChatRoomIdx?: number;
+  currentContact?: UserPublic;
+}): ReactElement {
+  const {
+    user,
+    chatRoomsCollection,
+    currentChatRoomIdx,
+    currentContact,
+  } = props;
+  const [messageCollection, setMessageCollection] = useState<
+    firebase.firestore.CollectionReference<firebase.firestore.DocumentData>
+  >();
+  const [messagesQuery, setMessagesQuery] = useState<
+    firebase.firestore.Query<firebase.firestore.DocumentData>
+  >();
+  const [messageValues, ,] = useCollection(messagesQuery);
+  const messages: Message[] = [];
+
+  if (messageValues) {
+    messageValues.docs.forEach((messageDoc) =>
+      messages.push({ ...messageDoc.data(), id: messageDoc.id } as Message)
+    );
+  }
+
+  useEffect(() => {
+    if (user && chatRoomsCollection && currentChatRoomIdx !== undefined) {
+      const chatRoomIds = chatRoomsCollection.docs.map((doc) => doc.id);
+      const currentChatRoomId = chatRoomIds[currentChatRoomIdx];
+
+      const messagesRef = chatRooms
+        .doc(currentChatRoomId)
+        .collection(CollectionName.Messages);
+
+      const query = messagesRef.orderBy("createdAt", "asc");
+
+      setMessageCollection(messagesRef);
+      setMessagesQuery(query);
+    }
+  }, [user, chatRoomsCollection, currentChatRoomIdx]);
+
   return (
     <DashboardCard padding={0} overflow="hidden" position="relative">
       <Header
-        photoUrl="https://placekitten.com/300/300"
-        name="Tommy Deng"
-        description="Interested in renting 1234 Sesame St. - “Beautiful apartment with great view”"
+        photoUrl={currentContact?.profilePicture || ""}
+        name={
+          currentContact
+            ? `${currentContact.firstName} ${currentContact.lastName}`
+            : ""
+        }
+        description=""
       />
-      <Body />
-      <Footer />
+      <Body user={user} messages={messages} />
+      <Footer
+        user={user}
+        messagesCollection={messageCollection}
+        currentContact={currentContact}
+      />
     </DashboardCard>
   );
 }

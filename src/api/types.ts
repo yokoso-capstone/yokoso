@@ -39,6 +39,7 @@ export type TenantEntry = UserPublic & {
 };
 
 export type UserPublic = {
+  uid?: string;
   firstName: string;
   lastName: string;
   profilePicture: string;
@@ -47,6 +48,7 @@ export type UserPublic = {
 };
 
 export type UserPrivate = {
+  uid?: string;
   address?: string;
   dob: timestamp;
   documents?: {
@@ -118,6 +120,7 @@ export type ChatRoom = {
 export type Message = {
   id?: string;
   uid: string;
+  members: string[];
   text: string;
   file?: {
     name: string;
