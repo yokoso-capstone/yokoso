@@ -1,6 +1,6 @@
 import { chakra, IconButton } from "@chakra-ui/react";
 
-const IconButtonBase = chakra(IconButton, {
+export const IconButtonBase = chakra(IconButton, {
   baseStyle: {
     borderRadius: "4px",
   },
