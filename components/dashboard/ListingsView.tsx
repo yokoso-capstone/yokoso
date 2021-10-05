@@ -62,7 +62,7 @@ const LandlordListingTable = (props: ListingProps) => {
                 title={`${listing.details.title.substring(0, 30)}${
                   listing.details.title.length > 30 ? "..." : ""
                 }`}
-                numBeds={listing.details.numBeds}
+                numBeds={listing.details.numBedrooms}
                 numBaths={listing.details.numBaths}
               />
             </Td>

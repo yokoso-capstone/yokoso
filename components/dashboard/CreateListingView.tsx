@@ -44,6 +44,7 @@ import {
   LeaseType,
   FurnishedStatus,
   Frequency,
+  Visibility,
 } from "@/src/api/types";
 import { listings, usersPublic } from "@/src/api/collections";
 import { auth, firestoreTimestamp, serverTimestamp } from "@/src/firebase";
@@ -74,7 +75,8 @@ type Part1DataType = {
   size: number | string;
   privateBathrooms: string;
   sharedBathrooms: string;
-  occupancy: string;
+  // TODO: replace with bedrooms
+  bedrooms: string;
   furnishedStatus: FurnishedStatus | "";
   smokingAllowed: boolean;
   petsAllowed: boolean;
@@ -89,6 +91,7 @@ type Part1DataType = {
   utilities: string[];
   utilitiesDescription: string;
   propertyTitle: string;
+  postingStatus: Visibility;
   propertyDescription: string;
   files: File[];
 };
@@ -109,7 +112,8 @@ const initialValuesPart1: Part1DataType = {
   size: "",
   privateBathrooms: "",
   sharedBathrooms: "",
-  occupancy: "",
+  // TODO: replace with bedroom
+  bedrooms: "",
   furnishedStatus: "",
   smokingAllowed: false,
   petsAllowed: false,
@@ -126,6 +130,7 @@ const initialValuesPart1: Part1DataType = {
   propertyTitle: "",
   propertyDescription: "",
   files: [] as File[],
+  postingStatus: "public",
 };
 
 function CreateListingView(): ReactElement {
@@ -186,7 +191,7 @@ function CreateListingView(): ReactElement {
 
           const listing: Listing = {
             owner: { ...userPublic, uid: user.uid },
-            visibility: "public",
+            visibility: part1Data.postingStatus,
             location: {
               address: part0Data.address,
               unitNumber: part0Data.unitNum,
@@ -210,13 +215,12 @@ function CreateListingView(): ReactElement {
               rentalSize: Number(part1Data.size),
               privateBathrooms: part1Data.privateBathrooms,
               sharedBathrooms: part1Data.sharedBathrooms,
-              maxOccupancy: part1Data.occupancy,
+              // TODO: remove this value --> will be stored in bedrooms
               furnished: part1Data.furnishedStatus,
               smokingAllowed: part1Data.smokingAllowed,
               petsAllowed: part1Data.petsAllowed,
-              numBedrooms: 2, // TODO:
+              numBedrooms: Number(part1Data.bedrooms),
               numBaths: 1, // TODO:
-              numBeds: 2, // TODO:
             },
             lease: {
               price: Number(part1Data.rentalPrice),
@@ -489,6 +493,7 @@ const Part0 = (props: {
                             <FormLabel>Unit Number</FormLabel>
                             <Input
                               {...field}
+                              type="number"
                               variant="flushed"
                               borderBottomColor="gray"
                               placeholder="88"
@@ -669,16 +674,22 @@ const Part1 = (props: {
                           )}
                         </Field>
                         <Box width="100%">
-                          <FormLabel>Private Bathrooms</FormLabel>
+                          <FormLabel>Bedrooms</FormLabel>
                           <SelectControl
-                            name="privateBathrooms"
+                            // TODO: replace with bedroom
+                            name="bedrooms"
                             selectProps={{ placeholder: "Select option" }}
                             isRequired
                           >
+                            <option value="0">0</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
-                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8+">8+</option>
                           </SelectControl>
                         </Box>
                       </Stack>
@@ -690,6 +701,7 @@ const Part1 = (props: {
                             selectProps={{ placeholder: "Select option" }}
                             isRequired
                           >
+                            <option value="0">0</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -697,20 +709,17 @@ const Part1 = (props: {
                           </SelectControl>
                         </Box>
                         <Box width="100%">
-                          <FormLabel>Max Occupancy</FormLabel>
+                          <FormLabel>Private Bathrooms</FormLabel>
                           <SelectControl
-                            name="occupancy"
+                            name="privateBathrooms"
                             selectProps={{ placeholder: "Select option" }}
                             isRequired
                           >
+                            <option value="0">0</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8+">8+</option>
+                            <option value="4+">4+</option>
                           </SelectControl>
                         </Box>
                       </Stack>
@@ -1037,6 +1046,13 @@ const Part1 = (props: {
                         </FormControl>
                       )}
                     </Field>
+                    <Box>
+                      <FormLabel>Posting Status</FormLabel>
+                      <SelectControl name="postingStatus" isRequired>
+                        <option value="public">Public</option>
+                        <option value="draft">Draft</option>
+                      </SelectControl>
+                    </Box>
                     <Field
                       name="propertyDescription"
                       validate={validateCompletedString}

@@ -68,9 +68,7 @@ function ListingPage(
       propertyType,
       rentalSpace,
       rentalSize,
-      maxOccupancy,
       numBedrooms,
-      numBeds,
       numBaths,
     },
     features,
@@ -108,15 +106,11 @@ function ListingPage(
               <Heading4 marginBottom="8px">{title}</Heading4>
               <HStack>
                 <Caption>
-                  {numBedrooms} bedroom{numBedrooms > 1 && "s"}
+                  {numBedrooms} Bedroom{numBedrooms > 1 && "s"}
                 </Caption>
                 <Caption>·</Caption>
                 <Caption>
-                  {numBeds} bed{numBeds > 1 && "s"}
-                </Caption>
-                <Caption>·</Caption>
-                <Caption>
-                  {numBaths} bath{numBaths > 1 && "s"}
+                  {numBaths} Bath{numBaths > 1 && "s"}
                 </Caption>
               </HStack>
             </Box>
@@ -157,7 +151,6 @@ function ListingPage(
                   <ListItem>Property type: {propertyType}</ListItem>
                   <ListItem>Space: {rentalSpace}</ListItem>
                   <ListItem>Area: {rentalSize} sq ft</ListItem>
-                  <ListItem>Max occupancy: {maxOccupancy}</ListItem>
                 </Stack>
               </UnorderedList>
             </Box>

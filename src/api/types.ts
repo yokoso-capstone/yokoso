@@ -84,13 +84,11 @@ export type Listing = {
     rentalSize: number;
     privateBathrooms: string;
     sharedBathrooms: string;
-    maxOccupancy: string;
     furnished: FurnishedStatus;
     smokingAllowed: boolean;
     petsAllowed: boolean;
     numBedrooms: number;
     numBaths: number;
-    numBeds: number;
   };
   lease: {
     price: number;
