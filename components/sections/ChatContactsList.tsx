@@ -175,6 +175,7 @@ function ChatContactsList(props: {
               <ContactPreview
                 photoUrl={contact.profilePicture}
                 name={`${contact.firstName} ${contact.lastName}`}
+                // TODO: potentially add last message details here
                 message=""
               />
             </Box>

@@ -7,9 +7,13 @@ module.exports = {
     "^.+\\.tsx?$": "ts-jest",
     "^.+\\.svg$": "<rootDir>/svgTransform.js",
   },
-  testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
-  moduleFileExtensions: ["tsx", "js", "jsx", "json", "node"],
-  testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/node_modules/"],
+  testRegex: "(.*|(\\.|/)(test|spec))\\.tsx?$",
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  testPathIgnorePatterns: [
+    "<rootDir>/.next/",
+    "<rootDir>/out/",
+    "<rootDir>/node_modules/",
+  ],
   snapshotSerializers: ["enzyme-to-json/serializer"],
   globals: {
     "ts-jest": {

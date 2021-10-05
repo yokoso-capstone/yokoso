@@ -68,6 +68,8 @@ service cloud.firestore {
         request.resource.data["initiatedBy"] == request.auth.uid &&
         request.resource.data["createdAt"] is timestamp &&
         request.resource.data["createdAt"] == request.time;
+      allow update: if
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(["listings"]);
 
       match /messages/{msgId} {
         allow read: if
