@@ -1,15 +1,34 @@
 import { ChangeEvent, ReactElement, useEffect, useRef, useState } from "react";
+import NextLink from "next/link";
+import RoutePath from "@/src/routes";
+import { ButtonPrimary, ButtonSecondary } from "@/components/core/Button";
 import {
   IconButtonPrimary,
   IconButtonSecondary,
 } from "@/components/core/IconButton";
 import { DashboardCard } from "@/components/core/Layout";
 import { Body2 } from "@/components/core/Text";
-import { Box, Grid, Flex, Image, Input, Stack } from "@chakra-ui/react";
+import {
+  Box,
+  Grid,
+  Flex,
+  Image,
+  Input,
+  Link,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Stack,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { GoKebabVertical } from "react-icons/go";
 import firebase from "firebase/app";
-import { Message, UserPublic } from "@/src/api/types";
+import { ChatRoom, Listing, Message, UserPublic } from "@/src/api/types";
 import { CollectionName, chatRooms } from "@/src/api/collections";
 import { serverTimestamp } from "@/src/firebase";
 import { useCollection } from "react-firebase-hooks/firestore";
@@ -17,62 +36,104 @@ import { useCollection } from "react-firebase-hooks/firestore";
 const Header = (props: {
   photoUrl?: string;
   name: string;
-  description: string;
+  listing?: Listing;
 }) => {
-  const { photoUrl, name, description } = props;
+  const { photoUrl, name, listing } = props;
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
-    <Grid
-      templateColumns="min-content 1fr min-content"
-      alignItems="center"
-      padding="1rem 2rem"
-      shadow="md"
-      position="absolute"
-      top={0}
-      width="100%"
-      background="white"
-      borderBottomWidth="1px"
-      borderBottomStyle="solid"
-      borderBottomColor="gray.200"
-      gap={4}
-      zIndex={1}
-    >
-      <Box width="48px">
-        <Image
-          src={photoUrl}
-          fallback={
-            <Box bg="gray.100" width="48px" height="48px" rounded="full" />
-          }
-          borderRadius="full"
+    <>
+      <Grid
+        templateColumns="min-content 1fr min-content"
+        alignItems="center"
+        padding="1rem 2rem"
+        shadow="md"
+        position="absolute"
+        top={0}
+        width="100%"
+        background="white"
+        borderBottomWidth="1px"
+        borderBottomStyle="solid"
+        borderBottomColor="gray.200"
+        gap={4}
+        zIndex={1}
+      >
+        <Box width="48px">
+          <Image
+            src={photoUrl}
+            fallback={
+              <Box bg="gray.100" width="48px" height="48px" rounded="full" />
+            }
+            borderRadius="full"
+          />
+        </Box>
+        <Flex flexDirection="column">
+          <Body2
+            fontWeight="bold"
+            display="-webkit-box"
+            style={{ WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}
+            overflow="hidden"
+            textOverflow="ellipsis"
+          >
+            {name}
+          </Body2>
+          <Body2
+            color="text.variant"
+            display="-webkit-box"
+            style={{ WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}
+            overflow="hidden"
+            textOverflow="ellipsis"
+          >
+            {listing
+              ? `Interested in your "${listing.details.title} listing" at ${
+                  listing.location.unitNumber
+                    ? `${listing.location.unitNumber} `
+                    : ""
+                }${listing.location.address}, ${listing.location.cityName}, ${
+                  listing.location.province
+                }`
+              : ""}
+          </Body2>
+        </Flex>
+        <IconButtonSecondary
+          aria-label="More"
+          border="none"
+          fontSize="24px"
+          icon={<GoKebabVertical />}
+          background="transparent"
+          onClick={onOpen}
         />
-      </Box>
-      <Flex flexDirection="column">
-        <Body2
-          fontWeight="bold"
-          display="-webkit-box"
-          style={{ WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}
-          overflow="hidden"
-          textOverflow="ellipsis"
-        >
-          {name}
-        </Body2>
-        <Body2
-          color="text.variant"
-          display="-webkit-box"
-          style={{ WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}
-          overflow="hidden"
-          textOverflow="ellipsis"
-        >
-          {description}
-        </Body2>
-      </Flex>
-      <IconButtonSecondary
-        aria-label="More"
-        border="none"
-        fontSize="24px"
-        icon={<GoKebabVertical />}
-        background="transparent"
-      />
-    </Grid>
+      </Grid>
+
+      <Modal isOpen={isOpen} onClose={onClose} size="xs" isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Actions</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Stack>
+              {/* TODO: handle error situation of no listing or ID (shouldn't happen?) */}
+              <NextLink
+                href={`${RoutePath.Listings}/${listing?.id || ""}`}
+                passHref
+              >
+                <Link>
+                  <ButtonSecondary isFullWidth>View listing</ButtonSecondary>
+                </Link>
+              </NextLink>
+              {/* TODO: implement or remove */}
+              <ButtonSecondary isFullWidth>Accept tenant</ButtonSecondary>
+            </Stack>
+          </ModalBody>
+
+          <ModalFooter>
+            <ButtonPrimary onClick={onClose} isFullWidth>
+              Close
+            </ButtonPrimary>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 
@@ -260,6 +321,21 @@ function ChatMessagingArea(props: {
   const [messageValues, ,] = useCollection(messagesQuery);
   const messages: Message[] = [];
 
+  const currentRoomCollection = chatRoomsCollection?.docs[
+    currentChatRoomIdx || 0
+  ].data() as ChatRoom | undefined;
+  // Take most recent associated listing
+  const associatedListing =
+    currentRoomCollection &&
+    Object.values(currentRoomCollection.listings)
+      .sort(
+        (a, b) =>
+          (a.initiatedAt as firebase.firestore.Timestamp).toMillis() -
+          (b.initiatedAt as firebase.firestore.Timestamp).toMillis()
+      )
+      .map((listing) => listing.data)
+      .pop();
+
   if (messageValues) {
     messageValues.docs.forEach((messageDoc) =>
       messages.push({ ...messageDoc.data(), id: messageDoc.id } as Message)
@@ -291,7 +367,7 @@ function ChatMessagingArea(props: {
             ? `${currentContact.firstName} ${currentContact.lastName}`
             : ""
         }
-        description=""
+        listing={associatedListing}
       />
       <Body user={user} messages={messages} />
       <Footer
