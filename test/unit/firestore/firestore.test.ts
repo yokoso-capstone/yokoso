@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import * as firebase from "@firebase/rules-unit-testing";
 
 const PROJECT_ID = "yokoso-staging";

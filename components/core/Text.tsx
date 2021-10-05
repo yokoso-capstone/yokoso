@@ -1,3 +1,4 @@
+import React from "react";
 import { chakra, Heading, Link as ChakraLink, Text } from "@chakra-ui/react";
 
 export const HeadingBase = chakra(Heading, {

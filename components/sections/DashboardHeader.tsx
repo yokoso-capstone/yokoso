@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { Box, Flex, Stack, IconButton, chakra, Image } from "@chakra-ui/react";
-import { Heading4 } from "@/components/core/Text";
+import { Heading4 } from "../core/Text";
 import NotificationBellSvg from "../svg/notification-bell.svg";
 
 export const NotificationBell = chakra(NotificationBellSvg);
