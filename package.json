@@ -13,8 +13,8 @@
     "format:check": "prettier --check '**/*'.{js,ts,tsx,css} --ignore-path .gitignore",
     "lint": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore",
     "lint-fix": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore --fix",
-    "test:unit:firestore": "jest test/unit/firestore",
-    "test": "jest"
+    "test:unit:components": "jest components/__tests__",
+    "test:unit:firestore": "jest test/unit/firestore"
   },
   "license": "MIT",
   "dependencies": {

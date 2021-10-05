@@ -50,7 +50,7 @@ npm run lint
 npm run lint-fix
 
 # run Enzyme unit tests
-npm run test
+npm run test:unit:components
 
 # run Firestore security rules unit tests
 npm run test:unit:firestore
