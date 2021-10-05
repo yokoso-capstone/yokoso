@@ -7,7 +7,7 @@ import {
 } from "react";
 import { DashboardCard } from "@/components/core/Layout";
 import { TextBase, Body2 } from "@/components/core/Text";
-import { IconButtonSecondary } from "@/components/core/Button";
+import { IconButtonSecondary } from "@/components/core/IconButton";
 import { Box, Flex, Grid, Image, Stack } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
 import firebase from "firebase/app";

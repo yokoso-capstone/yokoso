@@ -1,4 +1,4 @@
-import { chakra, Button, IconButton } from "@chakra-ui/react";
+import { chakra, Button } from "@chakra-ui/react";
 
 export const ButtonBase = chakra(Button, {
   baseStyle: {
@@ -121,51 +121,5 @@ export const SideBarButton = chakra(Button, {
     borderLeftColor: "transparent",
     _hover: { background: "gray.700" },
     _active: { background: "common.dark" },
-  },
-});
-
-const IconButtonBase = IconButton;
-
-export const IconButtonPrimary = chakra(IconButtonBase, {
-  baseStyle: {
-    fontWeight: "bold",
-    color: "white",
-    background: "common.dark",
-    borderWidth: "1px",
-    borderStyle: "solid",
-    borderColor: "common.dark",
-    _hover: {
-      background: "common.dark_hover",
-    },
-    _active: {
-      background: "common.dark",
-    },
-    _disabled: {
-      _hover: {
-        background: "common.dark_hover",
-      },
-    },
-  },
-});
-
-export const IconButtonSecondary = chakra(IconButtonBase, {
-  baseStyle: {
-    fontWeight: "bold",
-    color: "text.primary",
-    background: "common.light",
-    borderWidth: "1px",
-    borderStyle: "solid",
-    borderColor: "common.dark_hover",
-    _hover: {
-      background: "common.light_hover",
-    },
-    _active: {
-      background: "common.light_active",
-    },
-    _disabled: {
-      _hover: {
-        background: "common.light_hover",
-      },
-    },
   },
 });

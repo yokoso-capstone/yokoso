@@ -2,7 +2,7 @@ import { ChangeEvent, ReactElement, useEffect, useRef, useState } from "react";
 import {
   IconButtonPrimary,
   IconButtonSecondary,
-} from "@/components/core/Button";
+} from "@/components/core/IconButton";
 import { DashboardCard } from "@/components/core/Layout";
 import { Body2 } from "@/components/core/Text";
 import { Box, Grid, Flex, Image, Input, Stack } from "@chakra-ui/react";
