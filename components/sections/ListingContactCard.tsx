@@ -1,5 +1,6 @@
 import { useState, ChangeEvent, ReactElement } from "react";
 import { useRouter } from "next/router";
+import RoutePath, { RoutePathDashboard } from "@/src/routes";
 import { ButtonPrimary } from "@/components/core/Button";
 import { Card } from "@/components/core/Layout";
 import { Body1, Heading4, Heading5, TextBase } from "@/components/core/Text";
@@ -51,6 +52,16 @@ function ListingCard(props: ListingCardProps): ReactElement {
   const router = useRouter();
   const toast = useToast();
   const placeholderText = `Hi ${firstName}, I am interested in your listing. Is it still available? When would be a good time to view it?`;
+  const isSameUser = userUid === ownerUid;
+  let disabledErrorMsg = "";
+
+  if (disabled) {
+    disabledErrorMsg = "Create an account or log in to get started";
+  } else if (isSameUser) {
+    disabledErrorMsg = "Can't sent a message to yourself";
+  } else {
+    disabledErrorMsg = "Enter a message to send";
+  }
 
   const handleFocus = () => {
     if (!value) {
@@ -73,16 +84,25 @@ function ListingCard(props: ListingCardProps): ReactElement {
       const chatRoomRef = chatRooms.doc(chatId);
       const chatRoomDoc = await chatRoomRef.get();
 
-      if (!chatRoomDoc.exists) {
+      // Listing data + metadata that may be set if it's not already recorded as associated with the chat room
+      const currentListingData = {
+        [listing.id || ""]: {
+          initiatedAt: serverTimestamp,
+          data: listing,
+        },
+      };
+
+      if (chatRoomDoc.exists) {
+        const chatRoomData = chatRoomDoc.data() as ChatRoom;
+        // Merge current and existing listings with existing ones taking priority during conflict
+        const listings = { ...currentListingData, ...chatRoomData.listings };
+
+        await chatRoomRef.update({ listings });
+      } else {
         const chatRoomData: ChatRoom = {
           members,
           initiatedBy: userUid,
-          listings: {
-            [listing.id || ""]: {
-              initiatedAt: serverTimestamp,
-              data: listing,
-            },
-          },
+          listings: currentListingData,
           createdAt: serverTimestamp,
         };
         await chatRoomRef.set(chatRoomData);
@@ -97,7 +117,7 @@ function ListingCard(props: ListingCardProps): ReactElement {
         createdAt: serverTimestamp,
       };
       await messagesRef.add(messageData);
-      router.push("/dashboard/chat");
+      router.push(`${RoutePath.Dashboard}/${RoutePathDashboard.Chat}`);
     } catch (err) {
       toast({
         title: "Something went wrong",
@@ -152,7 +172,7 @@ function ListingCard(props: ListingCardProps): ReactElement {
         <Stack spacing="16px">
           <Heading5>Contact</Heading5>
           <Textarea
-            disabled={disabled}
+            disabled={disabled || isSameUser}
             placeholder={placeholderText}
             size="sm"
             borderRadius="4px"
@@ -166,11 +186,7 @@ function ListingCard(props: ListingCardProps): ReactElement {
           <Tooltip
             isDisabled={Boolean(value)}
             hasArrow
-            label={
-              disabled
-                ? "Create an account or log in to get started"
-                : "Enter a message to send"
-            }
+            label={disabledErrorMsg}
           >
             <Box>
               <ButtonPrimary
