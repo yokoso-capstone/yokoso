@@ -129,11 +129,18 @@ function ImageCarousel({ images }: ImageCarouselProps): ReactElement {
             <CarouselImageBox
               backgroundImage={`url(${image})`}
               backgroundSize="cover"
-              filter="blur(16px) brightness(1.2) saturate(0.75) contrast(75%)"
+              filter="brightness(1.5) saturate(0.75) contrast(75%)"
               transform="scale(1.2)"
             />
             <CarouselImageBox
               zIndex={1}
+              backgroundImage={`url(${image})`}
+              backgroundSize="cover"
+              filter="blur(16px) brightness(1.2) saturate(0.75) contrast(75%)"
+              transform="scale(1.2)"
+            />
+            <CarouselImageBox
+              zIndex={2}
               backgroundImage={`url(${image})`}
               backgroundSize="contain"
             />
