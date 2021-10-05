@@ -111,8 +111,15 @@ export type Listing = {
 export type ChatRoom = {
   id?: string;
   members: string[];
+  initiatedBy: string;
   messages?: {
     [msgId: string]: Message;
+  };
+  listings: {
+    [listingId: string]: {
+      initiatedAt: timestamp;
+      data: Listing;
+    };
   };
   createdAt: timestamp;
 };

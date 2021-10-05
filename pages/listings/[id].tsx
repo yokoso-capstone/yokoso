@@ -40,7 +40,7 @@ export const getServerSideProps = async (
 
     const response = await fetch(`${listingsRest}/${documentId}`);
     const { fields } = await response.json();
-    const props: Listing = FireStoreParser(fields);
+    const props: Listing = { ...FireStoreParser(fields), id: documentId };
 
     // TODO: pass user token and display private listings belonging to them
     if (props.visibility !== "public") {
@@ -204,6 +204,7 @@ function ListingPage(
                 disabled={error !== undefined || (!loading && !user)}
                 userUid={user?.uid || ""}
                 ownerUid={uid}
+                listing={props}
               />
             </Box>
           </Box>

@@ -1,4 +1,5 @@
 import { useState, ChangeEvent, ReactElement } from "react";
+import { useRouter } from "next/router";
 import { ButtonPrimary } from "@/components/core/Button";
 import { Card } from "@/components/core/Layout";
 import { Body1, Heading4, Heading5, TextBase } from "@/components/core/Text";
@@ -17,7 +18,7 @@ import {
 import { FaCheckCircle } from "react-icons/fa";
 import { getUTCMonthString } from "@/src/utils";
 import { CollectionName, chatRooms } from "@/src/api/collections";
-import { ChatRoom, Message } from "@/src/api/types";
+import { ChatRoom, Listing, Message } from "@/src/api/types";
 import { serverTimestamp } from "@/src/firebase";
 
 interface ListingCardProps {
@@ -29,6 +30,7 @@ interface ListingCardProps {
   disabled: boolean;
   userUid: string;
   ownerUid: string;
+  listing: Listing;
 }
 
 function ListingCard(props: ListingCardProps): ReactElement {
@@ -41,10 +43,12 @@ function ListingCard(props: ListingCardProps): ReactElement {
     disabled,
     userUid,
     ownerUid,
+    listing,
   } = props;
   const joinedDate = new Date(joined);
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const toast = useToast();
   const placeholderText = `Hi ${firstName}, I am interested in your listing. Is it still available? When would be a good time to view it?`;
 
@@ -72,6 +76,13 @@ function ListingCard(props: ListingCardProps): ReactElement {
       if (!chatRoomDoc.exists) {
         const chatRoomData: ChatRoom = {
           members,
+          initiatedBy: userUid,
+          listings: {
+            [listing.id || ""]: {
+              initiatedAt: serverTimestamp,
+              data: listing,
+            },
+          },
           createdAt: serverTimestamp,
         };
         await chatRoomRef.set(chatRoomData);
@@ -86,6 +97,7 @@ function ListingCard(props: ListingCardProps): ReactElement {
         createdAt: serverTimestamp,
       };
       await messagesRef.add(messageData);
+      router.push("/dashboard/chat");
     } catch (err) {
       toast({
         title: "Something went wrong",

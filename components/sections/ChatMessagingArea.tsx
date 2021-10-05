@@ -15,7 +15,7 @@ import { serverTimestamp } from "@/src/firebase";
 import { useCollection } from "react-firebase-hooks/firestore";
 
 const Header = (props: {
-  photoUrl: string;
+  photoUrl?: string;
   name: string;
   description: string;
 }) => {
@@ -37,7 +37,13 @@ const Header = (props: {
       zIndex={1}
     >
       <Box width="48px">
-        <Image src={photoUrl} borderRadius="full" />
+        <Image
+          src={photoUrl}
+          fallback={
+            <Box bg="gray.100" width="48px" height="48px" rounded="full" />
+          }
+          borderRadius="full"
+        />
       </Box>
       <Flex flexDirection="column">
         <Body2
@@ -165,6 +171,10 @@ const Footer = (props: {
   };
 
   const handleSend = async () => {
+    if (!messageValue) {
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -275,7 +285,7 @@ function ChatMessagingArea(props: {
   return (
     <DashboardCard padding={0} overflow="hidden" position="relative">
       <Header
-        photoUrl={currentContact?.profilePicture || ""}
+        photoUrl={currentContact?.profilePicture}
         name={
           currentContact
             ? `${currentContact.firstName} ${currentContact.lastName}`

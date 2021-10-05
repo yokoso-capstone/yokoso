@@ -102,7 +102,16 @@ describe("Firestore security rules", () => {
   describe("Chat room collection", () => {
     it("Allows creation of a new chat room", async () => {
       const db = getFirestore(myAuth);
-      const data = { members: [myId, theirId] };
+      const data = {
+        members: [myId, theirId],
+        initiatedBy: myId,
+        listings: {
+          listingId: {
+            initiatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+        },
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      };
       const testCollection = db.collection("chat-rooms");
 
       await firebase.assertSucceeds(testCollection.add(data));
@@ -110,7 +119,16 @@ describe("Firestore security rules", () => {
 
     it("Disallows creation of a new chat room with one member", async () => {
       const db = getFirestore(myAuth);
-      const data = { members: [myId] };
+      const data = {
+        members: [myId],
+        initiatedBy: myId,
+        listings: {
+          listingId: {
+            initiatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+        },
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      };
       const testCollection = db.collection("chat-rooms");
 
       await firebase.assertFails(testCollection.add(data));
@@ -118,7 +136,16 @@ describe("Firestore security rules", () => {
 
     it("Disallows creation of a new chat room without the user being a member", async () => {
       const db = getFirestore(myAuth);
-      const data = { members: [theirId, theirId] };
+      const data = {
+        members: [theirId, theirId],
+        initiatedBy: myId,
+        listings: {
+          listingId: {
+            initiatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+        },
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      };
       const testCollection = db.collection("chat-rooms");
 
       await firebase.assertFails(testCollection.add(data));
@@ -127,11 +154,21 @@ describe("Firestore security rules", () => {
     describe("Messages sub-collection", () => {
       it("Allows creation of messages", async () => {
         const db = getFirestore(myAuth);
-        const chatRoomData = { members: [myId, theirId] };
+        const chatRoomData = {
+          members: [myId, theirId],
+          initiatedBy: myId,
+          listings: {
+            listingId: {
+              initiatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            },
+          },
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        };
         const chatRef = await db.collection("chat-rooms").add(chatRoomData);
 
         const messageData = {
           uid: myId,
+          members: [myId, theirId],
           text: "hello",
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         };
