@@ -1,4 +1,4 @@
-import { useRef, useState, ReactElement } from "react";
+import React, { useRef, useState, ReactElement } from "react";
 import styled from "@emotion/styled";
 import { chakra, Box, IconButton, Spinner } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";

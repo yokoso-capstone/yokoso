@@ -7,6 +7,9 @@ module.exports = {
     "^.+\\.tsx?$": "ts-jest",
     "^.+\\.svg$": "<rootDir>/svgTransform.js",
   },
+  moduleNameMapper: {
+    "^.+\\.css$": "jest-transform-stub",
+  },
   testRegex: "(.*|(\\.|/)(test|spec))\\.tsx?$",
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   testPathIgnorePatterns: [
