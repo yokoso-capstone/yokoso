@@ -73,9 +73,9 @@ type Part0DataType = {
 
 type Part1DataType = {
   size: number | string;
-  privateBathrooms: string;
-  sharedBathrooms: string;
-  // TODO: replace with bedrooms
+  // privateBathrooms: string;
+  // sharedBathrooms: string;
+  bathrooms: string;
   bedrooms: string;
   furnishedStatus: FurnishedStatus | "";
   smokingAllowed: boolean;
@@ -110,10 +110,8 @@ const initialValuesPart0: Part0DataType = {
 
 const initialValuesPart1: Part1DataType = {
   size: "",
-  privateBathrooms: "",
-  sharedBathrooms: "",
-  // TODO: replace with bedroom
   bedrooms: "",
+  bathrooms: "",
   furnishedStatus: "",
   smokingAllowed: false,
   petsAllowed: false,
@@ -201,7 +199,6 @@ function CreateListingView(): ReactElement {
               cityName: part0Data.city,
               province: part0Data.province,
               country: part0Data.country,
-              // TODO: do for real (and use geolocation type)
               coordinate: {
                 longitude: coordinates[0],
                 latitude: coordinates[1],
@@ -213,14 +210,11 @@ function CreateListingView(): ReactElement {
               propertyType: part0Data.propertyType,
               rentalSpace: part0Data.rentalType,
               rentalSize: Number(part1Data.size),
-              privateBathrooms: part1Data.privateBathrooms,
-              sharedBathrooms: part1Data.sharedBathrooms,
-              // TODO: remove this value --> will be stored in bedrooms
               furnished: part1Data.furnishedStatus,
               smokingAllowed: part1Data.smokingAllowed,
               petsAllowed: part1Data.petsAllowed,
               numBedrooms: Number(part1Data.bedrooms),
-              numBaths: 1, // TODO:
+              numBaths: Number(part1Data.bathrooms),
             },
             lease: {
               price: Number(part1Data.rentalPrice),
@@ -695,23 +689,9 @@ const Part1 = (props: {
                       </Stack>
                       <Stack direction="row" spacing={5}>
                         <Box width="100%">
-                          <FormLabel>Shared Bathrooms</FormLabel>
+                          <FormLabel>Bathrooms</FormLabel>
                           <SelectControl
-                            name="sharedBathrooms"
-                            selectProps={{ placeholder: "Select option" }}
-                            isRequired
-                          >
-                            <option value="0">0</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4+">4+</option>
-                          </SelectControl>
-                        </Box>
-                        <Box width="100%">
-                          <FormLabel>Private Bathrooms</FormLabel>
-                          <SelectControl
-                            name="privateBathrooms"
+                            name="bathrooms"
                             selectProps={{ placeholder: "Select option" }}
                             isRequired
                           >

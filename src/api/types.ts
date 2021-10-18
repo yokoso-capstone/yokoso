@@ -10,7 +10,7 @@ export type FirestoreFieldValue = firebase.firestore.FieldValue;
 
 export type FirestoreTimestamp = firebase.firestore.Timestamp;
 
-export type Visibility = "public" | "draft" | "hidden";
+export type Visibility = "public" | "draft";
 
 export type PropertyType = "Apartment" | "House" | "Townhouse";
 
@@ -82,8 +82,6 @@ export type Listing = {
     propertyType: PropertyType;
     rentalSpace: RentalSpace;
     rentalSize: number;
-    privateBathrooms: string;
-    sharedBathrooms: string;
     furnished: FurnishedStatus;
     smokingAllowed: boolean;
     petsAllowed: boolean;
