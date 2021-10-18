@@ -40,14 +40,15 @@ export const getServerSideProps = async (
 
     const response = await fetch(`${listingsRest}/${documentId}`);
     const { fields } = await response.json();
-    const props: Listing = FireStoreParser(fields);
+    const listing: Listing = { ...FireStoreParser(fields), id: documentId };
 
     // TODO: pass user token and display private listings belonging to them
-    if (props.visibility !== "public") {
+    if (listing.visibility !== "public") {
       throw Error("Listing is not public");
     }
+    const data = { listing };
 
-    const result: GetServerSidePropsResult<typeof props> = { props };
+    const result: GetServerSidePropsResult<typeof data> = { props: data };
 
     return result;
   } catch (error) {
@@ -59,8 +60,9 @@ export const getServerSideProps = async (
 function ListingPage(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ): ReactElement {
+  const { listing } = props;
   const {
-    owner: { firstName, lastName, profilePicture, createdAt },
+    owner: { firstName, lastName, profilePicture, createdAt, uid },
     location: { cityName },
     details: {
       title,
@@ -75,7 +77,7 @@ function ListingPage(
     lease: { price },
     utilities,
     images,
-  } = props;
+  } = listing;
   const maxDescriptionCharacters = 300;
   const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
   const [user, loading, error] = useAuthState(auth);
@@ -195,6 +197,9 @@ function ListingPage(
                 profilePicture={profilePicture}
                 joined={createdAt as number}
                 disabled={error !== undefined || (!loading && !user)}
+                userUid={user?.uid || ""}
+                ownerUid={uid}
+                listing={listing}
               />
             </Box>
           </Box>

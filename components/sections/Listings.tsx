@@ -1,5 +1,6 @@
+import React from "react";
 import { Box, Image, Center } from "@chakra-ui/react";
-import { Caption, Body1 } from "@/components/core/Text";
+import { Caption, Body1 } from "../core/Text";
 
 interface DescriptionProps {
   location: string;

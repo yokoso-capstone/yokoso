@@ -50,11 +50,15 @@ npm run lint
 npm run lint-fix
 
 # run Enzyme unit tests
-npm run test
+npm run test:unit:components
 
 # run Firestore security rules unit tests
 npm run test:unit:firestore
 ```
+
+Note that Firestore security rules unit tests must be ran with the Firebase emulator installed and running for Firestore.
+One quick way is to run `npx -y firebase-tools emulators:exec --only firestore "npm run test:unit:firestore"` which will install the emulator (if not already installed) and run the tests.
+See the [Firebase documentation](https://firebase.google.com/docs/firestore/security/test-rules-emulator) for more details.
 
 ## Preview
 

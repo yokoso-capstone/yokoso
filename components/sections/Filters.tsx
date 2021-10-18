@@ -1,6 +1,6 @@
+import React from "react";
 import Slider from "rc-slider";
 import "rc-tooltip/assets/bootstrap.css";
-import { Heading6 } from "@/components/core/Text";
 import {
   HStack,
   Center,
@@ -10,6 +10,7 @@ import {
   InputLeftElement,
   InputGroup,
 } from "@chakra-ui/react";
+import { Heading6 } from "../core/Text";
 
 interface CounterProps {
   onClickMinus: () => any;
@@ -49,7 +50,7 @@ export function CounterFilter(props: CounterProps) {
 export function SliderFilter(props: SliderProps) {
   const { max, min, value, onChange } = props;
   return (
-    <Box p="10px">
+    <Box p="10px" aria-label="base">
       <Range
         allowCross={false}
         defaultValue={value}

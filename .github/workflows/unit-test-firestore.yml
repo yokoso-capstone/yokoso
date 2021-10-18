@@ -1,4 +1,4 @@
-name: Unit test
+name: Unit test Firestore security rules
 on:
   push:
     paths:

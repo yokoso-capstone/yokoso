@@ -2,10 +2,7 @@ import { chakra, IconButton } from "@chakra-ui/react";
 
 export const IconButtonBase = chakra(IconButton, {
   baseStyle: {
-    fontSize: "14px",
-    height: "auto",
     borderRadius: "4px",
-    padding: "14px 24px",
   },
 });
 
@@ -14,6 +11,7 @@ export const IconButtonPrimary = chakra(IconButtonBase, {
     fontWeight: "bold",
     color: "white",
     background: "common.dark",
+    borderWidth: "1px",
     borderStyle: "solid",
     borderColor: "common.dark",
     _hover: {
@@ -25,6 +23,28 @@ export const IconButtonPrimary = chakra(IconButtonBase, {
     _disabled: {
       _hover: {
         background: "common.dark_hover",
+      },
+    },
+  },
+});
+
+export const IconButtonSecondary = chakra(IconButtonBase, {
+  baseStyle: {
+    fontWeight: "bold",
+    color: "text.primary",
+    background: "common.light",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: "common.dark_hover",
+    _hover: {
+      background: "common.light_hover",
+    },
+    _active: {
+      background: "common.light_active",
+    },
+    _disabled: {
+      _hover: {
+        background: "common.light_hover",
       },
     },
   },

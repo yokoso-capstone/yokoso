@@ -1,4 +1,4 @@
-import { useRef, useState, ReactElement } from "react";
+import React, { useRef, useState, ReactElement } from "react";
 import styled from "@emotion/styled";
 import { chakra, Box, IconButton, Spinner } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
@@ -129,11 +129,18 @@ function ImageCarousel({ images }: ImageCarouselProps): ReactElement {
             <CarouselImageBox
               backgroundImage={`url(${image})`}
               backgroundSize="cover"
-              filter="blur(16px) brightness(1.2) saturate(0.75) contrast(75%)"
+              filter="brightness(1.5) saturate(0.75) contrast(75%)"
               transform="scale(1.2)"
             />
             <CarouselImageBox
               zIndex={1}
+              backgroundImage={`url(${image})`}
+              backgroundSize="cover"
+              filter="blur(16px) brightness(1.2) saturate(0.75) contrast(75%)"
+              transform="scale(1.2)"
+            />
+            <CarouselImageBox
+              zIndex={2}
               backgroundImage={`url(${image})`}
               backgroundSize="contain"
             />
