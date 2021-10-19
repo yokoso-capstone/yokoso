@@ -40,7 +40,7 @@ import { Listing, Visibility } from "@/src/api/types";
 import { auth } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { listings as listingsCollection } from "@/src/api/collections";
-import { useCollectionOnce } from "react-firebase-hooks/firestore";
+import { useCollection } from "react-firebase-hooks/firestore";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { Heading5 } from "../core/Text";
 
@@ -213,7 +213,7 @@ function ListingsView(): ReactElement {
         : undefined,
     [user, visibility]
   );
-  const [snapshot] = useCollectionOnce(query);
+  const [snapshot] = useCollection(query);
   const listings = snapshot?.docs.map(
     (doc) =>
       (({
@@ -249,9 +249,6 @@ function ListingsView(): ReactElement {
 
         <TabPanels>
           <TabPanel paddingX={0}>
-            <LandlordListingTable listings={listings} />
-          </TabPanel>
-          <TabPanel>
             <LandlordListingTable listings={listings} />
           </TabPanel>
           <TabPanel>
