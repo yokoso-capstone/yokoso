@@ -4,6 +4,10 @@ import { useRouter } from "next/router";
 import { ButtonPrimary, ButtonSecondary } from "@/components/core/Button";
 import { DashboardCard } from "@/components/core/Layout";
 import { TabPrimary } from "@/components/core/Tabs";
+import {
+  listingRouteBuilder,
+  listingHrefBuilder,
+} from "@/src/utils/listingRoute";
 import DashboardSearchInput from "@/components/core/DashboardSearchInput";
 import {
   Link,
@@ -46,6 +50,7 @@ import { Heading5 } from "../core/Text";
 
 interface ListingProps {
   listings?: Listing[];
+  userId?: string;
 }
 
 interface DeleteProps {
@@ -113,7 +118,7 @@ const DeleteConfirmationModal = (props: DeleteProps) => {
 };
 
 const LandlordListingTable = (props: ListingProps) => {
-  const { listings } = props;
+  const { listings, userId } = props;
 
   const [listingDelete, setListingDelete] = useState<Listing | undefined>();
 
@@ -172,7 +177,11 @@ const LandlordListingTable = (props: ListingProps) => {
                 <Box>{listing.applicants}</Box>
               </Td>
               <Td>
-                <NextLink href={`${RoutePath.Listings}/${listing.id}`} passHref>
+                <NextLink
+                  href={listingHrefBuilder(listing.id, userId)}
+                  as={listingRouteBuilder(listing.id)}
+                  passHref
+                >
                   <Link _hover={{ textDecoration: "none" }}>
                     <ButtonSecondary>View Listing</ButtonSecondary>
                   </Link>
@@ -249,10 +258,10 @@ function ListingsView(): ReactElement {
 
         <TabPanels>
           <TabPanel paddingX={0}>
-            <LandlordListingTable listings={listings} />
+            <LandlordListingTable userId={user?.uid} listings={listings} />
           </TabPanel>
           <TabPanel>
-            <LandlordListingTable listings={listings} />
+            <LandlordListingTable userId={user?.uid} listings={listings} />
           </TabPanel>
         </TabPanels>
       </Tabs>

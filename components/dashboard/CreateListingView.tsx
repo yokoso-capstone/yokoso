@@ -17,6 +17,10 @@ import {
   FormErrorMessage,
   Textarea,
 } from "@chakra-ui/react";
+import {
+  listingRouteBuilder,
+  listingHrefBuilder,
+} from "@/src/utils/listingRoute";
 import { Heading6 } from "@/components/core/Text";
 import { ButtonPrimary, ButtonSecondary } from "@/components/core/Button";
 import { Formik, Form, Field } from "formik";
@@ -49,7 +53,6 @@ import {
 import { listings, usersPublic } from "@/src/api/collections";
 import { auth, firestoreTimestamp, serverTimestamp } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import RoutePath from "@/src/routes";
 
 import { nanoid } from "nanoid";
 import firebase from "firebase/app";
@@ -73,8 +76,6 @@ type Part0DataType = {
 
 type Part1DataType = {
   size: number | string;
-  // privateBathrooms: string;
-  // sharedBathrooms: string;
   bathrooms: string;
   bedrooms: string;
   furnishedStatus: FurnishedStatus | "";
@@ -233,7 +234,10 @@ function CreateListingView(): ReactElement {
 
           const { id: listingId } = await listings.add(listing);
 
-          router.push(`${RoutePath.Listings}/${listingId}`);
+          router.push(
+            listingHrefBuilder(listingId, user.uid),
+            listingRouteBuilder(listingId)
+          );
         } catch (error) {
           toast({
             title: "Something went wrong",

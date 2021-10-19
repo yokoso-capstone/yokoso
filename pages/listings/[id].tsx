@@ -36,6 +36,8 @@ export const getServerSideProps = async (
 
   try {
     const { id } = context.params;
+    const { user } = context.query;
+
     const documentId = typeof id === "string" ? id : id[0];
 
     const response = await fetch(`${listingsRest}/${documentId}`);
@@ -43,7 +45,7 @@ export const getServerSideProps = async (
     const listing: Listing = { ...FireStoreParser(fields), id: documentId };
 
     // TODO: pass user token and display private listings belonging to them
-    if (listing.visibility !== "public") {
+    if (listing.visibility !== "public" && listing.owner.uid !== user) {
       throw Error("Listing is not public");
     }
     const data = { listing };
