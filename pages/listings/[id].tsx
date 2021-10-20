@@ -36,6 +36,8 @@ export const getServerSideProps = async (
 
   try {
     const { id } = context.params;
+    const { user } = context.query;
+
     const documentId = typeof id === "string" ? id : id[0];
 
     const response = await fetch(`${listingsRest}/${documentId}`);
@@ -43,7 +45,7 @@ export const getServerSideProps = async (
     const listing: Listing = { ...FireStoreParser(fields), id: documentId };
 
     // TODO: pass user token and display private listings belonging to them
-    if (listing.visibility !== "public") {
+    if (listing.visibility !== "public" && listing.owner.uid !== user) {
       throw Error("Listing is not public");
     }
     const data = { listing };
@@ -70,9 +72,7 @@ function ListingPage(
       propertyType,
       rentalSpace,
       rentalSize,
-      maxOccupancy,
       numBedrooms,
-      numBeds,
       numBaths,
     },
     features,
@@ -110,15 +110,11 @@ function ListingPage(
               <Heading4 marginBottom="8px">{title}</Heading4>
               <HStack>
                 <Caption>
-                  {numBedrooms} bedroom{numBedrooms > 1 && "s"}
+                  {numBedrooms} Bedroom{numBedrooms > 1 && "s"}
                 </Caption>
                 <Caption>·</Caption>
                 <Caption>
-                  {numBeds} bed{numBeds > 1 && "s"}
-                </Caption>
-                <Caption>·</Caption>
-                <Caption>
-                  {numBaths} bath{numBaths > 1 && "s"}
+                  {numBaths} Bath{numBaths > 1 && "s"}
                 </Caption>
               </HStack>
             </Box>
@@ -159,7 +155,6 @@ function ListingPage(
                   <ListItem>Property type: {propertyType}</ListItem>
                   <ListItem>Space: {rentalSpace}</ListItem>
                   <ListItem>Area: {rentalSize} sq ft</ListItem>
-                  <ListItem>Max occupancy: {maxOccupancy}</ListItem>
                 </Stack>
               </UnorderedList>
             </Box>

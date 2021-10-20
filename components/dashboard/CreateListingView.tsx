@@ -17,6 +17,10 @@ import {
   FormErrorMessage,
   Textarea,
 } from "@chakra-ui/react";
+import {
+  listingRouteBuilder,
+  listingHrefBuilder,
+} from "@/src/utils/listingRoute";
 import { Heading6 } from "@/components/core/Text";
 import { ButtonPrimary, ButtonSecondary } from "@/components/core/Button";
 import { Formik, Form, Field } from "formik";
@@ -44,11 +48,11 @@ import {
   LeaseType,
   FurnishedStatus,
   Frequency,
+  Visibility,
 } from "@/src/api/types";
 import { listings, usersPublic } from "@/src/api/collections";
 import { auth, firestoreTimestamp, serverTimestamp } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import RoutePath from "@/src/routes";
 
 import { nanoid } from "nanoid";
 import firebase from "firebase/app";
@@ -72,9 +76,8 @@ type Part0DataType = {
 
 type Part1DataType = {
   size: number | string;
-  privateBathrooms: string;
-  sharedBathrooms: string;
-  occupancy: string;
+  bathrooms: string;
+  bedrooms: string;
   furnishedStatus: FurnishedStatus | "";
   smokingAllowed: boolean;
   petsAllowed: boolean;
@@ -89,6 +92,7 @@ type Part1DataType = {
   utilities: string[];
   utilitiesDescription: string;
   propertyTitle: string;
+  postingStatus: Visibility;
   propertyDescription: string;
   files: File[];
 };
@@ -107,9 +111,8 @@ const initialValuesPart0: Part0DataType = {
 
 const initialValuesPart1: Part1DataType = {
   size: "",
-  privateBathrooms: "",
-  sharedBathrooms: "",
-  occupancy: "",
+  bedrooms: "",
+  bathrooms: "",
   furnishedStatus: "",
   smokingAllowed: false,
   petsAllowed: false,
@@ -126,6 +129,7 @@ const initialValuesPart1: Part1DataType = {
   propertyTitle: "",
   propertyDescription: "",
   files: [] as File[],
+  postingStatus: "public",
 };
 
 function CreateListingView(): ReactElement {
@@ -186,7 +190,7 @@ function CreateListingView(): ReactElement {
 
           const listing: Listing = {
             owner: { ...userPublic, uid: user.uid },
-            visibility: "public",
+            visibility: part1Data.postingStatus,
             location: {
               address: part0Data.address,
               unitNumber: part0Data.unitNum,
@@ -196,7 +200,6 @@ function CreateListingView(): ReactElement {
               cityName: part0Data.city,
               province: part0Data.province,
               country: part0Data.country,
-              // TODO: do for real (and use geolocation type)
               coordinate: {
                 longitude: coordinates[0],
                 latitude: coordinates[1],
@@ -208,15 +211,11 @@ function CreateListingView(): ReactElement {
               propertyType: part0Data.propertyType,
               rentalSpace: part0Data.rentalType,
               rentalSize: Number(part1Data.size),
-              privateBathrooms: part1Data.privateBathrooms,
-              sharedBathrooms: part1Data.sharedBathrooms,
-              maxOccupancy: part1Data.occupancy,
               furnished: part1Data.furnishedStatus,
               smokingAllowed: part1Data.smokingAllowed,
               petsAllowed: part1Data.petsAllowed,
-              numBedrooms: 2, // TODO:
-              numBaths: 1, // TODO:
-              numBeds: 2, // TODO:
+              numBedrooms: Number(part1Data.bedrooms),
+              numBaths: Number(part1Data.bathrooms),
             },
             lease: {
               price: Number(part1Data.rentalPrice),
@@ -235,7 +234,10 @@ function CreateListingView(): ReactElement {
 
           const { id: listingId } = await listings.add(listing);
 
-          router.push(`${RoutePath.Listings}/${listingId}`);
+          router.push(
+            listingHrefBuilder(listingId, user.uid),
+            listingRouteBuilder(listingId)
+          );
         } catch (error) {
           toast({
             title: "Something went wrong",
@@ -489,6 +491,7 @@ const Part0 = (props: {
                             <FormLabel>Unit Number</FormLabel>
                             <Input
                               {...field}
+                              type="number"
                               variant="flushed"
                               borderBottomColor="gray"
                               placeholder="88"
@@ -669,40 +672,14 @@ const Part1 = (props: {
                           )}
                         </Field>
                         <Box width="100%">
-                          <FormLabel>Private Bathrooms</FormLabel>
+                          <FormLabel>Bedrooms</FormLabel>
                           <SelectControl
-                            name="privateBathrooms"
+                            // TODO: replace with bedroom
+                            name="bedrooms"
                             selectProps={{ placeholder: "Select option" }}
                             isRequired
                           >
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4+">4+</option>
-                          </SelectControl>
-                        </Box>
-                      </Stack>
-                      <Stack direction="row" spacing={5}>
-                        <Box width="100%">
-                          <FormLabel>Shared Bathrooms</FormLabel>
-                          <SelectControl
-                            name="sharedBathrooms"
-                            selectProps={{ placeholder: "Select option" }}
-                            isRequired
-                          >
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4+">4+</option>
-                          </SelectControl>
-                        </Box>
-                        <Box width="100%">
-                          <FormLabel>Max Occupancy</FormLabel>
-                          <SelectControl
-                            name="occupancy"
-                            selectProps={{ placeholder: "Select option" }}
-                            isRequired
-                          >
+                            <option value="0">0</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -711,6 +688,22 @@ const Part1 = (props: {
                             <option value="6">6</option>
                             <option value="7">7</option>
                             <option value="8+">8+</option>
+                          </SelectControl>
+                        </Box>
+                      </Stack>
+                      <Stack direction="row" spacing={5}>
+                        <Box width="100%">
+                          <FormLabel>Bathrooms</FormLabel>
+                          <SelectControl
+                            name="bathrooms"
+                            selectProps={{ placeholder: "Select option" }}
+                            isRequired
+                          >
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4+">4+</option>
                           </SelectControl>
                         </Box>
                       </Stack>
@@ -1037,6 +1030,13 @@ const Part1 = (props: {
                         </FormControl>
                       )}
                     </Field>
+                    <Box>
+                      <FormLabel>Posting Status</FormLabel>
+                      <SelectControl name="postingStatus" isRequired>
+                        <option value="public">Public</option>
+                        <option value="draft">Draft</option>
+                      </SelectControl>
+                    </Box>
                     <Field
                       name="propertyDescription"
                       validate={validateCompletedString}

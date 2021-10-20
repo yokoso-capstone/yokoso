@@ -40,7 +40,7 @@ import { getQueryValue } from "@/src/utils";
 import { listings as listingsCollection } from "@/src/api/collections";
 import { useCollectionOnce } from "react-firebase-hooks/firestore";
 import { Listing } from "@/src/api/types";
-import RoutePath from "@/src/routes";
+import { listingRouteBuilder } from "@/src/utils/listingRoute";
 
 interface FilterDisplay {
   childComp?: React.ReactNode;
@@ -224,7 +224,7 @@ function SearchPage(): ReactElement {
               {listings?.map((listing, index) => (
                 <NextLink
                   key={listing.id || index}
-                  href={`${RoutePath.Listings}/${listing.id}`}
+                  href={listingRouteBuilder(listing.id)}
                   passHref
                 >
                   <Link textDecoration="none !important">
@@ -242,7 +242,7 @@ function SearchPage(): ReactElement {
               {listings?.map((listing, index) => (
                 <NextLink
                   key={listing.id || index}
-                  href={`${RoutePath.Listings}/${listing.id}`}
+                  href={listingRouteBuilder(listing.id)}
                   passHref
                 >
                   <Link textDecoration="none !important">

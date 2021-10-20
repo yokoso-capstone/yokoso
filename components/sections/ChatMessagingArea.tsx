@@ -1,6 +1,5 @@
 import { ChangeEvent, ReactElement, useEffect, useRef, useState } from "react";
 import NextLink from "next/link";
-import RoutePath from "@/src/routes";
 import { ButtonPrimary, ButtonSecondary } from "@/components/core/Button";
 import {
   IconButtonPrimary,
@@ -32,6 +31,7 @@ import { ChatRoom, Listing, Message, UserPublic } from "@/src/api/types";
 import { CollectionName, chatRooms } from "@/src/api/collections";
 import { serverTimestamp } from "@/src/firebase";
 import { useCollection } from "react-firebase-hooks/firestore";
+import { listingRouteBuilder } from "@/src/utils/listingRoute";
 
 const Header = (props: {
   photoUrl?: string;
@@ -113,10 +113,7 @@ const Header = (props: {
           <ModalBody>
             <Stack>
               {/* TODO: handle error situation of no listing or ID (shouldn't happen?) */}
-              <NextLink
-                href={`${RoutePath.Listings}/${listing?.id || ""}`}
-                passHref
-              >
+              <NextLink href={listingRouteBuilder(listing?.id)} passHref>
                 <Link>
                   <ButtonSecondary isFullWidth>View listing</ButtonSecondary>
                 </Link>
