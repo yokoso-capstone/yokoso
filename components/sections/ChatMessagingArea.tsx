@@ -323,7 +323,7 @@ function ChatMessagingArea(props: {
 
   const currentRoomCollection = chatRoomsCollection?.docs[
     currentChatRoomIdx || 0
-  ].data() as ChatRoom | undefined;
+  ]?.data() as ChatRoom | undefined;
   // Take most recent associated listing
   const associatedListing =
     currentRoomCollection &&
