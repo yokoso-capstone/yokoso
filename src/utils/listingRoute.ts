@@ -6,4 +6,4 @@ export const listingRouteBuilder = (listing?: string) =>
 export const listingHrefBuilder = (listing?: string, userUID?: string) => ({
   pathname: listingRouteBuilder(listing),
   query: { user: userUID },
-})
+});

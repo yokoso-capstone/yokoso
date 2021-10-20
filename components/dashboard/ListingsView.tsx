@@ -65,28 +65,26 @@ const DeleteConfirmationModal = (props: DeleteProps) => {
   const toast = useToast();
 
   const handleDelete = async (listingId: string | undefined) => {
-    await listingsCollection
-      .doc(listingId)
-      .delete()
-      .then(() => {
-        toast({
-          title: "Deleted Listing",
-          description: "We successfully deleted your listing",
-          isClosable: true,
-          duration: 4000,
-          status: "success",
-        });
-      })
-      .catch(() => {
-        toast({
-          title: "Something went wrong",
-          description:
-            "An error occurred and we couldn't delete your listing. Please try again later.",
-          isClosable: true,
-          duration: 4000,
-          status: "error",
-        });
+    try {
+      await listingsCollection.doc(listingId).delete();
+
+      toast({
+        title: "Deleted Listing",
+        description: "We successfully deleted your listing",
+        isClosable: true,
+        duration: 4000,
+        status: "success",
       });
+    } catch (e) {
+      toast({
+        title: "Something went wrong",
+        description:
+          "An error occurred and we couldn't delete your listing. Please try again later.",
+        isClosable: true,
+        duration: 4000,
+        status: "error",
+      });
+    }
   };
 
   const onDelete = (listingId: string | undefined) => {
