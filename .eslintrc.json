@@ -28,7 +28,7 @@
     "plugin:prettier/recommended",
     "plugin:cypress/recommended",
     "prettier/@typescript-eslint",
-    "prettier",
+    "prettier"
   ],
   "globals": {
     "Atomics": "readonly",
