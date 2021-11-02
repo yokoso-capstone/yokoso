@@ -133,6 +133,19 @@ export type Message = {
   createdAt: timestamp;
 };
 
+export type TenantRequest = {
+  id?: string;
+  landlordUid: string;
+  tenantUid: string;
+  createdAt: timestamp;
+  listing: {
+    [listingId: string]: {
+      initiatedAt: timestamp;
+      data: Listing;
+    };
+  };
+}
+
 export type Schema = {
   [CollectionName.ChatRooms]: {
     [chatId: string]: ChatRoom;

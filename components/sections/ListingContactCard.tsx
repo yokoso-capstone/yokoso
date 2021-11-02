@@ -1,7 +1,7 @@
-import { useState, ChangeEvent, ReactElement } from "react";
+import { useState, ChangeEvent, ReactElement, useEffect } from "react";
 import { useRouter } from "next/router";
 import RoutePath, { RoutePathDashboard } from "@/src/routes";
-import { ButtonPrimary } from "@/components/core/Button";
+import { ButtonPrimary, ButtonSecondary } from "@/components/core/Button";
 import { Card } from "@/components/core/Layout";
 import { Body1, Heading4, Heading5, TextBase } from "@/components/core/Text";
 import {
@@ -18,8 +18,12 @@ import {
 } from "@chakra-ui/react";
 import { FaCheckCircle } from "react-icons/fa";
 import { getUTCMonthString } from "@/src/utils";
-import { CollectionName, chatRooms } from "@/src/api/collections";
-import { ChatRoom, Listing, Message } from "@/src/api/types";
+import {
+  CollectionName,
+  chatRooms,
+  tenantRequests,
+} from "@/src/api/collections";
+import { ChatRoom, Listing, Message, TenantRequest } from "@/src/api/types";
 import { serverTimestamp } from "@/src/firebase";
 
 interface ListingCardProps {
@@ -47,35 +51,41 @@ function ListingCard(props: ListingCardProps): ReactElement {
     listing,
   } = props;
   const joinedDate = new Date(joined);
-  const [value, setValue] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [chatValue, setChatValue] = useState("");
+  const [requestDisabled, setRequestDisabled] = useState(false);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [requestLoading, setRequestLoading] = useState(false);
   const router = useRouter();
   const toast = useToast();
   const placeholderText = `Hi ${firstName}, I am interested in your listing. Is it still available? When would be a good time to view it?`;
   const isSameUser = userUid === ownerUid;
   let disabledErrorMsg = "";
+  let disabledRequestErrorMsg = "";
 
   if (disabled) {
     disabledErrorMsg = "Create an account or log in to get started";
+    disabledRequestErrorMsg = "Create an account or log in to get started";
   } else if (isSameUser) {
-    disabledErrorMsg = "Can't sent a message to yourself";
+    disabledErrorMsg = "Can't send a message to yourself";
+    disabledRequestErrorMsg = "Can't send a tenant request to yourself";
   } else {
     disabledErrorMsg = "Enter a message to send";
+    disabledRequestErrorMsg = "Tenant request has already been sent";
   }
 
   const handleFocus = () => {
-    if (!value) {
-      setValue(placeholderText);
+    if (!chatValue) {
+      setChatValue(placeholderText);
     }
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const inputValue = e.target?.value;
-    setValue(inputValue);
+    setChatValue(inputValue);
   };
 
   const handleSend = async () => {
-    setLoading(true);
+    setChatLoading(true);
 
     const members = [userUid, ownerUid].sort();
     const chatId = members.join("-");
@@ -113,7 +123,7 @@ function ListingCard(props: ListingCardProps): ReactElement {
       const messageData: Message = {
         uid: userUid,
         members,
-        text: value,
+        text: chatValue,
         createdAt: serverTimestamp,
       };
       await messagesRef.add(messageData);
@@ -127,9 +137,82 @@ function ListingCard(props: ListingCardProps): ReactElement {
         isClosable: true,
       });
     } finally {
-      setLoading(false);
+      setChatLoading(false);
     }
   };
+
+  const handleTenantRequest = async () => {
+    setRequestLoading(true);
+    try {
+      if (!listing.id) {
+        throw new Error("Couldn't find listing id");
+      } else {
+        const requestId = [userUid, ownerUid, listing.id].sort().join("-");
+        const requestRef = tenantRequests.doc(requestId);
+
+        const currentListingData = {
+          [listing.id]: {
+            initiatedAt: serverTimestamp,
+            data: listing,
+          },
+        };
+
+        const tenantRequestData: TenantRequest = {
+          landlordUid: ownerUid,
+          tenantUid: userUid,
+          listing: currentListingData,
+          createdAt: serverTimestamp,
+        };
+        await requestRef.set(tenantRequestData);
+
+        toast({
+          title: "Tenant Request Sent!",
+          description: `Tenant request was sent for listing, "${listing.details.title}"`,
+          status: "success",
+          duration: 4000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      toast({
+        title: "Something went wrong",
+        description:
+          "An error occurred and the listing request couldn't be sent. Please try again later.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    } finally {
+      setRequestLoading(false);
+    }
+  };
+
+  const checkRequestStatus = async () => {
+    const requestId = [userUid, ownerUid, listing.id].sort().join("-");
+
+    try {
+      const requestRef = tenantRequests.doc(requestId);
+      const requestDoc = await requestRef.get();
+
+      if (requestDoc.exists || isSameUser) {
+        setRequestDisabled(true);
+      }
+    } catch (err) {
+      toast({
+        title: "Something went wrong",
+        description:
+          "An error occurred and couldn't fetch requests. Please try again later.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+  };
+
+  useEffect(() => {
+    checkRequestStatus();
+  });
 
   return (
     <Card
@@ -179,24 +262,40 @@ function ListingCard(props: ListingCardProps): ReactElement {
             padding="16px"
             lineHeight="1.5"
             height="100px"
-            value={value}
+            value={chatValue}
             onChange={handleInputChange}
             onFocus={handleFocus}
           />
           <Tooltip
-            isDisabled={Boolean(value)}
+            isDisabled={Boolean(chatValue)}
             hasArrow
             label={disabledErrorMsg}
           >
             <Box>
               <ButtonPrimary
-                isDisabled={!value}
+                isDisabled={!chatValue}
                 isFullWidth
                 onClick={handleSend}
-                isLoading={loading}
+                isLoading={chatLoading}
               >
                 Send
               </ButtonPrimary>
+            </Box>
+          </Tooltip>
+          <Tooltip
+            isDisabled={!requestDisabled}
+            hasArrow
+            label={disabledRequestErrorMsg}
+          >
+            <Box>
+              <ButtonSecondary
+                isDisabled={requestDisabled}
+                isFullWidth
+                onClick={handleTenantRequest}
+                isLoading={requestLoading}
+              >
+                Send Tenant Request
+              </ButtonSecondary>
             </Box>
           </Tooltip>
         </Stack>
