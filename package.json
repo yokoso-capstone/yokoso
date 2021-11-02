@@ -15,7 +15,8 @@
     "lint-fix": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore --fix",
     "test:unit:components": "jest components/__tests__",
     "test:unit:firestore": "jest test/unit/firestore",
-    "cypress": "cypress open"
+    "cypress": "cypress open",
+    "cypress:all": "cypress run"
   },
   "license": "MIT",
   "dependencies": {

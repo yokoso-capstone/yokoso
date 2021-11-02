@@ -1,24 +1,71 @@
 /// <reference types="cypress" />
 // Example possible test suit using cypress
 
+const location = 'vancouver'
+const email = 'meganhong17@gmail.com'
+const password = 'Capstone1'
+
 describe('From index page', () => {
   beforeEach(() => {
     cy.visit('http://localhost:3000')
   })
 
-  it('displays correct hi items by default', () => {
-    cy.get('h1.css-t3mas8').should('have.length', 1)
-    cy.get('h1.css-t3mas8').first().should('have.text', 'Discover yournew home')
+  it('displays correct h1 items by default', () => {
+    cy.get('h1').should('have.length', 1)
+    cy.get('h1').first().should('have.text', 'Discover yournew home')
   })
 
   it('displays searchbar by default', () => {
     cy.get('input').should('have.length', 1)
   })
 
+  it('able to log in', () => {
+    cy.contains('Get Started').click();
+    cy.contains('Email').type(email);
+    cy.contains('Password').type(password);
+    cy.get('form').submit();
+  })
+
+  it('able to make new listing', () => {
+    cy.contains('Get Started').click();
+    cy.contains('Email').type(email);
+    cy.contains('Password').type(password);
+    cy.get('form').submit();
+    cy.contains('Post Listing').click();
+    cy.contains('House').click();
+    cy.contains('Entire Building').click();
+    cy.contains('Street Address').type('Bridlewood Drive');
+    cy.contains('Unit Number').type('199');
+    cy.get('.chakra-select').select('Ontario');
+    cy.contains('Postal Code').type('K2M 2M4');
+    cy.contains('City').type('Ottawa');
+    cy.get('form').submit();
+    // next page
+    cy.contains('Rental Size').type('500');
+    cy.get('[id^=privateBathrooms]').select('2');
+    cy.get('[id^=sharedBathrooms]').select('2');
+    cy.get('[id^=occupancy]').select('3');
+    cy.get('[id^=furnishedStatus]').select('Furnished');
+    cy.get('.chakra-form-control:nth-child(2) .chakra-switch__track').click();
+    cy.contains('Rental Price').type('1000');
+    cy.get('[id^=paymentFrequency]').select('Monthly');
+    cy.get('[id^=leaseType]').select('Lease');
+    cy.get('[name^=availabilityDate]').click();
+    cy.get('.react-datepicker__week:nth-child(5)').click();
+    cy.get('[id^=minLeaseDuration]').select('Monthly');
+    cy.contains('Deposit Price').type('1000');
+    cy.contains('Describe Additional Features').type('example feature');
+    cy.contains('Describe Additional Utilities').type('example utility');
+    cy.contains('Listing title').type('Example Title');
+    cy.contains('Add Description').type('DescriptionDescriptionDescriptionDescriptionDescription');
+
+    // Final submit not implemented because no delete listing function yet
+    // cy.get('form').submit();
+  })
+
   it('searchbar able to search for location', () => {
-    const location = 'vancouver'
-    cy.get('.mapboxgl-ctrl-geocoder--input').click()
-    cy.get('.mapboxgl-ctrl-geocoder--input').type(location)
+    cy.get('input').click()
+    cy.get('input').type(location)
     cy.wait(1000)
     cy.get('.chakra-icon').click()  
   })
@@ -30,9 +77,12 @@ describe('From index page', () => {
 
     it('selects sample listing', () => {
       cy.wait(4000)
-      cy.get('.chakra-link:nth-child(1) > .css-1gf96ne .css-vp41ck').click()
+      cy.contains('2bdrm').click()
       cy.wait(2000)
-      cy.get('.css-0:nth-child(5) > .css-11y6jzv').should('have.text', 'Lease details')
+      cy.contains('Lease details')
+      cy.contains('Amenities')
+      cy.contains('Utilities')
+      cy.contains('Reviews')
     })
   })
 })

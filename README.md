@@ -56,9 +56,11 @@ npm run test:unit:components
 npm run test:unit:firestore
 
 # TODO make cypress tests run automatically, currently manual local tests with plenty of examples
-# Delete all examples once we are comfortable writing cypress tests
-# run Cypress integration tests - will open new window. Manually select yosoko > index.spec.js test suit
+# run Cypress integration tests - will open new window with GUI interface for debug. Manually select yosoko > index.spec.js test suit
 npm run cypress
+
+# run Cypress integration tests in headless mode.
+npm run cypress:all
 ```
 
 Note that Firestore security rules unit tests must be ran with the Firebase emulator installed and running for Firestore.
