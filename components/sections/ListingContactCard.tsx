@@ -174,7 +174,6 @@ function ListingCard(props: ListingCardProps): ReactElement {
         });
       }
     } catch (err) {
-      console.log(err);
       toast({
         title: "Something went wrong",
         description:
