@@ -38,6 +38,8 @@ export type TenantEntry = UserPublic & {
   };
 };
 
+export type TenantRequestEntry = UserPublic & TenantRequest;
+
 export type UserPublic = {
   uid?: string;
   firstName: string;
