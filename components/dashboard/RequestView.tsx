@@ -12,7 +12,6 @@ import {
   Table,
   Thead,
   Spacer,
-  Spinner,
   Box,
   Tbody,
   Tr,
@@ -36,33 +35,43 @@ function RequestView(): ReactElement {
   const [selectedRequest, setSelectedRequest] = useState<Request>(
     Request.Received
   );
+  const [tenantRequestList, setTenantRequestList] = useState<
+    TenantRequestEntry[]
+  >([]);
 
   const [user] = useAuthState(auth);
   // TODO: query query based on the requests received and then go through each one and add the info from the user public data
-  const query = useMemo(() => {
-    return user
-      ? tenantRequests.where(selectedRequest, "==", user.uid)
-      : undefined;
-  }, [user, selectedRequest]);
+  const query = useMemo(
+    () =>
+      user ? tenantRequests.where(selectedRequest, "==", user.uid) : undefined,
+    [user, selectedRequest]
+  );
 
   const [snapshot] = useCollection(query);
 
-  const tenantRequestPromise = snapshot?.docs
-    .map(async (doc) => {
-      const requestData = doc.data();
+  const tenantRequestPromise = snapshot?.docs.map(async (doc) => {
+    const requestData = doc.data();
+    const publicUserInfo = await getUserPublicById(
+      requestData[
+        selectedRequest === Request.Received ? "tenantUid" : "landlordUid"
+      ]
+    );
+    return {
+      ...doc.data(),
+      ...publicUserInfo,
+      id: doc.id,
+    } as TenantRequestEntry;
+  });
 
-      const publicUserInfo = await getUserPublicById(
-        requestData[
-          selectedRequest === Request.Received ? "tenantUid" : "landlordUid"
-        ]
-      );
-      return {
-        ...doc.data(),
-        ...publicUserInfo,
-        id: doc.id,
-      } as TenantRequestEntry;
-    })
-    .flat();
+  useEffect(() => {
+    const handleTenantRequestPromise = async () => {
+      if (tenantRequestPromise) {
+        setTenantRequestList(await Promise.all(tenantRequestPromise));
+      }
+    };
+
+    handleTenantRequestPromise();
+  }, [user, selectedRequest, snapshot]);
 
   return (
     <DashboardCard>
@@ -89,10 +98,10 @@ function RequestView(): ReactElement {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <ReceivedRequestsTable tenantRequests={tenantRequestPromise} />
+            <ReceivedRequestsTable tenantRequests={tenantRequestList} />
           </TabPanel>
           <TabPanel>
-            <SentRequestsTable tenantRequests={tenantRequestPromise} />
+            <SentRequestsTable tenantRequests={tenantRequestList} />
           </TabPanel>
         </TabPanels>
       </Tabs>
@@ -100,24 +109,8 @@ function RequestView(): ReactElement {
   );
 }
 
-const ReceivedRequestsTable = (props: {
-  tenantRequests?: Promise<TenantRequestEntry>[] | undefined;
-}) => {
+const ReceivedRequestsTable = (props: { tenantRequests?: any[] }) => {
   const { tenantRequests } = props;
-
-  const [tenantRequestList, setTenantRequestList] = useState<
-    TenantRequestEntry[]
-  >([]);
-
-  const handleTenantRequestPromise = async () => {
-    if (tenantRequests) {
-      setTenantRequestList(await Promise.all(tenantRequests));
-    }
-  };
-
-  useEffect(() => {
-    handleTenantRequestPromise();
-  }, [tenantRequests]);
 
   return (
     <Table>
@@ -131,7 +124,7 @@ const ReceivedRequestsTable = (props: {
         </Tr>
       </Thead>
       <Tbody>
-        {tenantRequestList?.map((tenant, index) => (
+        {tenantRequests?.map((tenant, index) => (
           <Tr key={index}>
             <Td>
               <Image
@@ -153,24 +146,8 @@ const ReceivedRequestsTable = (props: {
   );
 };
 
-const SentRequestsTable = (props: {
-  tenantRequests?: Promise<TenantRequestEntry>[] | undefined;
-}) => {
+const SentRequestsTable = (props: { tenantRequests?: any[] }) => {
   const { tenantRequests } = props;
-
-  const [tenantRequestList, setTenantRequestList] = useState<
-    TenantRequestEntry[]
-  >([]);
-
-  const handleTenantRequestPromise = async () => {
-    if (tenantRequests) {
-      setTenantRequestList(await Promise.all(tenantRequests));
-    }
-  };
-
-  useEffect(() => {
-    handleTenantRequestPromise();
-  }, [tenantRequests]);
 
   return (
     <Table>
@@ -184,7 +161,7 @@ const SentRequestsTable = (props: {
         </Tr>
       </Thead>
       <Tbody>
-        {tenantRequestList?.map((tenant, index) => (
+        {tenantRequests?.map((tenant, index) => (
           <Tr key={index}>
             <Td>
               <Image
