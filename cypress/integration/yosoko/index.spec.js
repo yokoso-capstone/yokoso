@@ -1,4 +1,7 @@
 /// <reference types="cypress" />
+
+const { exists } = require("fs");
+
 // Example possible test suit using cypress
 
 const location = "Vancouver";
@@ -54,6 +57,7 @@ describe("From index page", () => {
     cy.contains("City").type(city);
     cy.get("form").submit();
     // next page
+    cy.contains("Rental Size", { timeout: 2000 });
     cy.contains("Rental Size").type("500");
     cy.get("[id^=privateBathrooms]").select("2");
     cy.get("[id^=sharedBathrooms]").select("2");
@@ -91,8 +95,10 @@ describe("From index page", () => {
     });
 
     it("selects sample listing", () => {
-      cy.contains("2bdrm", { timeout: 4000 }).click();
-      cy.contains("Lease details", { timeout: 2000 });
+      cy.location("pathname", { timeout: 4000 }).should("include", "/search");
+      cy.contains("2bdrm").click();
+      cy.location("pathname", { timeout: 4000 }).should("include", "/listings");
+      cy.contains("Lease details");
       cy.contains("Amenities");
       cy.contains("Utilities");
       cy.contains("Reviews");
