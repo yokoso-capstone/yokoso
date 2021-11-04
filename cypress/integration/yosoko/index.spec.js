@@ -96,9 +96,9 @@ describe("From index page", () => {
 
     it("selects sample listing", () => {
       cy.location("pathname", { timeout: 4000 }).should("include", "/search");
-      cy.contains("2bdrm").click();
+      cy.contains("2bdrm", { timeout: 3000 }).click();
       cy.location("pathname", { timeout: 4000 }).should("include", "/listings");
-      cy.contains("Lease details");
+      cy.contains("Lease details", { timeout: 3000 });
       cy.contains("Amenities");
       cy.contains("Utilities");
       cy.contains("Reviews");
