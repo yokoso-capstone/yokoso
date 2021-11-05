@@ -17,7 +17,7 @@ const city = "Ottawa";
 const feature = "Example feature";
 const utility = "Example utility";
 const title = "Example Title";
-const description = "Example description"
+const description = "Example description";
 
 describe("From index page", () => {
   beforeEach(() => {
@@ -92,13 +92,18 @@ describe("From index page", () => {
       cy.visit(
         "http://localhost:3000/search?center=-123.113953&center=49.260872&place=Vancouver%2C+British+Columbia%2C+Canada&text=Vancouver"
       );
+      cy.intercept(
+        "POST",
+        "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?**"
+      ).as("getDatabase");
+      cy.wait("@getDatabase", { timeout: 10000 });
     });
 
     it("selects sample listing", () => {
-      cy.location("pathname", { timeout: 4000 }).should("include", "/search");
-      cy.contains("2bdrm", { timeout: 3000 }).click();
-      cy.location("pathname", { timeout: 4000 }).should("include", "/listings");
-      cy.contains("Lease details", { timeout: 3000 });
+      cy.location("pathname").should("include", "/search");
+      cy.contains("2bdrm").click();
+      cy.location("pathname", { timeout: 5000 }).should("include", "/listings");
+      cy.contains("Lease details");
       cy.contains("Amenities");
       cy.contains("Utilities");
       cy.contains("Reviews");
