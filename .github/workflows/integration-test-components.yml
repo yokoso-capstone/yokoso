@@ -20,3 +20,13 @@ jobs:
         with:
           build: npm run build
           start: npm start
+      - name: Archive Cypress screenshot artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots/yokoso/
+      - name: Archive Cypress video artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress-videos
+          path: cypress/videos/yokoso/
