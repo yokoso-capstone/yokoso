@@ -1,7 +1,5 @@
 /// <reference types="cypress" />
 
-const { exists } = require("fs");
-
 // Example possible test suit using cypress
 
 const location = "Vancouver";
@@ -107,6 +105,7 @@ describe("From index page", () => {
       cy.contains("Amenities");
       cy.contains("Utilities");
       cy.contains("Reviews");
+      cy.contains("Contact");
     });
   });
 });
