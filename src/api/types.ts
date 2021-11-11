@@ -10,7 +10,7 @@ export type FirestoreFieldValue = firebase.firestore.FieldValue;
 
 export type FirestoreTimestamp = firebase.firestore.Timestamp;
 
-export type Visibility = "public" | "draft" | "hidden";
+export type Visibility = "public" | "draft";
 
 export type PropertyType = "Apartment" | "House" | "Townhouse";
 
@@ -39,6 +39,7 @@ export type TenantEntry = UserPublic & {
 };
 
 export type UserPublic = {
+  uid?: string;
   firstName: string;
   lastName: string;
   profilePicture: string;
@@ -47,6 +48,7 @@ export type UserPublic = {
 };
 
 export type UserPrivate = {
+  uid?: string;
   address?: string;
   dob: timestamp;
   documents?: {
@@ -82,15 +84,11 @@ export type Listing = {
     propertyType: PropertyType;
     rentalSpace: RentalSpace;
     rentalSize: number;
-    privateBathrooms: string;
-    sharedBathrooms: string;
-    maxOccupancy: string;
     furnished: FurnishedStatus;
     smokingAllowed: boolean;
     petsAllowed: boolean;
     numBedrooms: number;
     numBaths: number;
-    numBeds: number;
   };
   lease: {
     price: number;
@@ -98,6 +96,7 @@ export type Listing = {
     type: LeaseType;
     availability: timestamp;
     minDuration: Frequency;
+    depositPrice: number;
   };
   features: string[];
   utilities: string[];
@@ -109,8 +108,15 @@ export type Listing = {
 export type ChatRoom = {
   id?: string;
   members: string[];
+  initiatedBy: string;
   messages?: {
     [msgId: string]: Message;
+  };
+  listings: {
+    [listingId: string]: {
+      initiatedAt: timestamp;
+      data: Listing;
+    };
   };
   createdAt: timestamp;
 };
@@ -118,6 +124,7 @@ export type ChatRoom = {
 export type Message = {
   id?: string;
   uid: string;
+  members: string[];
   text: string;
   file?: {
     name: string;

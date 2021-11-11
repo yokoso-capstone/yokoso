@@ -18,7 +18,7 @@ export function LgSearchResult(props: ResultProps) {
   const {
     listing: {
       location: { cityName },
-      details: { title, numBeds, numBaths },
+      details: { title, numBedrooms, numBaths },
       lease: { price },
       images,
     },
@@ -42,7 +42,7 @@ export function LgSearchResult(props: ResultProps) {
         <GridItem colSpan={4} rowSpan={2}>
           <PropertyDes
             numBaths={numBaths}
-            numBeds={numBeds}
+            numBeds={numBedrooms}
             title={`${title.substring(0, LgMaxTitleCharacters)}${
               title.length > LgMaxTitleCharacters ? "..." : ""
             }`}
@@ -82,7 +82,7 @@ export function SmSearchResult(props: ResultProps) {
   const {
     listing: {
       location: { cityName },
-      details: { title, numBeds, numBaths },
+      details: { title, numBedrooms, numBaths },
       lease: { price },
       images,
     },
@@ -116,7 +116,7 @@ export function SmSearchResult(props: ResultProps) {
             </Box>
             <Box>
               <Caption fontSize="14px">
-                {numBeds} Bedrooms · {numBaths} Bathrooms
+                {numBedrooms} Bedrooms · {numBaths} Bathrooms
               </Caption>
             </Box>
           </Box>
@@ -132,7 +132,7 @@ export function SmSearchResult(props: ResultProps) {
 export function XsSearchResult(props: ResultProps) {
   const {
     listing: {
-      details: { title, numBeds, numBaths },
+      details: { title, numBedrooms, numBaths },
       lease: { price },
       images,
     },
@@ -166,7 +166,7 @@ export function XsSearchResult(props: ResultProps) {
           </Box>
           <Box>
             <Caption fontSize="12px">
-              {numBeds} Bedrooms · {numBaths} Bathrooms
+              {numBedrooms} Bedrooms · {numBaths} Bathrooms
             </Caption>
           </Box>
         </GridItem>

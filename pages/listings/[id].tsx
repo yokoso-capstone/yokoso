@@ -36,18 +36,21 @@ export const getServerSideProps = async (
 
   try {
     const { id } = context.params;
+    const { user } = context.query;
+
     const documentId = typeof id === "string" ? id : id[0];
 
     const response = await fetch(`${listingsRest}/${documentId}`);
     const { fields } = await response.json();
-    const props: Listing = FireStoreParser(fields);
+    const listing: Listing = { ...FireStoreParser(fields), id: documentId };
 
     // TODO: pass user token and display private listings belonging to them
-    if (props.visibility !== "public") {
+    if (listing.visibility !== "public" && listing.owner.uid !== user) {
       throw Error("Listing is not public");
     }
+    const data = { listing };
 
-    const result: GetServerSidePropsResult<typeof props> = { props };
+    const result: GetServerSidePropsResult<typeof data> = { props: data };
 
     return result;
   } catch (error) {
@@ -59,8 +62,9 @@ export const getServerSideProps = async (
 function ListingPage(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ): ReactElement {
+  const { listing } = props;
   const {
-    owner: { firstName, lastName, profilePicture, createdAt },
+    owner: { firstName, lastName, profilePicture, createdAt, uid },
     location: { cityName },
     details: {
       title,
@@ -68,16 +72,14 @@ function ListingPage(
       propertyType,
       rentalSpace,
       rentalSize,
-      maxOccupancy,
       numBedrooms,
-      numBeds,
       numBaths,
     },
     features,
     lease: { price },
     utilities,
     images,
-  } = props;
+  } = listing;
   const maxDescriptionCharacters = 300;
   const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
   const [user, loading, error] = useAuthState(auth);
@@ -108,15 +110,11 @@ function ListingPage(
               <Heading4 marginBottom="8px">{title}</Heading4>
               <HStack>
                 <Caption>
-                  {numBedrooms} bedroom{numBedrooms > 1 && "s"}
+                  {numBedrooms} Bedroom{numBedrooms > 1 && "s"}
                 </Caption>
                 <Caption>·</Caption>
                 <Caption>
-                  {numBeds} bed{numBeds > 1 && "s"}
-                </Caption>
-                <Caption>·</Caption>
-                <Caption>
-                  {numBaths} bath{numBaths > 1 && "s"}
+                  {numBaths} Bath{numBaths > 1 && "s"}
                 </Caption>
               </HStack>
             </Box>
@@ -157,7 +155,6 @@ function ListingPage(
                   <ListItem>Property type: {propertyType}</ListItem>
                   <ListItem>Space: {rentalSpace}</ListItem>
                   <ListItem>Area: {rentalSize} sq ft</ListItem>
-                  <ListItem>Max occupancy: {maxOccupancy}</ListItem>
                 </Stack>
               </UnorderedList>
             </Box>
@@ -202,6 +199,9 @@ function ListingPage(
                 profilePicture={profilePicture}
                 joined={createdAt as number}
                 disabled={error !== undefined || (!loading && !user)}
+                userUid={user?.uid || ""}
+                ownerUid={uid}
+                listing={listing}
               />
             </Box>
           </Box>

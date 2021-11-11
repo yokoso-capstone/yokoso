@@ -12,12 +12,17 @@ import {
   HStack,
   Radio,
   Text,
+  ButtonGroup,
   Icon,
   FormErrorMessage,
   Textarea,
 } from "@chakra-ui/react";
+import {
+  listingRouteBuilder,
+  listingHrefBuilder,
+} from "@/src/utils/listingRoute";
 import { Heading6 } from "@/components/core/Text";
-import { ButtonPrimary } from "@/components/core/Button";
+import { ButtonPrimary, ButtonSecondary } from "@/components/core/Button";
 import { Formik, Form, Field } from "formik";
 import {
   CheckboxContainer,
@@ -43,15 +48,17 @@ import {
   LeaseType,
   FurnishedStatus,
   Frequency,
+  Visibility,
 } from "@/src/api/types";
 import { listings, usersPublic } from "@/src/api/collections";
 import { auth, firestoreTimestamp, serverTimestamp } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import RoutePath from "@/src/routes";
 
 import { nanoid } from "nanoid";
 import firebase from "firebase/app";
 import "firebase/storage";
+
+import { fetchCoordinates } from "@/src/mapbox";
 
 const storageRef = firebase.storage().ref();
 
@@ -69,13 +76,13 @@ type Part0DataType = {
 
 type Part1DataType = {
   size: number | string;
-  privateBathrooms: string;
-  sharedBathrooms: string;
-  occupancy: string;
+  bathrooms: string;
+  bedrooms: string;
   furnishedStatus: FurnishedStatus | "";
   smokingAllowed: boolean;
   petsAllowed: boolean;
   rentalPrice: string;
+  depositPrice: string;
   paymentFrequency: Frequency | "";
   leaseType: LeaseType | "";
   availabilityDate: string;
@@ -85,26 +92,73 @@ type Part1DataType = {
   utilities: string[];
   utilitiesDescription: string;
   propertyTitle: string;
+  postingStatus: Visibility;
   propertyDescription: string;
   files: File[];
 };
 
+const initialValuesPart0: Part0DataType = {
+  propertyType: "Apartment",
+  rentalType: "Entire Building",
+  address: "",
+  unitNum: "",
+  hideUnit: false,
+  country: "Canada",
+  province: "",
+  postalCode: "",
+  city: "",
+};
+
+const initialValuesPart1: Part1DataType = {
+  size: "",
+  bedrooms: "",
+  bathrooms: "",
+  furnishedStatus: "",
+  smokingAllowed: false,
+  petsAllowed: false,
+  rentalPrice: "",
+  depositPrice: "",
+  paymentFrequency: "",
+  leaseType: "",
+  availabilityDate: "",
+  minLeaseDuration: "",
+  features: [] as string[],
+  featureDescription: "",
+  utilities: [] as string[],
+  utilitiesDescription: "",
+  propertyTitle: "",
+  propertyDescription: "",
+  files: [] as File[],
+  postingStatus: "public",
+};
+
 function CreateListingView(): ReactElement {
   const [partNum, setPartNum] = useState(0);
-  const [part0Data, setPart0Data] = useState<Part0DataType>();
-  const [part1Data, setPart1Data] = useState<Part1DataType>();
+  const [part0Data, setPart0Data] = useState<Part0DataType>(initialValuesPart0);
+  const [part1Data, setPart1Data] = useState<Part1DataType>(initialValuesPart1);
+  const [coordinates, setCoordinates] = useState<number[]>([0, 0]);
   const [availabilityDate, setAvailabilityDate] = useState<Date>();
+
   const [user] = useAuthState(auth);
   const router = useRouter();
   const toast = useToast();
 
   const content = [
-    <Part0 key={0} setPartNum={setPartNum} setPart0Data={setPart0Data} />,
+    <Part0
+      key={0}
+      value={part0Data}
+      setPartNum={setPartNum}
+      setPart0Data={setPart0Data}
+      setCoordinates={setCoordinates}
+      toast={toast}
+    />,
     <Part1
       key={1}
+      value={part1Data}
       availabilityDate={availabilityDate}
       setAvailabilityDate={setAvailabilityDate}
       setPart1Data={setPart1Data}
+      setPartNum={setPartNum}
     />,
   ][partNum];
 
@@ -136,7 +190,7 @@ function CreateListingView(): ReactElement {
 
           const listing: Listing = {
             owner: { ...userPublic, uid: user.uid },
-            visibility: "public",
+            visibility: part1Data.postingStatus,
             location: {
               address: part0Data.address,
               unitNumber: part0Data.unitNum,
@@ -146,10 +200,9 @@ function CreateListingView(): ReactElement {
               cityName: part0Data.city,
               province: part0Data.province,
               country: part0Data.country,
-              // TODO: do for real (and use geolocation type)
               coordinate: {
-                latitude: 0,
-                longitude: 0,
+                longitude: coordinates[0],
+                latitude: coordinates[1],
               },
             },
             details: {
@@ -158,15 +211,11 @@ function CreateListingView(): ReactElement {
               propertyType: part0Data.propertyType,
               rentalSpace: part0Data.rentalType,
               rentalSize: Number(part1Data.size),
-              privateBathrooms: part1Data.privateBathrooms,
-              sharedBathrooms: part1Data.sharedBathrooms,
-              maxOccupancy: part1Data.occupancy,
               furnished: part1Data.furnishedStatus,
               smokingAllowed: part1Data.smokingAllowed,
               petsAllowed: part1Data.petsAllowed,
-              numBedrooms: 2, // TODO:
-              numBaths: 1, // TODO:
-              numBeds: 2, // TODO:
+              numBedrooms: Number(part1Data.bedrooms),
+              numBaths: Number(part1Data.bathrooms),
             },
             lease: {
               price: Number(part1Data.rentalPrice),
@@ -174,6 +223,7 @@ function CreateListingView(): ReactElement {
               type: part1Data.leaseType,
               availability: firestoreTimestamp.fromDate(availabilityDate),
               minDuration: part1Data.minLeaseDuration,
+              depositPrice: Number(part1Data.depositPrice),
             },
             features: part1Data.features,
             utilities: part1Data.utilities,
@@ -184,7 +234,10 @@ function CreateListingView(): ReactElement {
 
           const { id: listingId } = await listings.add(listing);
 
-          router.push(`${RoutePath.Listings}/${listingId}`);
+          router.push(
+            listingHrefBuilder(listingId, user.uid),
+            listingRouteBuilder(listingId)
+          );
         } catch (error) {
           toast({
             title: "Something went wrong",
@@ -198,7 +251,15 @@ function CreateListingView(): ReactElement {
     };
 
     submit();
-  }, [router, toast, availabilityDate, user, part0Data, part1Data]);
+  }, [
+    router,
+    toast,
+    availabilityDate,
+    user,
+    part0Data,
+    part1Data,
+    coordinates,
+  ]);
 
   return content;
 }
@@ -278,45 +339,25 @@ function validateAvailabilityDate(date: any) {
   return error;
 }
 
-const initialValuesPart0: Part0DataType = {
-  propertyType: "Apartment",
-  rentalType: "Entire Building",
-  address: "",
-  unitNum: "",
-  hideUnit: false,
-  country: "Canada",
-  province: "",
-  postalCode: "",
-  city: "",
-};
-
-const initialValuesPart1: Part1DataType = {
-  size: "",
-  privateBathrooms: "",
-  sharedBathrooms: "",
-  occupancy: "",
-  furnishedStatus: "",
-  smokingAllowed: false,
-  petsAllowed: false,
-  rentalPrice: "",
-  paymentFrequency: "",
-  leaseType: "",
-  availabilityDate: "",
-  minLeaseDuration: "",
-  features: [] as string[],
-  featureDescription: "",
-  utilities: [] as string[],
-  utilitiesDescription: "",
-  propertyTitle: "",
-  propertyDescription: "",
-  files: [] as File[],
-};
-
 const Part0 = (props: {
+  value: Part0DataType;
   setPartNum: React.Dispatch<React.SetStateAction<number>>;
-  setPart0Data: React.Dispatch<React.SetStateAction<Part0DataType | undefined>>;
+  setPart0Data: React.Dispatch<React.SetStateAction<Part0DataType>>;
+  setCoordinates: React.Dispatch<React.SetStateAction<number[]>>;
+  toast: ReturnType<typeof useToast>;
 }) => {
-  const { setPartNum, setPart0Data } = props;
+  const { toast, setCoordinates, setPartNum, setPart0Data, value } = props;
+
+  const handleError = () => {
+    toast({
+      id: "error",
+      title: "Invalid Address Entered",
+      description: "The address entered couldn't be found, please try again.",
+      status: "error",
+      duration: 9000,
+      isClosable: true,
+    });
+  };
 
   return (
     <Flex width="full" justifyContent="center">
@@ -328,225 +369,237 @@ const Part0 = (props: {
       >
         <Box textAlign="left" padding={8}>
           <Formik
-            initialValues={initialValuesPart0}
-            onSubmit={(values) => {
-              setPart0Data(values);
-              setPartNum(1);
+            initialValues={value}
+            onSubmit={async (values) => {
+              try {
+                const coordinates = await fetchCoordinates(values);
+                setCoordinates(coordinates);
+                setPart0Data(values);
+                setPartNum(1);
+              } catch (e) {
+                // TODO: make a proper error
+                handleError();
+              }
             }}
           >
-            <Form>
-              <Stack spacing={8}>
-                {/* Property Type Radio Buttons */}
-                <Heading6 textAlign="center" marginTop={8}>
-                  First select a property type
-                </Heading6>
-                <Box
-                  p={8}
-                  borderWidth={1}
-                  borderRadius={8}
-                  boxShadow="md"
-                  marginBottom={8}
-                >
-                  <RadioGroupControl name="propertyType">
-                    <HStack spacing="6rem" width="100%" justify="center">
-                      <Stack align="center">
-                        <Icon as={BiBuilding} boxSize={16} />
-                        <Text>Apartment</Text>
-                        <Radio value="Apartment" />
-                      </Stack>
-                      <Stack align="center">
-                        <Icon as={BiHome} boxSize={16} />
-                        <Text>House</Text>
-                        <Radio value="House" />
-                      </Stack>
-                      <Stack align="center">
-                        <Icon as={BiBuildingHouse} boxSize={16} />
-                        <Text>Townhouse</Text>
-                        <Radio value="Townhouse" />
-                      </Stack>
-                    </HStack>
-                  </RadioGroupControl>
-                </Box>
+            {({ isSubmitting }) => (
+              <Form>
+                <Stack spacing={8}>
+                  {/* Property Type Radio Buttons */}
+                  <Heading6 textAlign="center" marginTop={8}>
+                    First select a property type
+                  </Heading6>
+                  <Box
+                    p={8}
+                    borderWidth={1}
+                    borderRadius={8}
+                    boxShadow="md"
+                    marginBottom={8}
+                  >
+                    <RadioGroupControl name="propertyType">
+                      <HStack spacing="6rem" width="100%" justify="center">
+                        <Stack align="center">
+                          <Icon as={BiBuilding} boxSize={16} />
+                          <Text>Apartment</Text>
+                          <Radio value="Apartment" />
+                        </Stack>
+                        <Stack align="center">
+                          <Icon as={BiHome} boxSize={16} />
+                          <Text>House</Text>
+                          <Radio value="House" />
+                        </Stack>
+                        <Stack align="center">
+                          <Icon as={BiBuildingHouse} boxSize={16} />
+                          <Text>Townhouse</Text>
+                          <Radio value="Townhouse" />
+                        </Stack>
+                      </HStack>
+                    </RadioGroupControl>
+                  </Box>
 
-                {/* Rental Type Radio Buttons */}
-                <Heading6 textAlign="center">
-                  Then select your rental space
-                </Heading6>
-                <Box
-                  p={8}
-                  borderWidth={1}
-                  borderRadius={8}
-                  boxShadow="md"
-                  marginBottom={8}
-                >
-                  <RadioGroupControl name="rentalType">
-                    <HStack spacing="5rem" width="100%" justify="center">
-                      <Stack align="center">
-                        <Icon as={BsCircleFill} boxSize={16} />
-                        <Text>Entire Building</Text>
-                        <Radio value="Entire Building" />
-                      </Stack>
-                      <Stack align="center">
-                        <Icon as={BsCircleHalf} boxSize={16} />
-                        <Text>Partial Building</Text>
-                        <Radio value="Partial Building" />
-                      </Stack>
-                      <Stack align="center">
-                        <Icon as={BiDoorOpen} boxSize={16} />
-                        <Text>Single Room</Text>
-                        <Radio value="Single Room" />
-                      </Stack>
-                    </HStack>
-                  </RadioGroupControl>
-                </Box>
+                  {/* Rental Type Radio Buttons */}
+                  <Heading6 textAlign="center">
+                    Then select your rental space
+                  </Heading6>
+                  <Box
+                    p={8}
+                    borderWidth={1}
+                    borderRadius={8}
+                    boxShadow="md"
+                    marginBottom={8}
+                  >
+                    <RadioGroupControl name="rentalType">
+                      <HStack spacing="5rem" width="100%" justify="center">
+                        <Stack align="center">
+                          <Icon as={BsCircleFill} boxSize={16} />
+                          <Text>Entire Building</Text>
+                          <Radio value="Entire Building" />
+                        </Stack>
+                        <Stack align="center">
+                          <Icon as={BsCircleHalf} boxSize={16} />
+                          <Text>Partial Building</Text>
+                          <Radio value="Partial Building" />
+                        </Stack>
+                        <Stack align="center">
+                          <Icon as={BiDoorOpen} boxSize={16} />
+                          <Text>Single Room</Text>
+                          <Radio value="Single Room" />
+                        </Stack>
+                      </HStack>
+                    </RadioGroupControl>
+                  </Box>
 
-                <Heading6 textAlign="center">
-                  Tell us where it is located
-                </Heading6>
-                <Box
-                  p={8}
-                  borderWidth={1}
-                  borderRadius={8}
-                  boxShadow="md"
-                  marginBottom={8}
-                >
-                  <Stack spacing={3}>
-                    <Field name="address" validate={validateLetterString}>
-                      {({ field, form }: any) => (
-                        <FormControl
-                          isInvalid={
-                            form.errors.address && form.touched.address
-                          }
+                  <Heading6 textAlign="center">
+                    Tell us where it is located
+                  </Heading6>
+                  <Box
+                    p={8}
+                    borderWidth={1}
+                    borderRadius={8}
+                    boxShadow="md"
+                    marginBottom={8}
+                  >
+                    <Stack spacing={3}>
+                      <Field name="address" validate={validateLetterString}>
+                        {({ field, form }: any) => (
+                          <FormControl
+                            isInvalid={
+                              form.errors.address && form.touched.address
+                            }
+                          >
+                            <FormLabel>Street Address</FormLabel>
+                            <Input
+                              {...field}
+                              variant="flushed"
+                              borderBottomColor="gray"
+                              placeholder="Belleview Drive"
+                              isRequired
+                            />
+                            <FormErrorMessage>
+                              {form.errors.address}
+                            </FormErrorMessage>
+                          </FormControl>
+                        )}
+                      </Field>
+                      <Field name="unitNum" validate={validateNumber}>
+                        {({ field, form }: any) => (
+                          <FormControl
+                            isInvalid={
+                              form.errors.unitNum && form.touched.unitNum
+                            }
+                          >
+                            <FormLabel>Unit Number</FormLabel>
+                            <Input
+                              {...field}
+                              type="number"
+                              variant="flushed"
+                              borderBottomColor="gray"
+                              placeholder="88"
+                              width="50%"
+                              isRequired
+                            />
+                            <FormErrorMessage>
+                              {form.errors.unitNum}
+                            </FormErrorMessage>
+                          </FormControl>
+                        )}
+                      </Field>
+                      <FormControl display="flex" alignItems="center">
+                        <FormLabel mb={1.5}>
+                          Hide unit number on listing
+                        </FormLabel>
+                        <SwitchControl name="hideUnit" />
+                      </FormControl>
+                    </Stack>
+                    <Stack paddingBottom={3} spacing={3} direction="row">
+                      <Box width="50%">
+                        <FormLabel>Country</FormLabel>
+                        <Input
+                          placeholder="Canada"
+                          isDisabled
+                          borderColor="gray"
+                        />
+                      </Box>
+                      <Box width="50%">
+                        <FormLabel>Province</FormLabel>
+                        <SelectControl
+                          name="province"
+                          selectProps={{ placeholder: "Select option" }}
+                          isRequired
                         >
-                          <FormLabel>Street Address</FormLabel>
-                          <Input
-                            {...field}
-                            variant="flushed"
-                            borderBottomColor="gray"
-                            placeholder="Belleview Drive"
-                            isRequired
-                          />
-                          <FormErrorMessage>
-                            {form.errors.address}
-                          </FormErrorMessage>
-                        </FormControl>
-                      )}
-                    </Field>
-                    <Field name="unitNum" validate={validateNumber}>
-                      {({ field, form }: any) => (
-                        <FormControl
-                          isInvalid={
-                            form.errors.unitNum && form.touched.unitNum
-                          }
-                        >
-                          <FormLabel>Unit Number</FormLabel>
-                          <Input
-                            {...field}
-                            variant="flushed"
-                            borderBottomColor="gray"
-                            placeholder="88"
-                            width="50%"
-                            isRequired
-                          />
-                          <FormErrorMessage>
-                            {form.errors.unitNum}
-                          </FormErrorMessage>
-                        </FormControl>
-                      )}
-                    </Field>
-                    <FormControl display="flex" alignItems="center">
-                      <FormLabel mb={1.5}>
-                        Hide unit number on listing
-                      </FormLabel>
-                      <SwitchControl name="hideUnit" />
-                    </FormControl>
-                  </Stack>
-                  <Stack paddingBottom={3} spacing={3} direction="row">
-                    <Box width="50%">
-                      <FormLabel>Country</FormLabel>
-                      <Input
-                        placeholder="Canada"
-                        isDisabled
-                        borderColor="gray"
-                      />
-                    </Box>
-                    <Box width="50%">
-                      <FormLabel>Province</FormLabel>
-                      <SelectControl
-                        name="province"
-                        selectProps={{ placeholder: "Select option" }}
-                        isRequired
-                      >
-                        <option value="Alberta">Alberta</option>
-                        <option value="British Columbia">
-                          British Columbia
-                        </option>
-                        <option value="Manitoba">Manitoba</option>
-                        <option value="New Brunswick">New Brunswick</option>
-                        <option value="Newfoundland and Labrador">
-                          Newfoundland and Labrador
-                        </option>
-                        <option value="Northwest Territories">
-                          Northwest Territories
-                        </option>
-                        <option value="Nova Scotia">Nova Scotia</option>
-                        <option value="Nunavut">Nunavut</option>
-                        <option value="Ontario">Ontario</option>
-                        <option value="Prince Edward Island">
-                          Prince Edward Island
-                        </option>
-                        <option value="Quebec">Quebec</option>
-                        <option value="Saskatchewan">Saskatchewan</option>
-                        <option value="Yukon">Yukon</option>
-                      </SelectControl>
-                    </Box>
-                  </Stack>
-                  <Stack spacing={3} direction="row">
-                    <Field name="postalCode" validate={validatePostalCode}>
-                      {({ field, form }: any) => (
-                        <FormControl
-                          isInvalid={
-                            form.errors.postalCode && form.touched.postalCode
-                          }
-                        >
-                          <FormLabel>Postal Code</FormLabel>
-                          <Input
-                            {...field}
-                            variant="flushed"
-                            borderBottomColor="gray"
-                            placeholder="A0B 1C2"
-                            isRequired
-                          />
-                          <FormErrorMessage>
-                            {form.errors.postalCode}
-                          </FormErrorMessage>
-                        </FormControl>
-                      )}
-                    </Field>
-                    <Field name="city" validate={validateLetterString}>
-                      {({ field, form }: any) => (
-                        <FormControl
-                          isInvalid={form.errors.city && form.touched.city}
-                        >
-                          <FormLabel>City</FormLabel>
-                          <Input
-                            {...field}
-                            variant="flushed"
-                            borderBottomColor="gray"
-                            placeholder="Ottawa"
-                            isRequired
-                          />
-                          <FormErrorMessage>
-                            {form.errors.city}
-                          </FormErrorMessage>
-                        </FormControl>
-                      )}
-                    </Field>
-                  </Stack>
-                </Box>
-                <ButtonPrimary type="submit">Next</ButtonPrimary>
-              </Stack>
-            </Form>
+                          <option value="Alberta">Alberta</option>
+                          <option value="British Columbia">
+                            British Columbia
+                          </option>
+                          <option value="Manitoba">Manitoba</option>
+                          <option value="New Brunswick">New Brunswick</option>
+                          <option value="Newfoundland and Labrador">
+                            Newfoundland and Labrador
+                          </option>
+                          <option value="Northwest Territories">
+                            Northwest Territories
+                          </option>
+                          <option value="Nova Scotia">Nova Scotia</option>
+                          <option value="Nunavut">Nunavut</option>
+                          <option value="Ontario">Ontario</option>
+                          <option value="Prince Edward Island">
+                            Prince Edward Island
+                          </option>
+                          <option value="Quebec">Quebec</option>
+                          <option value="Saskatchewan">Saskatchewan</option>
+                          <option value="Yukon">Yukon</option>
+                        </SelectControl>
+                      </Box>
+                    </Stack>
+                    <Stack spacing={3} direction="row">
+                      <Field name="postalCode" validate={validatePostalCode}>
+                        {({ field, form }: any) => (
+                          <FormControl
+                            isInvalid={
+                              form.errors.postalCode && form.touched.postalCode
+                            }
+                          >
+                            <FormLabel>Postal Code</FormLabel>
+                            <Input
+                              {...field}
+                              variant="flushed"
+                              borderBottomColor="gray"
+                              placeholder="A0B 1C2"
+                              isRequired
+                            />
+                            <FormErrorMessage>
+                              {form.errors.postalCode}
+                            </FormErrorMessage>
+                          </FormControl>
+                        )}
+                      </Field>
+                      <Field name="city" validate={validateLetterString}>
+                        {({ field, form }: any) => (
+                          <FormControl
+                            isInvalid={form.errors.city && form.touched.city}
+                          >
+                            <FormLabel>City</FormLabel>
+                            <Input
+                              {...field}
+                              variant="flushed"
+                              borderBottomColor="gray"
+                              placeholder="Ottawa"
+                              isRequired
+                            />
+                            <FormErrorMessage>
+                              {form.errors.city}
+                            </FormErrorMessage>
+                          </FormControl>
+                        )}
+                      </Field>
+                    </Stack>
+                  </Box>
+                  <ButtonPrimary isLoading={isSubmitting} type="submit">
+                    Next
+                  </ButtonPrimary>
+                </Stack>
+              </Form>
+            )}
           </Formik>
         </Box>
       </Box>
@@ -555,11 +608,19 @@ const Part0 = (props: {
 };
 
 const Part1 = (props: {
+  value: Part1DataType;
   availabilityDate: Date | undefined;
   setAvailabilityDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
-  setPart1Data: React.Dispatch<React.SetStateAction<Part1DataType | undefined>>;
+  setPart1Data: React.Dispatch<React.SetStateAction<Part1DataType>>;
+  setPartNum: React.Dispatch<React.SetStateAction<number>>;
 }) => {
-  const { availabilityDate, setAvailabilityDate, setPart1Data } = props;
+  const {
+    value,
+    availabilityDate,
+    setAvailabilityDate,
+    setPart1Data,
+    setPartNum,
+  } = props;
 
   return (
     <Flex width="full" justifyContent="center">
@@ -571,7 +632,7 @@ const Part1 = (props: {
       >
         <Box textAlign="left" padding={8}>
           <Formik
-            initialValues={initialValuesPart1}
+            initialValues={value}
             onSubmit={(values) => {
               setPart1Data(values);
             }}
@@ -611,40 +672,14 @@ const Part1 = (props: {
                           )}
                         </Field>
                         <Box width="100%">
-                          <FormLabel>Private Bathrooms</FormLabel>
+                          <FormLabel>Bedrooms</FormLabel>
                           <SelectControl
-                            name="privateBathrooms"
+                            // TODO: replace with bedroom
+                            name="bedrooms"
                             selectProps={{ placeholder: "Select option" }}
                             isRequired
                           >
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4+">4+</option>
-                          </SelectControl>
-                        </Box>
-                      </Stack>
-                      <Stack direction="row" spacing={5}>
-                        <Box width="100%">
-                          <FormLabel>Shared Bathrooms</FormLabel>
-                          <SelectControl
-                            name="sharedBathrooms"
-                            selectProps={{ placeholder: "Select option" }}
-                            isRequired
-                          >
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4+">4+</option>
-                          </SelectControl>
-                        </Box>
-                        <Box width="100%">
-                          <FormLabel>Max Occupancy</FormLabel>
-                          <SelectControl
-                            name="occupancy"
-                            selectProps={{ placeholder: "Select option" }}
-                            isRequired
-                          >
+                            <option value="0">0</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -653,6 +688,22 @@ const Part1 = (props: {
                             <option value="6">6</option>
                             <option value="7">7</option>
                             <option value="8+">8+</option>
+                          </SelectControl>
+                        </Box>
+                      </Stack>
+                      <Stack direction="row" spacing={5}>
+                        <Box width="100%">
+                          <FormLabel>Bathrooms</FormLabel>
+                          <SelectControl
+                            name="bathrooms"
+                            selectProps={{ placeholder: "Select option" }}
+                            isRequired
+                          >
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4+">4+</option>
                           </SelectControl>
                         </Box>
                       </Stack>
@@ -774,21 +825,47 @@ const Part1 = (props: {
                           )}
                         </Field>
                       </Stack>
-                      <Box width="100%">
-                        <FormLabel>Min Lease Duration</FormLabel>
-                        <SelectControl
-                          name="minLeaseDuration"
-                          selectProps={{ placeholder: "Select Duration" }}
-                          isRequired
-                        >
-                          <option value="monthly">Monthly</option>
-                          <option value="semester">Semester (4 Months)</option>
-                          <option value="twoSemester">
-                            Two Semesters (8 Months)
-                          </option>
-                          <option value="year">Yearly</option>
-                        </SelectControl>
-                      </Box>
+                      <Stack direction="row" spacing={5}>
+                        <Box width="100%">
+                          <FormLabel>Min Lease Duration</FormLabel>
+                          <SelectControl
+                            name="minLeaseDuration"
+                            selectProps={{ placeholder: "Select Duration" }}
+                            isRequired
+                          >
+                            <option value="monthly">Monthly</option>
+                            <option value="semester">
+                              Semester (4 Months)
+                            </option>
+                            <option value="twoSemester">
+                              Two Semesters (8 Months)
+                            </option>
+                            <option value="year">Yearly</option>
+                          </SelectControl>
+                        </Box>
+                        <Field name="depositPrice" validate={validateNumber}>
+                          {({ field, form }: any) => (
+                            <FormControl
+                              isInvalid={
+                                form.errors.depositPrice &&
+                                form.touched.depositPrice
+                              }
+                            >
+                              <FormLabel>Deposit Price (CAD)</FormLabel>
+                              <Input
+                                {...field}
+                                variant="flushed"
+                                borderBottomColor="gray"
+                                placeholder="400"
+                                isRequired
+                              />
+                              <FormErrorMessage>
+                                {form.errors.depositPrice}
+                              </FormErrorMessage>
+                            </FormControl>
+                          )}
+                        </Field>
+                      </Stack>
                     </Stack>
                   </Box>
 
@@ -953,6 +1030,13 @@ const Part1 = (props: {
                         </FormControl>
                       )}
                     </Field>
+                    <Box>
+                      <FormLabel>Posting Status</FormLabel>
+                      <SelectControl name="postingStatus" isRequired>
+                        <option value="public">Public</option>
+                        <option value="draft">Draft</option>
+                      </SelectControl>
+                    </Box>
                     <Field
                       name="propertyDescription"
                       validate={validateCompletedString}
@@ -1002,9 +1086,18 @@ const Part1 = (props: {
                       </Box>
                     )}
                   </Dropzone>
-                  <ButtonPrimary type="submit" isLoading={isSubmitting}>
-                    Submit Listing
-                  </ButtonPrimary>
+                  <ButtonGroup w="100%">
+                    <ButtonSecondary w="35%" onClick={() => setPartNum(0)}>
+                      Back
+                    </ButtonSecondary>
+                    <ButtonPrimary
+                      w="65%"
+                      type="submit"
+                      isLoading={isSubmitting}
+                    >
+                      Submit Listing
+                    </ButtonPrimary>
+                  </ButtonGroup>
                 </Stack>
               </Form>
             )}
