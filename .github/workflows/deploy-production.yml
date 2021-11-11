@@ -52,6 +52,6 @@ jobs:
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
-          args: deploy -P production --only firestore,storage
+          args: deploy -P production --only firestore,storage,functions
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_PRODUCTION }}
