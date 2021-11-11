@@ -1,9 +1,16 @@
 import React from "react";
 import { loadStripe } from "@stripe/stripe-js";
+import { functions } from "@/src/firebase";
 
-// Make sure to call `loadStripe` outside of a component’s render to avoid
-// recreating the `Stripe` object on every render.
-const stripePromise = loadStripe(NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+const STRIPE_PUBLISHABLE_KEY = process.env.stripePublishableKey ?? "";
+
+// Ensures environment variable is set at build time
+if (!STRIPE_PUBLISHABLE_KEY) {
+  throw new Error("Stripe publishable key must be defined.");
+}
+
+const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
+const createStripeCheckout = functions.httpsCallable("createStripeCheckout");
 
 export default function PreviewPage() {
   React.useEffect(() => {
@@ -21,19 +28,46 @@ export default function PreviewPage() {
     }
   }, []);
 
+  const createCheckout = async () => {
+    let sessionResponse;
+
+    try {
+      // TODO: pass in listing ID
+      sessionResponse = await createStripeCheckout();
+    } catch (err) {
+      // TODO: indicate error (auth)
+      console.log(err);
+      return;
+    }
+
+    const { session_id: sessionId } = sessionResponse.data;
+
+    if (!sessionId) {
+      // TODO: indicate error (API)
+      console.log("API error");
+      return;
+    }
+
+    const stripe = await stripePromise;
+    const stripeError = await stripe?.redirectToCheckout({ sessionId });
+
+    if (stripeError) {
+      // TODO: indicate error (stripe)
+      console.log(stripeError.error);
+    }
+  };
+
   return (
-    <form
-      action="http://localhost:5001/yokoso-staging/us-central1/handler"
-      method="POST"
-    >
-      <section>
-        <button type="submit" role="link">
+    <>
+      <div>
+        <button type="submit" onClick={createCheckout}>
           Checkout
         </button>
-      </section>
+      </div>
+
       <style jsx>
         {`
-          section {
+          div {
             background: #ffffff;
             display: flex;
             flex-direction: column;
@@ -58,6 +92,6 @@ export default function PreviewPage() {
           }
         `}
       </style>
-    </form>
+    </>
   );
 }

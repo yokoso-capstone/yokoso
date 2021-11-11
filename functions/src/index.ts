@@ -1,33 +1,68 @@
 import * as functions from "firebase-functions";
-const stripe = require('stripe')(STRIPE_SECRET_KEY);
+import * as admin from "firebase-admin";
+import Stripe from "stripe";
+import {FunctionsErrorCode} from "firebase-functions/v1/https";
 
-export const handler = functions.https.onRequest(async(req, res) => {
-    if (req.method === 'POST') {
-        try {
-          // Create Checkout Sessions from body params.
-          const session = await stripe.checkout.sessions.create({
-            line_items: [
-              {
-                // TODO: replace this with the `price` of the product you want to sell
-                price: 'price_1JfFnlJf0fJIUSvGNnqqYVf8',
-                quantity: 1,
+admin.initializeApp();
+
+const STRIPE_SECRET_KEY = functions.config().stripe_test_mode.secret_key;
+const stripe = new Stripe(STRIPE_SECRET_KEY, {apiVersion: "2020-08-27"});
+
+exports.createStripeCheckout = functions.https.onCall(
+    async (data, context) => {
+      const uid = context.auth?.uid;
+
+      if (!uid) {
+        const errorType: FunctionsErrorCode = "unauthenticated";
+        const errorMsg = "The function must be called while authenticated.";
+
+        throw new functions.https.HttpsError(errorType, errorMsg);
+      }
+
+      const request = context.rawRequest;
+      const origin = request.headers.origin;
+
+      if (!origin) {
+        const errorType: FunctionsErrorCode = "invalid-argument";
+        const errorMsg = "Request header must contain an origin.";
+
+        throw new functions.https.HttpsError(errorType, errorMsg);
+      }
+
+      const successParams = "success=true&session_id={CHECKOUT_SESSION_ID}";
+      const successUrl = `${origin}/payment/?${successParams}`;
+      const cancelUrl = `${origin}/payment/?cancelled=true`;
+
+      try {
+        // TODO: dynamically populate price, name, description, ...
+        const session = await stripe.checkout.sessions.create({
+          line_items: [
+            {
+              quantity: 1,
+              price_data: {
+                currency: "CAD",
+                unit_amount: 100,
+                product_data: {
+                  name: "name",
+                  description: "description",
                 },
-            ],
-            payment_method_types: [
-              'card',
-            //   'acss_debit',
-            //   'wechat_pay',
-            ],
-            mode: 'payment',
-            success_url: `${req.headers.origin}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${req.headers.origin}/?canceled=true`,
-          });
-          res.redirect(303, session.url);
-        } catch (err) {
-          // @ts-ignore
-          res.status(err.statusCode || 500).json(err.message);
-        }
-      } else {
-        res.setHeader('Allow', 'POST');
-        res.status(405).end('Method Not Allowed');
-      }});
+              },
+            },
+          ],
+          payment_method_types: ["card"],
+          mode: "payment",
+          success_url: successUrl,
+          cancel_url: cancelUrl,
+        });
+
+        return {session_id: session.id};
+      } catch (err) {
+        console.error(err);
+
+        const errorType: FunctionsErrorCode = "unknown";
+        const errorMsg = "There was an issue processing your request.";
+
+        throw new functions.https.HttpsError(errorType, errorMsg);
+      }
+    }
+);
