@@ -4,10 +4,12 @@ on:
     branches-ignore:
       - "main"
       - "develop"
+    paths-ignore:
+      - "functions/**"
 
 jobs:
-  build:
-    name: build
+  build-nextjs:
+    name: Build Next.js
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
