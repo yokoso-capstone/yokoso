@@ -7,6 +7,8 @@ yokoso-staging:
       cmd: "npm"
       args: ["run", "build:staging"]
     bucketName: yokoso-staging-s3
+    cloudfront:
+      comment: "Distribution for yokoso-staging"
     description: "Lambda@Edge for yokoso-staging"
     name:
       defaultLambda: yokoso-staging-default-lambda
