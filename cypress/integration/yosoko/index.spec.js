@@ -57,9 +57,8 @@ describe("From index page", () => {
     // next page
     cy.contains("Rental Size", { timeout: 2000 });
     cy.contains("Rental Size").type("500");
-    cy.get("[id^=privateBathrooms]").select("2");
-    cy.get("[id^=sharedBathrooms]").select("2");
-    cy.get("[id^=occupancy]").select("3");
+    cy.get("[id^=bedrooms]").select("2");
+    cy.get("[id^=bathrooms]").select("2");
     cy.get("[id^=furnishedStatus]").select("Furnished");
     cy.get(".chakra-form-control:nth-child(2) .chakra-switch__track").click();
     cy.contains("Rental Price").type("1000");
