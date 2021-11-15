@@ -5,6 +5,7 @@ on:
       - develop
 jobs:
   deploy-nextjs:
+    name: Deploy Next.js in staging environment
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -44,6 +45,7 @@ jobs:
         run: aws s3 sync .serverless s3://yokoso-serverless-state-bucket/yokoso/staging/.serverless --delete
 
   deploy-firebase:
+    name: Deploy Firebase in staging environment
     needs: deploy-nextjs
     runs-on: ubuntu-latest
     steps:
