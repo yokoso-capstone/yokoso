@@ -26,6 +26,7 @@
     "plugin:jsx-a11y/recommended",
     "plugin:react-hooks/recommended",
     "plugin:prettier/recommended",
+    "plugin:cypress/recommended",
     "prettier/@typescript-eslint",
     "prettier"
   ],
