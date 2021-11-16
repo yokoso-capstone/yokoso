@@ -52,8 +52,11 @@ service cloud.firestore {
         request.auth != null &&
         request.auth.uid == resource.data["owner"]["uid"] &&
         !request.resource.data.keys().hasAny(["owner", "createdAt"]); // user cannot update these fields
+    	allow delete: if
+        request.auth != null &&
+				request.auth.uid == resource.data["owner"]["uid"]
     }
-
+    
     match /tenant-requests/{requestId} {
       allow read: if 
         request.auth != null &&
@@ -65,6 +68,9 @@ service cloud.firestore {
         request.resource.data["tenantUid"] == request.auth.uid &&
         request.resource.data["createdAt"] is timestamp &&
         request.resource.data["createdAt"] == request.time;
+      allow delete: if 
+      	request.auth != null &&
+        request.auth.uid == resource.data["tenantUid"]
     }
 
     match /chat-rooms/{chatId} {
