@@ -3,15 +3,19 @@ import * as admin from "firebase-admin";
 import Stripe from "stripe";
 import {FunctionsErrorCode} from "firebase-functions/v1/https";
 
-admin.initializeApp();
-
 const STRIPE_SECRET_KEY = functions.config().stripe_test_mode.secret_key;
 const stripe = new Stripe(STRIPE_SECRET_KEY, {apiVersion: "2020-08-27"});
+
+admin.initializeApp();
 
 exports.createStripeCheckout = functions.https.onCall(
     async (data, context) => {
       const uid = context.auth?.uid;
+      const request = context.rawRequest;
+      const origin = request.headers.origin;
+      const {listingId} = data ?? {};
 
+      // Guard condition to ensure user is authenticated
       if (!uid) {
         const errorType: FunctionsErrorCode = "unauthenticated";
         const errorMsg = "The function must be called while authenticated.";
@@ -19,12 +23,18 @@ exports.createStripeCheckout = functions.https.onCall(
         throw new functions.https.HttpsError(errorType, errorMsg);
       }
 
-      const request = context.rawRequest;
-      const origin = request.headers.origin;
-
+      // Guard condition to ensure there is an origin for stripe to redirect to
       if (!origin) {
         const errorType: FunctionsErrorCode = "invalid-argument";
         const errorMsg = "Request header must contain an origin.";
+
+        throw new functions.https.HttpsError(errorType, errorMsg);
+      }
+
+      // Guard condition to ensure listing ID is provided
+      if (!listingId) {
+        const errorType: FunctionsErrorCode = "invalid-argument";
+        const errorMsg = "Listing ID must be provided.";
 
         throw new functions.https.HttpsError(errorType, errorMsg);
       }
