@@ -18,12 +18,8 @@ import {
 } from "@chakra-ui/react";
 import { FaCheckCircle } from "react-icons/fa";
 import { getUTCMonthString } from "@/src/utils";
-import {
-  CollectionName,
-  chatRooms,
-  tenantRequests,
-} from "@/src/api/collections";
-import { ChatRoom, Listing, Message, TenantRequest } from "@/src/api/types";
+import { CollectionName, chatRooms } from "@/src/api/collections";
+import { ChatRoom, Listing, Message } from "@/src/api/types";
 import { serverTimestamp } from "@/src/firebase";
 import {
   checkRequestStatus,

@@ -30,7 +30,7 @@ import {
   ModalFooter,
   Modal,
 } from "@chakra-ui/react";
-import { PropertyImage, MultiWeightText } from "@/components/sections/Listings";
+import { PropertyImage } from "@/components/sections/Listings";
 import { TenantRequestEntry } from "@/src/api/types";
 import { auth } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";

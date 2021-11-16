@@ -141,7 +141,7 @@ export type TenantRequest = {
   tenantUid: string;
   createdAt: timestamp;
   listing: {
-    initiatedAt: timestamp;
+    initiatedAt: any;
     data: Listing;
     id: string;
   };

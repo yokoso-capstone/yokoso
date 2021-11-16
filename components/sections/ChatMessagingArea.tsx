@@ -46,7 +46,6 @@ const Header = (props: {
 
   const [requestDisabled, setRequestDisabled] = useState(false);
   const [isLandlord, setIsLandlord] = useState(false);
-  const [requestLoading, setRequestLoading] = useState(false);
 
   let disabledRequestErrorMsg = "";
 
