@@ -1,11 +1,13 @@
 import { useMemo, useState, ReactElement, useEffect } from "react";
-import { ButtonSecondary } from "@/components/core/Button";
+import { ButtonPrimary, ButtonSecondary } from "@/components/core/Button";
 import { DashboardCard } from "@/components/core/Layout";
 import { TabPrimary } from "@/components/core/Tabs";
+import NextLink from "next/link";
 import DashboardSearchInput from "@/components/core/DashboardSearchInput";
 import {
-  Image,
+  Link,
   Tabs,
+  ButtonGroup,
   TabList,
   TabPanels,
   TabPanel,
@@ -17,17 +19,40 @@ import {
   Tr,
   Th,
   Td,
+  IconButton,
+  useDisclosure,
+  useToast,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  Modal,
 } from "@chakra-ui/react";
+import { PropertyImage, MultiWeightText } from "@/components/sections/Listings";
 import { TenantRequestEntry } from "@/src/api/types";
 import { auth } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { tenantRequests } from "@/src/api/collections";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { getUserPublicById } from "@/src/api/queries";
+import { DeleteIcon, CloseIcon, CheckIcon } from "@chakra-ui/icons";
+import {
+  listingRouteBuilder,
+  listingHrefBuilder,
+} from "@/src/utils/listingRoute";
+import { Heading5 } from "../core/Text";
 
 enum Request {
   Sent = "tenantUid",
   Received = "landlordUid",
+}
+
+interface DeleteProps {
+  isOpen: boolean;
+  onClose: () => void;
+  request: TenantRequestEntry | undefined;
 }
 
 function RequestView(): ReactElement {
@@ -40,7 +65,6 @@ function RequestView(): ReactElement {
   >([]);
 
   const [user] = useAuthState(auth);
-  // TODO: query query based on the requests received and then go through each one and add the info from the user public data
   const query = useMemo(
     () =>
       user ? tenantRequests.where(selectedRequest, "==", user.uid) : undefined,
@@ -71,7 +95,7 @@ function RequestView(): ReactElement {
     };
 
     handleTenantRequestPromise();
-  }, [user, selectedRequest, snapshot]);
+  }, [user, selectedRequest, snapshot, tenantRequestPromise]);
 
   return (
     <DashboardCard>
@@ -98,10 +122,18 @@ function RequestView(): ReactElement {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <ReceivedRequestsTable tenantRequests={tenantRequestList} />
+            <RequestsTable
+              tenantRequests={tenantRequestList}
+              userId={user?.uid}
+              requestType="received"
+            />
           </TabPanel>
           <TabPanel>
-            <SentRequestsTable tenantRequests={tenantRequestList} />
+            <RequestsTable
+              tenantRequests={tenantRequestList}
+              userId={user?.uid}
+              requestType="sent"
+            />
           </TabPanel>
         </TabPanels>
       </Tabs>
@@ -109,77 +141,163 @@ function RequestView(): ReactElement {
   );
 }
 
-const ReceivedRequestsTable = (props: { tenantRequests?: any[] }) => {
-  const { tenantRequests } = props;
+const DeleteConfirmationModal = (props: DeleteProps) => {
+  const { isOpen, onClose, request } = props;
+
+  const listingTitle = request?.listing.data.details.title;
+
+  const toast = useToast();
+
+  const handleDelete = async (requestId: string | undefined) => {
+    try {
+      await tenantRequests.doc(requestId).delete();
+      toast({
+        title: "Deleted Tenant Request",
+        description: `We successfully deleted your tenant Request for listing: ${listingTitle}`,
+        isClosable: true,
+        duration: 4000,
+        status: "success",
+      });
+    } catch (e) {
+      toast({
+        title: "Something went wrong",
+        description:
+          "An error occurred and we couldn't delete your tenant request. Please try again later.",
+        isClosable: true,
+        duration: 4000,
+        status: "error",
+      });
+    }
+  };
+
+  const onDelete = (requestId: string | undefined) => {
+    handleDelete(requestId);
+    onClose();
+  };
 
   return (
-    <Table>
-      <Thead>
-        <Tr>
-          <Th>Photo</Th>
-          <Th>First name</Th>
-          <Th>Last name</Th>
-          <Th>Rentals and durations</Th>
-          <Th />
-        </Tr>
-      </Thead>
-      <Tbody>
-        {tenantRequests?.map((tenant, index) => (
-          <Tr key={index}>
-            <Td>
-              <Image
-                src={tenant.profilePicture}
-                boxSize="64px"
-                objectFit="cover"
-                borderRadius="full"
-              />
-            </Td>
-            <Td>{tenant.firstName}</Td>
-            <Td>{tenant.lastName}</Td>
-            <Td>
-              <ButtonSecondary>View Details</ButtonSecondary>
-            </Td>
-          </Tr>
-        ))}
-      </Tbody>
-    </Table>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered size="sm">
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>
+          <Heading5>Delete Listing</Heading5>
+        </ModalHeader>
+        <ModalCloseButton />
+        <ModalBody mb="1rem">
+          <p>Are you sure you want to delete the tenant request for listing,</p>
+          <b>{listingTitle}</b>?<p>This action cannot be undone.</p>
+        </ModalBody>
+        <ModalFooter>
+          <ButtonPrimary mr={3} onClick={() => onDelete(request?.id)}>
+            Delete
+          </ButtonPrimary>
+          <ButtonSecondary onClick={onClose}>Cancel</ButtonSecondary>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 
-const SentRequestsTable = (props: { tenantRequests?: any[] }) => {
-  const { tenantRequests } = props;
+const RequestsTable = (props: {
+  tenantRequests?: TenantRequestEntry[];
+  userId: string | undefined;
+  requestType: string;
+}) => {
+  const { tenantRequests, userId, requestType } = props;
+
+  const [tenantRequest, setTenantRequest] = useState<
+    TenantRequestEntry | undefined
+  >();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const handleDeleteRequestModal = (
+    request: TenantRequestEntry | undefined
+  ) => {
+    setTenantRequest(request);
+    onOpen();
+  };
+
+  const handleDeleteRequestModalClose = () => {
+    setTenantRequest(undefined);
+    onClose();
+  };
 
   return (
-    <Table>
-      <Thead>
-        <Tr>
-          <Th>Photo</Th>
-          <Th>First name</Th>
-          <Th>Last name</Th>
-          <Th>Rentals and durations</Th>
-          <Th />
-        </Tr>
-      </Thead>
-      <Tbody>
-        {tenantRequests?.map((tenant, index) => (
-          <Tr key={index}>
-            <Td>
-              <Image
-                src={tenant.profilePicture}
-                boxSize="64px"
-                objectFit="cover"
-                borderRadius="full"
-              />
-            </Td>
-            <Td>{tenant.firstName}</Td>
-            <Td>{tenant.lastName}</Td>
-            <Td>
-              <ButtonSecondary>View Details</ButtonSecondary>
-            </Td>
+    <>
+      <Table>
+        <Thead>
+          <Tr>
+            <Th display={["none", "none", "none", "block", "block"]}>Photo</Th>
+            <Th>Listing</Th>
+            <Th>First name</Th>
+            <Th>Last name</Th>
+            <Th>Sent Date</Th>
+            <Th width={0} />
           </Tr>
-        ))}
-      </Tbody>
-    </Table>
+        </Thead>
+        <Tbody>
+          {tenantRequests?.map((tenant, index) => {
+            return (
+              <Tr key={index}>
+                <Td display={["none", "none", "none", "block", "block"]}>
+                  <PropertyImage
+                    image={tenant.listing.data.images[0]}
+                    size="200px"
+                  />
+                </Td>
+                <Td>{tenant.listing.data.details.title}</Td>
+                <Td>{tenant.firstName}</Td>
+                <Td>{tenant.lastName}</Td>
+                <Td>{tenant.listing.initiatedAt.toDate().toDateString()}</Td>
+                <Td>
+                  <ButtonGroup>
+                    <NextLink
+                      href={listingHrefBuilder(tenant.listing.data.id, userId)}
+                      as={listingRouteBuilder(tenant.listing.data.id)}
+                      passHref
+                    >
+                      <Link _hover={{ textDecoration: "none" }}>
+                        <ButtonSecondary>View Listing</ButtonSecondary>
+                      </Link>
+                    </NextLink>
+                    {requestType === "sent" ? (
+                      <IconButton
+                        size="md"
+                        variant="ghost"
+                        aria-label="Delete Listing"
+                        onClick={() => handleDeleteRequestModal(tenant)}
+                        icon={<DeleteIcon />}
+                      />
+                    ) : (
+                      <>
+                        <IconButton
+                          size="sm"
+                          variant="ghost"
+                          aria-label="Delete Listing"
+                          icon={<CheckIcon />}
+                        />
+                        <IconButton
+                          size="sm"
+                          variant="ghost"
+                          aria-label="Delete Listing"
+                          icon={<CloseIcon />}
+                        />
+                      </>
+                    )}
+                  </ButtonGroup>
+                </Td>
+              </Tr>
+            );
+          })}
+        </Tbody>
+      </Table>
+      <DeleteConfirmationModal
+        isOpen={isOpen}
+        onClose={handleDeleteRequestModalClose}
+        request={tenantRequest}
+      />
+    </>
   );
 };
 

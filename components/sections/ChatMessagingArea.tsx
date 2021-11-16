@@ -15,6 +15,7 @@ import {
   Input,
   Link,
   Modal,
+  Tooltip,
   ModalOverlay,
   ModalContent,
   ModalHeader,
@@ -32,14 +33,42 @@ import { CollectionName, chatRooms } from "@/src/api/collections";
 import { serverTimestamp } from "@/src/firebase";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { listingRouteBuilder } from "@/src/utils/listingRoute";
+import { checkRequestStatus } from "@/src/utils/tenantRequest";
 
 const Header = (props: {
   photoUrl?: string;
   name: string;
   listing?: Listing;
+  user?: firebase.User | null;
 }) => {
-  const { photoUrl, name, listing } = props;
+  const { photoUrl, name, listing, user } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [requestDisabled, setRequestDisabled] = useState(false);
+  const [isLandlord, setIsLandlord] = useState(false);
+  const [requestLoading, setRequestLoading] = useState(false);
+
+  let disabledRequestErrorMsg = "";
+
+  if (isLandlord) {
+    disabledRequestErrorMsg = "Can't send a tenant request to yourself";
+  } else {
+    disabledRequestErrorMsg = "Tenant request has already been sent";
+  }
+
+  const handleModalOpen = () => {
+    if (listing && user) {
+      checkRequestStatus(
+        listing,
+        user.uid,
+        listing.owner.uid,
+        setRequestDisabled
+      );
+
+      setIsLandlord(listing?.owner.uid === user.uid);
+    }
+    onOpen();
+  };
 
   return (
     <>
@@ -101,7 +130,7 @@ const Header = (props: {
           fontSize="24px"
           icon={<GoKebabVertical />}
           background="transparent"
-          onClick={onOpen}
+          onClick={handleModalOpen}
         />
       </Grid>
 
@@ -113,13 +142,24 @@ const Header = (props: {
           <ModalBody>
             <Stack>
               {/* TODO: handle error situation of no listing or ID (shouldn't happen?) */}
-              <NextLink href={listingRouteBuilder(listing?.id)} passHref>
-                <Link>
-                  <ButtonSecondary isFullWidth>View listing</ButtonSecondary>
-                </Link>
-              </NextLink>
-              {/* TODO: implement or remove */}
-              <ButtonSecondary isFullWidth>Accept tenant</ButtonSecondary>
+              <Tooltip label="test">
+                <NextLink href={listingRouteBuilder(listing?.id)} passHref>
+                  <Link>
+                    <ButtonSecondary isFullWidth>View listing</ButtonSecondary>
+                  </Link>
+                </NextLink>
+              </Tooltip>
+              <Tooltip
+                isDisabled={!requestDisabled}
+                hasArrow
+                label={disabledRequestErrorMsg}
+              >
+                <Box>
+                  <ButtonSecondary isFullWidth isDisabled={requestDisabled}>
+                    Send Tenant Request
+                  </ButtonSecondary>
+                </Box>
+              </Tooltip>
             </Stack>
           </ModalBody>
 
@@ -359,6 +399,7 @@ function ChatMessagingArea(props: {
     <DashboardCard padding={0} overflow="hidden" position="relative">
       <Header
         photoUrl={currentContact?.profilePicture}
+        user={user}
         name={
           currentContact
             ? `${currentContact.firstName} ${currentContact.lastName}`

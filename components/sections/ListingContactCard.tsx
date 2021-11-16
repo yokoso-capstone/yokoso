@@ -25,6 +25,10 @@ import {
 } from "@/src/api/collections";
 import { ChatRoom, Listing, Message, TenantRequest } from "@/src/api/types";
 import { serverTimestamp } from "@/src/firebase";
+import {
+  checkRequestStatus,
+  handleTenantRequest,
+} from "@/src/utils/tenantRequest";
 
 interface ListingCardProps {
   price: number;
@@ -141,77 +145,47 @@ function ListingCard(props: ListingCardProps): ReactElement {
     }
   };
 
-  const handleTenantRequest = async () => {
-    setRequestLoading(true);
-    try {
-      if (!listing.id) {
-        throw new Error("Couldn't find listing id");
-      } else {
-        const requestId = [userUid, ownerUid, listing.id].sort().join("-");
-        const requestRef = tenantRequests.doc(requestId);
-
-        const currentListingData = {
-          [listing.id]: {
-            initiatedAt: serverTimestamp,
-            data: listing,
-          },
-        };
-
-        const tenantRequestData: TenantRequest = {
-          landlordUid: ownerUid,
-          tenantUid: userUid,
-          listing: currentListingData,
-          createdAt: serverTimestamp,
-        };
-        await requestRef.set(tenantRequestData);
-
-        toast({
-          title: "Tenant Request Sent!",
-          description: `Tenant request was sent for listing, "${listing.details.title}"`,
-          status: "success",
-          duration: 4000,
-          isClosable: true,
-        });
-      }
-    } catch (err) {
-      toast({
-        title: "Something went wrong",
-        description:
-          "An error occurred and the listing request couldn't be sent. Please try again later.",
-        status: "error",
-        duration: 4000,
-        isClosable: true,
-      });
-    } finally {
-      setRequestLoading(false);
-    }
+  const onTenantRequestSuccess = () => {
+    toast({
+      title: "Tenant Request Sent!",
+      description: `Tenant request was sent for listing, "${listing.details.title}"`,
+      status: "success",
+      duration: 4000,
+      isClosable: true,
+    });
   };
 
-  const checkRequestStatus = async () => {
-    const requestId = [userUid, ownerUid, listing.id].sort().join("-");
+  const onTenantRequestError = () => {
+    toast({
+      title: "Something went wrong",
+      description:
+        "An error occurred and the listing request couldn't be sent. Please try again later.",
+      status: "error",
+      duration: 4000,
+      isClosable: true,
+    });
+  };
 
-    try {
-      const requestRef = tenantRequests.doc(requestId);
-      const requestDoc = await requestRef.get();
-
-      if (requestDoc.exists || isSameUser) {
-        setRequestDisabled(true);
-      }
-    } catch (err) {
-      toast({
-        title: "Something went wrong",
-        description:
-          "An error occurred and couldn't fetch requests. Please try again later.",
-        status: "error",
-        duration: 4000,
-        isClosable: true,
-      });
-    }
+  const handleCheckRequestStatusError = () => {
+    toast({
+      title: "Something went wrong",
+      description:
+        "An error occurred and couldn't fetch requests. Please try again later.",
+      status: "error",
+      duration: 4000,
+      isClosable: true,
+    });
   };
 
   useEffect(() => {
-    checkRequestStatus();
-  });
+    checkRequestStatus(
+      listing,
+      userUid,
+      ownerUid,
+      setRequestDisabled,
+      handleCheckRequestStatusError
+    );
+  }, [listing, userUid, ownerUid, handleCheckRequestStatusError]);
 
   return (
     <Card
@@ -290,7 +264,16 @@ function ListingCard(props: ListingCardProps): ReactElement {
               <ButtonSecondary
                 isDisabled={requestDisabled}
                 isFullWidth
-                onClick={handleTenantRequest}
+                onClick={() =>
+                  handleTenantRequest(
+                    listing,
+                    userUid,
+                    ownerUid,
+                    onTenantRequestSuccess,
+                    onTenantRequestError,
+                    setRequestLoading
+                  )
+                }
                 isLoading={requestLoading}
               >
                 Send Tenant Request
