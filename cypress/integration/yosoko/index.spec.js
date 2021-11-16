@@ -46,7 +46,8 @@ describe("From index page", () => {
 
     cy.contains("Email", { timeout: 2000 }).should("not.exist");
     cy.contains("Post Listing").click();
-    cy.contains("House", { timeout: 5000 }).click();
+    cy.contains("House", { timeout: 5000 });
+    cy.contains("House").click();
     cy.contains("Entire Building").click();
     cy.contains("Street Address").type(address);
     cy.contains("Unit Number").type(unit);
