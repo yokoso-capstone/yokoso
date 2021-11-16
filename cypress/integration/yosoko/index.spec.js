@@ -46,7 +46,7 @@ describe("From index page", () => {
 
     cy.contains("Email", { timeout: 2000 }).should("not.exist");
     cy.contains("Post Listing").click();
-    cy.contains("House").click();
+    cy.contains("House", { timeout: 5000 }).click();
     cy.contains("Entire Building").click();
     cy.contains("Street Address").type(address);
     cy.contains("Unit Number").type(unit);
@@ -99,7 +99,7 @@ describe("From index page", () => {
     it("selects sample listing", () => {
       cy.location("pathname").should("include", "/search");
       cy.contains("2bdrm").click();
-      cy.location("pathname", { timeout: 5000 }).should("include", "/listings");
+      cy.location("pathname", { timeout: 7000 }).should("include", "/listings");
       cy.contains("Lease details");
       cy.contains("Amenities");
       cy.contains("Utilities");
