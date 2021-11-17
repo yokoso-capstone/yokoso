@@ -243,7 +243,7 @@ const RequestsTable = (props: {
                 <Td display={["none", "none", "none", "block", "block"]}>
                   <PropertyImage
                     image={tenant.listing.data.images[0]}
-                    size="200px"
+                    size="150px"
                   />
                 </Td>
                 <Td>{tenant.listing.data.details.title}</Td>
