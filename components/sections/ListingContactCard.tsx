@@ -181,7 +181,7 @@ function ListingCard(props: ListingCardProps): ReactElement {
       setRequestDisabled,
       handleCheckRequestStatusError
     );
-  }, [listing, userUid, ownerUid, handleCheckRequestStatusError]);
+  }, [listing, userUid, ownerUid, requestLoading]);
 
   return (
     <Card

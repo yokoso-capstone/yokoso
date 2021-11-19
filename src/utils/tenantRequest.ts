@@ -72,6 +72,9 @@ export const checkRequestStatus = async (
     if (requestDoc.exists || userUid === ownerUid) {
       setRequestStatus(true);
     }
+    else{
+      setRequestStatus(false);
+    }
 
   } catch (err) {
     if (onError) {
