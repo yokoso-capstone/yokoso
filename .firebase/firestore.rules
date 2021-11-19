@@ -52,25 +52,26 @@ service cloud.firestore {
         request.auth != null &&
         request.auth.uid == resource.data["owner"]["uid"] &&
         !request.resource.data.keys().hasAny(["owner", "createdAt"]); // user cannot update these fields
-    	allow delete: if
+      allow delete: if
         request.auth != null &&
-				request.auth.uid == resource.data["owner"]["uid"]
+        request.auth.uid == resource.data["owner"]["uid"];
     }
-    
+
     match /tenant-requests/{requestId} {
-      allow read: if 
+      allow read: if
+        request.auth != null && (
+          request.auth.uid == resource.data["tenantUid"] ||
+          request.auth.uid == resource.data["landlordUid"] ||
+          !exists(/databases/$(database)/documents/tenant-requests/$(requestId)));
+      allow create: if
         request.auth != null &&
-        (request.auth.uid == resource.data["tenantUid"] || request.auth.uid == resource.data["landlordUid"] ||
-        !exists(/databases/$(database)/documents/tenant-requests/$(requestId)));
-      allow create: if 
-        request.auth != null &&
-        verifyFields(["createdAt", "tenantUid", "landlordUid", "listing"], [])&& 
+        verifyFields(["createdAt", "tenantUid", "landlordUid", "listing"], []) &&
         request.resource.data["tenantUid"] == request.auth.uid &&
         request.resource.data["createdAt"] is timestamp &&
         request.resource.data["createdAt"] == request.time;
-      allow delete: if 
-      	request.auth != null &&
-        request.auth.uid == resource.data["tenantUid"]
+      allow delete: if
+        request.auth != null &&
+        request.auth.uid == resource.data["tenantUid"];
     }
 
     match /chat-rooms/{chatId} {
