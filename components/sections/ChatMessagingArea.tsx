@@ -48,7 +48,6 @@ const Header = (props: {
   const { photoUrl, name, listing, user } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const [listingOwner, setListingOwner] = useState(listing?.owner.uid);
   const [requestDisabled, setRequestDisabled] = useState(false);
   const [isLandlord, setIsLandlord] = useState(false);
   const [requestLoading, setRequestLoading] = useState(false);
@@ -63,20 +62,6 @@ const Header = (props: {
     disabledRequestErrorMsg = "Tenant request has already been sent";
   }
 
-  const handleModalOpen = () => {
-    if (listing && user) {
-      checkRequestStatus(
-        listing,
-        user.uid,
-        listing.owner.uid,
-        setRequestDisabled
-      );
-
-      setIsLandlord(listing?.owner.uid === user.uid);
-    }
-    onOpen();
-  };
-
   const handleCheckRequestStatusError = () => {
     toast({
       title: "Something went wrong",
@@ -89,7 +74,7 @@ const Header = (props: {
   };
 
   useEffect(() => {
-    if (listing && user) {
+    if (listing && user && isOpen === true) {
       checkRequestStatus(
         listing,
         user.uid,
