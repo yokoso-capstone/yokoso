@@ -56,7 +56,6 @@ interface DeleteProps {
 }
 
 function RequestView(): ReactElement {
-  // @ts-ignore
   const [selectedRequest, setSelectedRequest] = useState<Request>(
     Request.Received
   );
@@ -73,29 +72,29 @@ function RequestView(): ReactElement {
 
   const [snapshot] = useCollection(query);
 
-  const tenantRequestPromise = snapshot?.docs.map(async (doc) => {
-    const requestData = doc.data();
-    const publicUserInfo = await getUserPublicById(
-      requestData[
-        selectedRequest === Request.Received ? "tenantUid" : "landlordUid"
-      ]
-    );
-    return {
-      ...doc.data(),
-      ...publicUserInfo,
-      id: doc.id,
-    } as TenantRequestEntry;
-  });
-
   useEffect(() => {
     const handleTenantRequestPromise = async () => {
+      const tenantRequestPromise = snapshot?.docs.map(async (doc) => {
+        const requestData = doc.data();
+        const publicUserInfo = await getUserPublicById(
+          requestData[
+            selectedRequest === Request.Received ? "tenantUid" : "landlordUid"
+          ]
+        );
+        return {
+          ...publicUserInfo,
+          ...requestData,
+          id: doc.id,
+        } as TenantRequestEntry;
+      });
+
       if (tenantRequestPromise) {
         setTenantRequestList(await Promise.all(tenantRequestPromise));
       }
     };
 
     handleTenantRequestPromise();
-  }, [user, selectedRequest, snapshot, tenantRequestPromise]);
+  }, [user, snapshot]);
 
   return (
     <DashboardCard>
