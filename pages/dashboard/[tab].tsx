@@ -12,6 +12,7 @@ import ListingsView from "@/components/dashboard/ListingsView";
 import TenantsView from "@/components/dashboard/TenantsView";
 import ChatView from "@/components/dashboard/ChatView";
 import CreateListingView from "@/components/dashboard/CreateListingView";
+import RequestView from "@/components/dashboard/RequestView";
 
 const pathData: {
   [key in RoutePathDashboard]: {
@@ -26,6 +27,10 @@ const pathData: {
   [RoutePathDashboard.Tenants]: {
     label: DashboardLabel.Tenants,
     content: <TenantsView />,
+  },
+  [RoutePathDashboard.Requests]: {
+    label: DashboardLabel.Requests,
+    content: <RequestView />,
   },
   [RoutePathDashboard.Chat]: {
     label: DashboardLabel.Chat,

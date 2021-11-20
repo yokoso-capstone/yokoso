@@ -15,6 +15,7 @@ import {
   Input,
   Link,
   Modal,
+  Tooltip,
   ModalOverlay,
   ModalContent,
   ModalHeader,
@@ -23,6 +24,7 @@ import {
   ModalCloseButton,
   Stack,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { GoKebabVertical } from "react-icons/go";
@@ -32,14 +34,81 @@ import { CollectionName, chatRooms } from "@/src/api/collections";
 import { serverTimestamp } from "@/src/firebase";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { listingRouteBuilder } from "@/src/utils/listingRoute";
+import {
+  checkRequestStatus,
+  handleTenantRequest,
+} from "@/src/utils/tenantRequest";
 
 const Header = (props: {
   photoUrl?: string;
   name: string;
   listing?: Listing;
+  user?: firebase.User | null;
 }) => {
-  const { photoUrl, name, listing } = props;
+  const { photoUrl, name, listing, user } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [requestDisabled, setRequestDisabled] = useState(false);
+  const [isLandlord, setIsLandlord] = useState(false);
+  const [requestLoading, setRequestLoading] = useState(false);
+
+  const toast = useToast();
+
+  let disabledRequestErrorMsg = "";
+
+  if (isLandlord) {
+    disabledRequestErrorMsg = "Can't send a tenant request to yourself";
+  } else {
+    disabledRequestErrorMsg = "Tenant request has already been sent";
+  }
+
+  const handleCheckRequestStatusError = () => {
+    toast({
+      title: "Something went wrong",
+      description:
+        "An error occurred and couldn't fetch requests. Please try again later.",
+      status: "error",
+      duration: 4000,
+      isClosable: true,
+    });
+  };
+
+  useEffect(() => {
+    if (listing && user && isOpen === true) {
+      checkRequestStatus(
+        listing,
+        user.uid,
+        listing.owner.uid,
+        setRequestDisabled,
+        handleCheckRequestStatusError
+      );
+
+      setIsLandlord(listing?.owner.uid === user.uid);
+    }
+  }, [isOpen, requestLoading]);
+
+  const handleRequestSuccess = () => {
+    if (listing) {
+      toast({
+        title: "Tenant Request Sent!",
+        description: `Tenant request was sent for listing, "${listing.details.title}"`,
+        status: "success",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleRequestError = () => {
+    toast({
+      title: "Something went wrong",
+      description:
+        "An error occurred and the listing request couldn't be sent. Please try again later.",
+      status: "error",
+      duration: 4000,
+      isClosable: true,
+    });
+  };
 
   return (
     <>
@@ -113,13 +182,40 @@ const Header = (props: {
           <ModalBody>
             <Stack>
               {/* TODO: handle error situation of no listing or ID (shouldn't happen?) */}
-              <NextLink href={listingRouteBuilder(listing?.id)} passHref>
-                <Link>
-                  <ButtonSecondary isFullWidth>View listing</ButtonSecondary>
-                </Link>
-              </NextLink>
-              {/* TODO: implement or remove */}
-              <ButtonSecondary isFullWidth>Accept tenant</ButtonSecondary>
+              <Tooltip label="test">
+                <NextLink href={listingRouteBuilder(listing?.id)} passHref>
+                  <Link>
+                    <ButtonSecondary isFullWidth>View listing</ButtonSecondary>
+                  </Link>
+                </NextLink>
+              </Tooltip>
+              <Tooltip
+                isDisabled={!requestDisabled || !user || !listing}
+                hasArrow
+                label={disabledRequestErrorMsg}
+              >
+                <Box>
+                  <ButtonSecondary
+                    isFullWidth
+                    isDisabled={requestDisabled}
+                    isLoading={requestLoading}
+                    onClick={() => {
+                      if (user && listing) {
+                        handleTenantRequest(
+                          listing,
+                          user.uid,
+                          listing.owner.uid,
+                          handleRequestSuccess,
+                          handleRequestError,
+                          setRequestLoading
+                        );
+                      }
+                    }}
+                  >
+                    Send Tenant Request
+                  </ButtonSecondary>
+                </Box>
+              </Tooltip>
             </Stack>
           </ModalBody>
 
@@ -359,6 +455,7 @@ function ChatMessagingArea(props: {
     <DashboardCard padding={0} overflow="hidden" position="relative">
       <Header
         photoUrl={currentContact?.profilePicture}
+        user={user}
         name={
           currentContact
             ? `${currentContact.firstName} ${currentContact.lastName}`

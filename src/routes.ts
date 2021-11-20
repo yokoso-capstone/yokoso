@@ -10,6 +10,7 @@ export enum RoutePathDashboard {
   Tenants = "tenants",
   Chat = "chat",
   Create = "create",
+  Requests = "requests",
 }
 
 export default RoutePath;

@@ -44,6 +44,11 @@ const sideButtonData: {
     path: RoutePathDashboard.Tenants,
   },
   {
+    label: DashboardLabel.Requests,
+    icon: BsFillPersonFill,
+    path: RoutePathDashboard.Requests,
+  },
+  {
     label: DashboardLabel.Chat,
     icon: BsFillChatDotsFill,
     path: RoutePathDashboard.Chat,

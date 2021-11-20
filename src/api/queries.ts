@@ -1,10 +1,11 @@
-import { ChatRoom, Listing, Message, UserPrivate, UserPublic } from "./types";
+import { ChatRoom, Listing, Message, TenantRequest, UserPrivate, UserPublic } from "./types";
 import {
   chatRooms,
   listings,
   usersPrivate,
   usersPublic,
   CollectionName,
+  tenantRequests,
 } from "./collections";
 
 export const getChatRoomById = async (id: string) => {
@@ -50,6 +51,32 @@ export const getChatRoomsWithUser = async (id: string) => {
 
   return documents.map((doc) => ({ id: doc.id, ...doc.data() })) as ChatRoom[];
 };
+
+export const getReceivedTenantRequest = async (id: string) => {
+  const ref = tenantRequests
+    .orderBy("createdAt")
+    .where("landlordUid", "==", id);
+
+  const querySnapshot = await ref.get();
+  const documents = querySnapshot.docs;
+
+  return documents.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as TenantRequest[];
+}
+
+export const getSentTenantRequests = async (id: string) => {
+  const ref = tenantRequests.orderBy("createdAt").where("tenantUid", "==", id);
+
+  const querySnapshot = await ref.get();
+  const documents = querySnapshot.docs;
+
+  return documents.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as TenantRequest[];
+}
 
 /**
  * Get the messages of a chat room.

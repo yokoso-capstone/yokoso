@@ -38,6 +38,8 @@ export type TenantEntry = UserPublic & {
   };
 };
 
+export type TenantRequestEntry = UserPublic & TenantRequest;
+
 export type UserPublic = {
   uid?: string;
   firstName: string;
@@ -132,6 +134,18 @@ export type Message = {
   };
   createdAt: timestamp;
 };
+
+export type TenantRequest = {
+  id?: string;
+  landlordUid: string;
+  tenantUid: string;
+  createdAt: timestamp;
+  listing: {
+    initiatedAt: any;
+    data: Listing;
+    id: string;
+  };
+}
 
 export type Schema = {
   [CollectionName.ChatRooms]: {
