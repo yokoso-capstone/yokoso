@@ -51,7 +51,8 @@ service cloud.firestore {
       allow update: if
         request.auth != null &&
         request.auth.uid == resource.data["owner"]["uid"] &&
-        !request.resource.data.keys().hasAny(["owner", "createdAt"]); // user cannot update these fields
+        !request.resource.data.diff(resource.data).affectedKeys()
+        .hasAny(['owner', 'createdAt']); // user cannot update these fields
       allow delete: if
         request.auth != null &&
         request.auth.uid == resource.data["owner"]["uid"];

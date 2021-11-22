@@ -11,12 +11,14 @@ import {
 import DashboardSearchInput from "@/components/core/DashboardSearchInput";
 import {
   Link,
+  Tooltip,
   useToast,
   Tabs,
   TabList,
   TabPanels,
   TabPanel,
   Table,
+  ButtonGroup,
   IconButton,
   ModalOverlay,
   ModalContent,
@@ -45,21 +47,23 @@ import { auth } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { listings as listingsCollection } from "@/src/api/collections";
 import { useCollection } from "react-firebase-hooks/firestore";
-import { DeleteIcon } from "@chakra-ui/icons";
+import { DeleteIcon, ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
 import { Heading5 } from "../core/Text";
 
 interface ListingProps {
+  listingType: Visibility;
   listings?: Listing[];
   userId?: string;
 }
 
-interface DeleteProps {
+interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   listing: Listing | undefined;
+  visibility?: Visibility;
 }
 
-const DeleteConfirmationModal = (props: DeleteProps) => {
+const DeleteConfirmationModal = (props: ModalProps) => {
   const { isOpen, onClose, listing } = props;
 
   const toast = useToast();
@@ -115,10 +119,75 @@ const DeleteConfirmationModal = (props: DeleteProps) => {
   );
 };
 
-const LandlordListingTable = (props: ListingProps) => {
-  const { listings, userId } = props;
+const VisibilityConfirmationModal = (props: ModalProps) => {
+  const { isOpen, onClose, listing, visibility } = props;
 
-  const [listingDelete, setListingDelete] = useState<Listing | undefined>();
+  const toggleVisibility = visibility === "public" ? "hidden" : "public";
+
+  const toast = useToast();
+
+  const publicSuccessMsg = "Listing was successfully made public";
+  const hiddenSuccessMsg = "Listing was successfully hidden";
+
+  const handleVisibilityChange = async (listingId: string | undefined) => {
+    try {
+      await listingsCollection
+        .doc(listingId)
+        .update({ visibility: `${toggleVisibility}` });
+
+      toast({
+        title: "Updated Listing",
+        description:
+          visibility === "public" ? hiddenSuccessMsg : publicSuccessMsg,
+        isClosable: true,
+        duration: 4000,
+        status: "success",
+      });
+    } catch (e) {
+      toast({
+        title: "Something went wrong",
+        description:
+          "An error occurred and we couldn't update your listing. Please try again later.",
+        isClosable: true,
+        duration: 4000,
+        status: "error",
+      });
+    }
+  };
+
+  const onVisibilityUpdate = (listingId: string | undefined) => {
+    handleVisibilityChange(listingId);
+    onClose();
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} isCentered size="sm">
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>
+          <Heading5>Update Listing Visibility</Heading5>
+        </ModalHeader>
+        <ModalCloseButton />
+        <ModalBody mb="1rem">
+          <p>Are you sure you want to make the listing,</p>
+          <b>{listing?.details.title}</b>
+          {` ${toggleVisibility}?`}
+        </ModalBody>
+        <ModalFooter>
+          <ButtonPrimary mr={3} onClick={() => onVisibilityUpdate(listing?.id)}>
+            Update
+          </ButtonPrimary>
+          <ButtonSecondary onClick={onClose}>Cancel</ButtonSecondary>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+};
+
+const LandlordListingTable = (props: ListingProps) => {
+  const { listings, userId, listingType } = props;
+
+  const [listingModal, setListingModal] = useState<Listing | undefined>();
 
   const {
     isOpen: isDeleteModalOpen,
@@ -126,14 +195,28 @@ const LandlordListingTable = (props: ListingProps) => {
     onClose: onDeleteModalClose,
   } = useDisclosure();
 
-  const handleDeleteModal = (listing: Listing) => {
-    setListingDelete(listing);
-    onDeleteModalOpen();
+  const {
+    isOpen: isVisibilityUpdateModalOpen,
+    onOpen: onVisibilityUpdateModalOpen,
+    onClose: onVisibilityUpdateModalClose,
+  } = useDisclosure();
+
+  const handleOpenModal = (listing: Listing, isDelete?: boolean) => {
+    setListingModal(listing);
+    if (isDelete) {
+      onDeleteModalOpen();
+    } else {
+      onVisibilityUpdateModalOpen();
+    }
   };
 
-  const handleDeleteModalClose = () => {
-    setListingDelete(undefined);
-    onDeleteModalClose();
+  const handleCloseModal = (isDelete?: boolean) => {
+    setListingModal(undefined);
+    if (isDelete) {
+      onDeleteModalClose();
+    } else {
+      onVisibilityUpdateModalClose();
+    }
   };
 
   return (
@@ -186,13 +269,44 @@ const LandlordListingTable = (props: ListingProps) => {
                 </NextLink>
               </Td>
               <Td>
-                <IconButton
-                  size="md"
-                  variant="ghost"
-                  aria-label="Delete Listing"
-                  onClick={() => handleDeleteModal(listing)}
-                  icon={<DeleteIcon />}
-                />
+                <ButtonGroup>
+                  <Tooltip
+                    label={
+                      listingType === "public"
+                        ? "Hide Listing"
+                        : "Make Listing Public"
+                    }
+                    hasArrow
+                  >
+                    <IconButton
+                      size="md"
+                      variant="ghost"
+                      onClick={() => handleOpenModal(listing)}
+                      aria-label={
+                        listingType === "public"
+                          ? "Hide Listing"
+                          : "Make Listing Public"
+                      }
+                      icon={
+                        listingType === "public" ? (
+                          <ViewOffIcon />
+                        ) : (
+                          <ViewIcon />
+                        )
+                      }
+                    />
+                  </Tooltip>
+
+                  <Tooltip hasArrow label="Delete Listing">
+                    <IconButton
+                      size="md"
+                      variant="ghost"
+                      aria-label="Delete Listing"
+                      onClick={() => handleOpenModal(listing, true)}
+                      icon={<DeleteIcon />}
+                    />
+                  </Tooltip>
+                </ButtonGroup>
               </Td>
             </Tr>
           ))}
@@ -200,8 +314,14 @@ const LandlordListingTable = (props: ListingProps) => {
       </Table>
       <DeleteConfirmationModal
         isOpen={isDeleteModalOpen}
-        onClose={handleDeleteModalClose}
-        listing={listingDelete}
+        onClose={() => handleCloseModal(true)}
+        listing={listingModal}
+      />
+      <VisibilityConfirmationModal
+        isOpen={isVisibilityUpdateModalOpen}
+        onClose={() => handleCloseModal()}
+        listing={listingModal}
+        visibility={listingType}
       />
     </>
   );
@@ -236,7 +356,9 @@ function ListingsView(): ReactElement {
           <TabPrimary onClick={() => setVisibility("public")}>
             Listings
           </TabPrimary>
-          <TabPrimary onClick={() => setVisibility("draft")}>Draft</TabPrimary>
+          <TabPrimary onClick={() => setVisibility("hidden")}>
+            Hidden
+          </TabPrimary>
           <Spacer />
           <Box marginTop="8px" marginBottom="8px" width="2.5in">
             <DashboardSearchInput />
@@ -256,10 +378,18 @@ function ListingsView(): ReactElement {
 
         <TabPanels>
           <TabPanel paddingX={0}>
-            <LandlordListingTable userId={user?.uid} listings={listings} />
+            <LandlordListingTable
+              listingType={visibility}
+              userId={user?.uid}
+              listings={listings}
+            />
           </TabPanel>
           <TabPanel>
-            <LandlordListingTable userId={user?.uid} listings={listings} />
+            <LandlordListingTable
+              listingType={visibility}
+              userId={user?.uid}
+              listings={listings}
+            />
           </TabPanel>
         </TabPanels>
       </Tabs>
