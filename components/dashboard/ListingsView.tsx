@@ -165,7 +165,7 @@ const VisibilityConfirmationModal = (props: ModalProps) => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <Heading5>Delete Listing</Heading5>
+          <Heading5>Update Listing Visibility</Heading5>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody mb="1rem">
