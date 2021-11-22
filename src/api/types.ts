@@ -10,7 +10,7 @@ export type FirestoreFieldValue = firebase.firestore.FieldValue;
 
 export type FirestoreTimestamp = firebase.firestore.Timestamp;
 
-export type Visibility = "public" | "draft";
+export type Visibility = "public" | "hidden";
 
 export type PropertyType = "Apartment" | "House" | "Townhouse";
 

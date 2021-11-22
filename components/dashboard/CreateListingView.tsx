@@ -1034,7 +1034,7 @@ const Part1 = (props: {
                       <FormLabel>Posting Status</FormLabel>
                       <SelectControl name="postingStatus" isRequired>
                         <option value="public">Public</option>
-                        <option value="draft">Draft</option>
+                        <option value="hidden">Hidden</option>
                       </SelectControl>
                     </Box>
                     <Field
