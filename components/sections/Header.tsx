@@ -8,6 +8,10 @@ import {
   Flex,
   Link,
   Stack,
+  IconButton,
+  Image,
+  Divider,
+  Center
 } from "@chakra-ui/react";
 import { ButtonPrimary, ButtonSecondary } from "@/components/core/Button";
 import { LogoWhite, LogoBlack } from "@/components/core/Branding";
@@ -130,7 +134,7 @@ function Header(props: HeaderProps): ReactElement {
             <Stack
               spacing="12px"
               direction="row"
-              display={["none", "none", "none", "block"]}
+              display={["none", "none", "none", "flex"]}
             >
               <ButtonSecondary
                 {...(darkTheme && darkThemeSecondaryButtonProps)}
@@ -144,6 +148,23 @@ function Header(props: HeaderProps): ReactElement {
               >
                 Get Started
               </ButtonPrimary>
+              <Center height="50px">
+                <Divider orientation="vertical" />
+              </Center>
+              {user && (
+                <IconButton
+                  aria-label="Profile"
+                  width="44px"
+                  height="44px"
+                  isRound
+                  icon={
+                    <Image
+                      borderRadius="full"
+                      src="https://placekitten.com/300/300"
+                    />
+                  }
+                />
+              )}
             </Stack>
             <Box display={["block", "block", "block", "none"]} cursor="pointer">
               {/* TODO: show overlay with options (search, post listing, and get started) */}
