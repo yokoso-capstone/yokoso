@@ -18,6 +18,8 @@ import {
 } from "@chakra-ui/react";
 import { Body2, Heading5 } from "@/components/core/Text";
 import { auth } from "@/src/firebase";
+import { useRouter } from "next/router";
+import RoutePath from "@/src/routes";
 
 function validateEmail(email: string) {
   let error;
@@ -51,6 +53,7 @@ interface LoginProps {
 function Login(props: LoginProps) {
   const { isOpen, onClose, onOpenSignUp } = props;
   const toast = useToast();
+  const router = useRouter();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -77,7 +80,14 @@ function Login(props: LoginProps) {
               const { email, password } = values;
               try {
                 await auth.signInWithEmailAndPassword(email, password);
+                toast({
+                  title: "Welcome to Yokoso!",
+                  status: "success",
+                  duration: 4000,
+                  isClosable: true,
+                });
                 onClose();
+                router.push(RoutePath.Dashboard)
               } catch (error) {
                 actions.setSubmitting(false);
                 const wrongPassword = error.code === "auth/wrong-password";

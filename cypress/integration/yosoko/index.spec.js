@@ -45,7 +45,7 @@ describe("From index page", () => {
     cy.get("form").submit();
 
     cy.contains("Email", { timeout: 2000 }).should("not.exist");
-    cy.contains("Post Listing").click();
+    cy.contains("Create Listing").click();
     cy.contains("House", { timeout: 5000 });
     cy.contains("House").click();
     cy.contains("Entire Building").click();
