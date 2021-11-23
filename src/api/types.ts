@@ -22,6 +22,8 @@ export type Frequency =
 
 export type LeaseType = "Sublet" | "Lease";
 
+export type RequestStatus = "pending" | "rejected" | "accepted";
+
 export type RentalSpace =
   | "Entire Building"
   | "Partial Building"
@@ -140,6 +142,7 @@ export type TenantRequest = {
   landlordUid: string;
   tenantUid: string;
   createdAt: timestamp;
+  status: RequestStatus;
   listing: {
     initiatedAt: any;
     data: Listing;

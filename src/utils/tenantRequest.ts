@@ -31,6 +31,7 @@ export const handleTenantRequest = async (
       const tenantRequestData: TenantRequest = {
         landlordUid: ownerUid,
         tenantUid: userUid,
+        status: "pending",
         listing: currentListingData,
         createdAt: serverTimestamp,
       };
