@@ -35,12 +35,20 @@ import {
   FormControl,
   FormLabel,
   useDisclosure,
+  HStack,
+  Tag,
+  TagLabel,
+  TagCloseButton,
+  TagLeftIcon,
 } from "@chakra-ui/react";
 import { getQueryValue } from "@/src/utils";
 import { listings as listingsCollection } from "@/src/api/collections";
 import { useCollectionOnce } from "react-firebase-hooks/firestore";
 import { Listing } from "@/src/api/types";
 import { listingRouteBuilder } from "@/src/utils/listingRoute";
+import { BiDoorOpen, BiDollar } from "react-icons/bi";
+import { FaToilet } from "react-icons/fa";
+import { useDebounce } from "use-debounce";
 
 interface FilterDisplay {
   childComp?: React.ReactNode;
@@ -48,7 +56,11 @@ interface FilterDisplay {
   isOpen: boolean;
   onOpen: () => any;
   onClose: () => any;
+  onApply: () => any;
 }
+
+const SLIDER_FILTER_MIN = 0;
+const SLIDER_FILTER_MAX = 2100;
 
 const FilterModals = ({ isOpen, onClose }: any) => {
   return (
@@ -63,7 +75,8 @@ const FilterModals = ({ isOpen, onClose }: any) => {
           </FormControl>
         </ModalBody>
         <ModalFooter>
-          <ButtonSecondary>Apply</ButtonSecondary>
+          {/* TODO: add or remove amenities filter */}
+          <ButtonSecondary onClick={onClose}>Apply</ButtonSecondary>
         </ModalFooter>
       </ModalContent>
     </Modal>
@@ -71,7 +84,7 @@ const FilterModals = ({ isOpen, onClose }: any) => {
 };
 
 const SingleFilter = (props: FilterDisplay) => {
-  const { name, childComp, onOpen, onClose, isOpen } = props;
+  const { name, childComp, onOpen, onClose, isOpen, onApply } = props;
 
   return (
     <Popover isOpen={isOpen} onClose={onClose} onOpen={onOpen}>
@@ -90,7 +103,15 @@ const SingleFilter = (props: FilterDisplay) => {
         <PopoverCloseButton />
         <PopoverBody>{childComp}</PopoverBody>
         <PopoverFooter>
-          <ButtonSecondary padding="10px">Apply</ButtonSecondary>
+          <ButtonSecondary
+            padding="10px"
+            onClick={() => {
+              onApply();
+              onClose();
+            }}
+          >
+            Apply
+          </ButtonSecondary>
         </PopoverFooter>
       </PopoverContent>
     </Popover>
@@ -122,22 +143,60 @@ function SearchPage(): ReactElement {
     isOpen: isOpenPrice,
   } = useDisclosure();
 
-  const [priceFilter, setPriceFilter] = useState([0, 2150]);
+  const [priceFilter, setPriceFilter] = useState([
+    SLIDER_FILTER_MIN,
+    SLIDER_FILTER_MAX + 1,
+  ]);
+  // Use debounce to reduce the number of queries with using price slider
+  const [priceFilterDebounced] = useDebounce(priceFilter, 500);
   const [rooms, setRooms] = useState(1);
   const [bathrooms, setBathroom] = useState(1);
+
+  const [isPriceFilterActive, setPriceFilterActive] = useState(false);
+  const [isRoomFilterActive, setRoomFilterActive] = useState(false);
+  const [isBathroomFilterActive, setBathroomFilterActive] = useState(false);
 
   const router = useRouter();
   const { center } = router.query;
   const place = getQueryValue(router.query, "place");
   const text = getQueryValue(router.query, "text")?.toLowerCase();
 
-  const query = useMemo(
-    () =>
-      text
-        ? listingsCollection.where("location.cityKey", "==", text)
-        : undefined,
-    [text]
-  );
+  // Query uses composite indexes
+  const query = useMemo(() => {
+    if (!text) {
+      return undefined;
+    }
+
+    let query = listingsCollection.where("location.cityKey", "==", text);
+
+    if (isPriceFilterActive) {
+      const [minPrice, maxPrice] = priceFilterDebounced;
+
+      query = query.where("lease.price", ">=", minPrice);
+
+      if (maxPrice <= SLIDER_FILTER_MAX) {
+        query = query.where("lease.price", "<=", maxPrice);
+      }
+    }
+
+    if (isRoomFilterActive) {
+      query = query.where("details.numBedrooms", "==", rooms);
+    }
+
+    if (isBathroomFilterActive) {
+      query = query.where("details.numBaths", "==", bathrooms);
+    }
+
+    return query;
+  }, [
+    text,
+    isPriceFilterActive,
+    priceFilterDebounced,
+    isRoomFilterActive,
+    rooms,
+    isBathroomFilterActive,
+    bathrooms,
+  ]);
   const [snapshot] = useCollectionOnce(query);
   const listings = snapshot?.docs.map(
     (doc) =>
@@ -161,16 +220,17 @@ function SearchPage(): ReactElement {
             <Box flex="1" p="5">
               <Heading4>{place || "Location not found"}</Heading4>
             </Box>
-            <SimpleGrid flex="1" p="4" spacing={[0, 0, 1, 2, 2]} columns={4}>
+            <SimpleGrid flex="1" m="4" spacing={[0, 0, 1, 2, 2]} columns={4}>
               <SingleFilter
                 name="Price"
                 isOpen={isOpenPrice}
                 onOpen={onOpenPrice}
                 onClose={onClosePrice}
+                onApply={() => setPriceFilterActive(true)}
                 childComp={
                   <SliderFilter
-                    max={2100}
-                    min={0}
+                    max={SLIDER_FILTER_MAX}
+                    min={SLIDER_FILTER_MIN}
                     value={priceFilter}
                     onChange={(val) => setPriceFilter(val)}
                   />
@@ -182,6 +242,7 @@ function SearchPage(): ReactElement {
                 isOpen={isOpenRooms}
                 onOpen={onOpenRooms}
                 onClose={onCloseRooms}
+                onApply={() => setRoomFilterActive(true)}
                 childComp={
                   <CounterFilter
                     value={rooms}
@@ -197,6 +258,7 @@ function SearchPage(): ReactElement {
                 isOpen={isOpenBathroom}
                 onOpen={onOpenBathroom}
                 onClose={onCloseBathroom}
+                onApply={() => setBathroomFilterActive(true)}
                 childComp={
                   <CounterFilter
                     value={bathrooms}
@@ -219,6 +281,39 @@ function SearchPage(): ReactElement {
               </ButtonSecondaryVariant>
               <FilterModals isOpen={isFilterOpen} onClose={onFilterClose} />
             </SimpleGrid>
+            <HStack m={4}>
+              {isPriceFilterActive && (
+                <Tag size="md" borderRadius="full">
+                  <TagLeftIcon boxSize="14px" as={BiDollar} />
+                  <TagLabel>{`${priceFilter[0]} - ${
+                    priceFilter[1] > SLIDER_FILTER_MAX
+                      ? `${SLIDER_FILTER_MAX}+`
+                      : priceFilter[1]
+                  }`}</TagLabel>
+                  <TagCloseButton onClick={() => setPriceFilterActive(false)} />
+                </Tag>
+              )}
+              {isRoomFilterActive && (
+                <Tag size="md" borderRadius="full">
+                  <TagLeftIcon boxSize="14px" as={BiDoorOpen} />
+                  <TagLabel>
+                    {rooms} {rooms > 1 ? "rooms" : "room"}
+                  </TagLabel>
+                  <TagCloseButton onClick={() => setRoomFilterActive(false)} />
+                </Tag>
+              )}
+              {isBathroomFilterActive && (
+                <Tag size="md" borderRadius="full">
+                  <TagLeftIcon boxSize="14px" as={FaToilet} />
+                  <TagLabel>
+                    {bathrooms} {bathrooms > 1 ? "bathrooms" : "bathroom"}
+                  </TagLabel>
+                  <TagCloseButton
+                    onClick={() => setBathroomFilterActive(false)}
+                  />
+                </Tag>
+              )}
+            </HStack>
             <Divider />
             <Box flex="1" overflow="auto" w="100%">
               {listings?.map((listing, index) => (
