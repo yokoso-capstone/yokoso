@@ -1,5 +1,5 @@
-import firebaseConfig from "@/src/firebaseConfig";
-import { firestore } from "@/src/firebase";
+import firebaseConfig from "../firebaseConfig";
+import { firestore } from "../firebase";
 
 export enum CollectionName {
   ChatRooms = "chat-rooms",
