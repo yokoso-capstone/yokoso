@@ -53,11 +53,11 @@ export function SliderFilter(props: SliderProps) {
     <Box p="10px" aria-label="base">
       <Range
         allowCross={false}
-        defaultValue={value}
+        value={value}
         draggableTrack
         min={min}
         max={max + 1}
-        onAfterChange={onChange}
+        onChange={onChange}
         tipFormatter={(value) => (value > max ? `$${max}+` : `$${value}`)}
         trackStyle={[{ background: "#BC002D" }]}
         handleStyle={[{ backgroundColor: "white", borderColor: "grey" }]}
@@ -73,7 +73,16 @@ export function SliderFilter(props: SliderProps) {
             >
               $
             </InputLeftElement>
-            <Input defaultValue={`${value[0]}`} />
+            <Input
+              value={value[0]}
+              onChange={(event) => {
+                const value = Number(event.target.value);
+
+                if (!Number.isNaN(value) && min <= value && value <= max) {
+                  onChange([value, max]);
+                }
+              }}
+            />
           </InputGroup>
           <Box>
             <Heading6>-</Heading6>
@@ -88,8 +97,14 @@ export function SliderFilter(props: SliderProps) {
               $
             </InputLeftElement>
             <Input
-              isReadOnly
-              defaultValue={`${value[1] > max ? `${max}+` : `${value[1]}`}`}
+              value={`${value[1] > max ? `${max}+` : `${value[1]}`}`}
+              onChange={(event) => {
+                const value = Number(event.target.value);
+
+                if (!Number.isNaN(value) && min <= value) {
+                  onChange([min, value]);
+                }
+              }}
             />
           </InputGroup>
         </HStack>
