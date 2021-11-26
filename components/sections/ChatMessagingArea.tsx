@@ -154,7 +154,7 @@ const Header = (props: {
             textOverflow="ellipsis"
           >
             {listing
-              ? `Interested in your "${listing.details.title} listing" at ${
+              ? `Interested in "${listing.details.title} listing" at ${
                   listing.location.unitNumber
                     ? `${listing.location.unitNumber} `
                     : ""

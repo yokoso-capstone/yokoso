@@ -8,7 +8,7 @@ function DashboardIndex(): ReactElement {
   const router = useRouter();
 
   useEffect(() => {
-    router.push(`${RoutePath.Dashboard}/${RoutePathDashboard.Listings}`);
+    router.push(`${RoutePath.Dashboard}/${RoutePathDashboard.Start}`);
   }, [router]);
 
   return <LoadingScreen />;

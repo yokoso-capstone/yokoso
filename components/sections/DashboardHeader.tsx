@@ -10,7 +10,7 @@ import NotificationBellSvg from "../svg/notification-bell.svg";
 export const NotificationBell = chakra(NotificationBellSvg);
 
 interface DashboardHeaderProps {
-  title: string;
+  title?: string;
 }
 
 function DashboardHeader(props: DashboardHeaderProps): ReactElement {

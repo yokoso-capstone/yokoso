@@ -42,6 +42,8 @@ import {
   listingRouteBuilder,
   listingHrefBuilder,
 } from "@/src/utils/listingRoute";
+import { useStore } from "@/src/store";
+import { UserType } from "@/src/enum";
 import { Heading5 } from "../core/Text";
 
 enum Request {
@@ -56,12 +58,12 @@ interface DeleteProps {
 }
 
 function RequestView(): ReactElement {
-  const [selectedRequest, setSelectedRequest] = useState<Request>(
-    Request.Received
-  );
   const [tenantRequestList, setTenantRequestList] = useState<
     TenantRequestEntry[]
   >([]);
+  const userType = useStore((state) => state.userType);
+  const selectedRequest =
+    userType && userType === UserType.Tenant ? Request.Sent : Request.Received;
 
   const [user] = useAuthState(auth);
   const query = useMemo(
@@ -81,6 +83,7 @@ function RequestView(): ReactElement {
             selectedRequest === Request.Received ? "tenantUid" : "landlordUid"
           ]
         );
+
         return {
           ...publicUserInfo,
           ...requestData,
@@ -93,27 +96,21 @@ function RequestView(): ReactElement {
       }
     };
 
-    handleTenantRequestPromise();
-  }, [user, snapshot]);
+    if (selectedRequest) {
+      handleTenantRequestPromise();
+    }
+  }, [selectedRequest, snapshot]);
 
   return (
     <DashboardCard>
       <Tabs isLazy>
         <TabList>
-          <TabPrimary
-            onClick={() => {
-              setSelectedRequest(Request.Received);
-            }}
-          >
-            Received
+          <TabPrimary>
+            {selectedRequest && selectedRequest === Request.Received
+              ? "Received"
+              : "Sent"}
           </TabPrimary>
-          <TabPrimary
-            onClick={() => {
-              setSelectedRequest(Request.Sent);
-            }}
-          >
-            Sent
-          </TabPrimary>
+
           <Spacer />
           <Box marginTop="8px" marginBottom="16px">
             <DashboardSearchInput />
