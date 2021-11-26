@@ -75,6 +75,8 @@ interface DeleteProps {
   modalType: string;
 }
 
+const MAX_TITLE_LENGTH = 15;
+
 function RequestView(): ReactElement {
   const [selectedRequest, setSelectedRequest] = useState<Request>(
     Request.Received
@@ -239,7 +241,30 @@ const ActionConfirmationModal = (props: DeleteProps) => {
       toast({
         title: "Something went wrong",
         description:
-          "An error occurred and we couldn't delete your tenant request. Please try again later.",
+          "An error occurred and we couldn't request deposit. Please try again later.",
+        isClosable: true,
+        duration: 4000,
+        status: "error",
+      });
+    }
+  };
+
+  const handleReject = async (requestId: string | undefined) => {
+    try {
+      await tenantRequests.doc(requestId).update({ status: "rejected" });
+
+      toast({
+        title: "Rejected Tenant Request",
+        description: "Successfully rejected tenant request.",
+        isClosable: true,
+        duration: 4000,
+        status: "success",
+      });
+    } catch (e) {
+      toast({
+        title: "Something went wrong",
+        description:
+          "An error occurred and we couldn't reject the tenant request. Please try again later.",
         isClosable: true,
         duration: 4000,
         status: "error",
@@ -279,6 +304,11 @@ const ActionConfirmationModal = (props: DeleteProps) => {
 
   const onDelete = (requestId: string | undefined) => {
     handleDelete(requestId);
+    onClose();
+  };
+
+  const onReject = (requestId: string | undefined) => {
+    handleReject(requestId);
     onClose();
   };
 
@@ -401,10 +431,7 @@ const ActionConfirmationModal = (props: DeleteProps) => {
         </Stack>
       </ModalBody>
       <ModalFooter>
-        <RedButton
-          mr={3}
-          // onClick={() => console.log(request)}
-        >
+        <RedButton mr={3} onClick={() => onReject(request?.id)}>
           Reject
         </RedButton>
         <ButtonSecondary onClick={onClose}>Cancel</ButtonSecondary>
@@ -508,7 +535,7 @@ const RequestsTable = (props: {
     //add stripe front end logic here!
     return userView === "tenant" ? (
       <ButtonGroup>
-        <ButtonPrimary>Pay Deposit</ButtonPrimary>
+        <ButtonPrimary padding={3}>Pay Deposit</ButtonPrimary>
         <Tooltip hasArrow label="Delete Tenant Request">
           <IconButton
             size="md"
@@ -562,6 +589,14 @@ const RequestsTable = (props: {
         </Thead>
         <Tbody>
           {tenantRequests?.map((tenant, index) => {
+            const listingTitle =
+              tenant.listing.data.details.title.length > MAX_TITLE_LENGTH
+                ? tenant.listing.data.details.title.substring(
+                    0,
+                    MAX_TITLE_LENGTH
+                  ) + "..."
+                : tenant.listing.data.details.title;
+
             return (
               <Tr key={index}>
                 <Td display={["none", "none", "none", "block", "block"]}>
@@ -570,21 +605,23 @@ const RequestsTable = (props: {
                     size="150px"
                   />
                 </Td>
-                <Td>{tenant.listing.data.details.title}</Td>
+                <Td>{listingTitle}</Td>
                 <Td>{tenant.firstName}</Td>
                 <Td>{tenant.lastName}</Td>
                 <Td>{`$${tenant.listing.data.lease.price}`}</Td>
                 <Td>{`$${tenant.listing.data.lease.depositPrice}`}</Td>
                 <Td>{tenant.listing.initiatedAt.toDate().toDateString()}</Td>
                 <Td>
-                  <ButtonGroup spacing={5}>
+                  <ButtonGroup spacing={2}>
                     <NextLink
                       href={listingHrefBuilder(tenant.listing.data.id, userId)}
                       as={listingRouteBuilder(tenant.listing.data.id)}
                       passHref
                     >
                       <Link _hover={{ textDecoration: "none" }}>
-                        <ButtonSecondary>View Listing</ButtonSecondary>
+                        <ButtonSecondary padding={3}>
+                          View Listing
+                        </ButtonSecondary>
                       </Link>
                     </NextLink>
                     {userView === "tenant"
