@@ -59,6 +59,7 @@ import firebase from "firebase/app";
 import "firebase/storage";
 
 import { fetchCoordinates } from "@/src/mapbox";
+import { ListingStatus } from "@/src/enum";
 
 const storageRef = firebase.storage().ref();
 
@@ -230,6 +231,7 @@ function CreateListingView(): ReactElement {
             images: fileUrls,
             applicants: 0,
             createdAt: serverTimestamp,
+            status: ListingStatus.Available,
           };
 
           const { id: listingId } = await listings.add(listing);

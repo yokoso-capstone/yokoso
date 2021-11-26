@@ -22,7 +22,7 @@ export type Frequency =
 
 export type LeaseType = "Sublet" | "Lease";
 
-export type RequestStatus = "pending" | "rejected" | "accepted";
+export type RequestStatus = "sent" |"pending" | "rejected" | "accepted";
 
 export type RentalSpace =
   | "Entire Building"
@@ -30,6 +30,9 @@ export type RentalSpace =
   | "Single Room";
 
 export type FurnishedStatus = "Unfurnished" | "Furnished" | "Semi-Furnished";
+
+export type ListingStatus = "available" | "pending" | "rented";
+
 
 export type TenantEntry = UserPublic & {
   rentals: {
@@ -107,6 +110,7 @@ export type Listing = {
   images: string[];
   applicants: number;
   createdAt: timestamp;
+  status: ListingStatus;
 };
 
 export type ChatRoom = {

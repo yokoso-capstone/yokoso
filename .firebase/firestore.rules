@@ -66,10 +66,16 @@ service cloud.firestore {
           !exists(/databases/$(database)/documents/tenant-requests/$(requestId)));
       allow create: if
         request.auth != null &&
-        verifyFields(["createdAt", "tenantUid", "landlordUid", "listing"], []) &&
+        verifyFields(["createdAt", "tenantUid", "landlordUid", "listing", "status"], []) &&
         request.resource.data["tenantUid"] == request.auth.uid &&
         request.resource.data["createdAt"] is timestamp &&
         request.resource.data["createdAt"] == request.time;
+      allow update: if
+        request.auth != null &&
+        (request.auth.uid == resource.data["tenantUid"] ||
+          request.auth.uid == resource.data["landlordUid"]) &&
+        request.resource.data.diff(resource.data).affectedKeys()
+        .hasAny(['status']); // user cannot update these fields
       allow delete: if
         request.auth != null &&
         request.auth.uid == resource.data["tenantUid"];

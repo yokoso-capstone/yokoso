@@ -5,3 +5,9 @@ export enum DashboardLabel {
   Create = "Create Listing",
   Requests = "Requests"
 }
+
+export enum ListingStatus {
+  Available = "available",
+  Pending = "pending",
+  Rented = "rented"
+}

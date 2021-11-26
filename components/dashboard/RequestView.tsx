@@ -42,10 +42,11 @@ import { PropertyImage } from "@/components/sections/Listings";
 import { TenantRequestEntry } from "@/src/api/types";
 import { auth } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { tenantRequests } from "@/src/api/collections";
+import { tenantRequests, listings } from "@/src/api/collections";
 import { useCollection } from "react-firebase-hooks/firestore";
-import { getUserPublicById } from "@/src/api/queries";
+import { getUserPublicById, getListingById } from "@/src/api/queries";
 import { DeleteIcon, CheckIcon, NotAllowedIcon } from "@chakra-ui/icons";
+import { ListingStatus } from "@/src/enum";
 import {
   listingRouteBuilder,
   listingHrefBuilder,
@@ -63,6 +64,10 @@ enum Status {
   Accepted = "accepted",
 }
 
+interface ButtonGroupProps {
+  tenant: TenantRequestEntry;
+}
+
 interface DeleteProps {
   isOpen: boolean;
   onClose: () => void;
@@ -74,21 +79,26 @@ function RequestView(): ReactElement {
   const [selectedRequest, setSelectedRequest] = useState<Request>(
     Request.Received
   );
+
+  const [userView, setUserView] = useState<string>("tenant");
+
   const [tenantRequestList, setTenantRequestList] = useState<
     TenantRequestEntry[]
   >([]);
   const [requestStatus, setRequestStatus] = useState<Status>(Status.Sent);
 
   const [user] = useAuthState(auth);
-  const query = useMemo(
-    () =>
-      user
-        ? tenantRequests
-            .where(selectedRequest, "==", user.uid)
-            .where("status", "==", requestStatus)
-        : undefined,
-    [user, selectedRequest, requestStatus]
-  );
+
+  const query = useMemo(() => {
+    setSelectedRequest(
+      userView === "landlord" ? Request.Received : Request.Sent
+    );
+    return user
+      ? tenantRequests
+          .where(selectedRequest, "==", user.uid)
+          .where("status", "==", requestStatus)
+      : undefined;
+  }, [user, selectedRequest, requestStatus, userView]);
 
   const [snapshot] = useCollection(query);
 
@@ -123,22 +133,15 @@ function RequestView(): ReactElement {
           <TabList>
             <TabPrimary
               onClick={() => {
-                setSelectedRequest(Request.Received);
-                setRequestStatus(Status.Sent);
-              }}
-            >
-              Received
-            </TabPrimary>
-            <TabPrimary
-              onClick={() => {
                 setSelectedRequest(Request.Sent);
                 setRequestStatus(Status.Sent);
               }}
             >
-              Sent
+              {userView === "tenant" ? "Sent" : "Received"}
             </TabPrimary>
             <TabPrimary
               onClick={() => {
+                setSelectedRequest(Request.Received);
                 setRequestStatus(Status.Pending);
               }}
             >
@@ -146,11 +149,13 @@ function RequestView(): ReactElement {
             </TabPrimary>
             <TabPrimary
               onClick={() => {
+                setSelectedRequest(Request.Received);
                 setRequestStatus(Status.Accepted);
               }}
             >
               Accepted
             </TabPrimary>
+            <TabPrimary>Toggle</TabPrimary>
             <Spacer />
             <Box marginTop="8px" marginBottom="16px">
               <DashboardSearchInput />
@@ -161,29 +166,35 @@ function RequestView(): ReactElement {
               <RequestsTable
                 tenantRequests={tenantRequestList}
                 userId={user?.uid}
-                requestType="received"
+                userView={userView}
+                requestStatus={requestStatus}
               />
             </TabPanel>
             <TabPanel>
               <RequestsTable
                 tenantRequests={tenantRequestList}
                 userId={user?.uid}
-                requestType="sent"
+                userView={userView}
+                requestStatus={requestStatus}
               />
             </TabPanel>
             <TabPanel>
               <RequestsTable
                 tenantRequests={tenantRequestList}
                 userId={user?.uid}
-                requestType="received"
+                userView={userView}
+                requestStatus={requestStatus}
               />
             </TabPanel>
             <TabPanel>
-              <RequestsTable
-                tenantRequests={tenantRequestList}
-                userId={user?.uid}
-                requestType="received"
-              />
+              <ButtonPrimary
+                onClick={() =>
+                  // remember to delete this before merge
+                  setUserView(userView === "tenant" ? "landlord" : "tenant")
+                }
+              >
+                {userView}
+              </ButtonPrimary>
             </TabPanel>
           </TabPanels>
         </Tabs>
@@ -194,6 +205,21 @@ function RequestView(): ReactElement {
 
 const ActionConfirmationModal = (props: DeleteProps) => {
   const { isOpen, onClose, request, modalType } = props;
+
+  const [isDisabled, setIsDisabled] = useState<boolean>(false);
+
+  useEffect(() => {
+    const disableCTA = async () => {
+      if (request?.listing.id) {
+        const listing = await getListingById(request.listing.id);
+        setIsDisabled(listing?.status !== ListingStatus.Available);
+      }
+    };
+
+    if (modalType === "accept") {
+      disableCTA();
+    }
+  }, [modalType, request]);
 
   const listingTitle = request?.listing.data.details.title;
 
@@ -221,8 +247,46 @@ const ActionConfirmationModal = (props: DeleteProps) => {
     }
   };
 
+  const handleAccept = async (
+    requestId: string | undefined,
+    listingId: string | undefined
+  ) => {
+    try {
+      if (isDisabled) {
+        throw Error;
+      }
+      await listings.doc(listingId).update({ status: "pending" });
+      await tenantRequests.doc(requestId).update({ status: "pending" });
+
+      toast({
+        title: "Deposit Request",
+        description: "Successfully sent request deposit.",
+        isClosable: true,
+        duration: 4000,
+        status: "success",
+      });
+    } catch (e) {
+      toast({
+        title: "Something went wrong",
+        description:
+          "An error occurred and we couldn't send the request deposit. Please try again later.",
+        isClosable: true,
+        duration: 4000,
+        status: "error",
+      });
+    }
+  };
+
   const onDelete = (requestId: string | undefined) => {
     handleDelete(requestId);
+    onClose();
+  };
+
+  const onAccept = (
+    requestId: string | undefined,
+    listingId: string | undefined
+  ) => {
+    handleAccept(requestId, listingId);
     onClose();
   };
 
@@ -294,13 +358,24 @@ const ActionConfirmationModal = (props: DeleteProps) => {
           </Stack>
         </ModalBody>
         <ModalFooter>
-          <ButtonPrimary
-            mr={3}
-            isDisabled={!allChecked}
-            // onClick={() => console.log(request)}
+          <Tooltip
+            hasArrow
+            label={
+              isDisabled
+                ? "Cannot send deposit request because a pending request for this listing exists."
+                : null
+            }
           >
-            Request Deposit
-          </ButtonPrimary>
+            <div>
+              <ButtonPrimary
+                mr={3}
+                isDisabled={!allChecked || isDisabled}
+                onClick={() => onAccept(request?.id, request?.listing.id)}
+              >
+                Request Deposit
+              </ButtonPrimary>
+            </div>
+          </Tooltip>
           <ButtonSecondary onClick={onClose}>Cancel</ButtonSecondary>
         </ModalFooter>
       </>
@@ -361,9 +436,10 @@ const ActionConfirmationModal = (props: DeleteProps) => {
 const RequestsTable = (props: {
   tenantRequests?: TenantRequestEntry[];
   userId: string | undefined;
-  requestType: string;
+  userView: string;
+  requestStatus: Status;
 }) => {
-  const { tenantRequests, userId, requestType } = props;
+  const { tenantRequests, userId, userView, requestStatus } = props;
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -373,9 +449,100 @@ const RequestsTable = (props: {
     TenantRequestEntry | undefined
   >();
 
-  const onActionModalOpen = (request: TenantRequestEntry | undefined) => {
+  const onActionModalOpen = async (request: TenantRequestEntry | undefined) => {
     setTenantRequest(request);
     onOpen();
+  };
+
+  const SentButtonGroups = (props: ButtonGroupProps) => {
+    const { tenant } = props;
+    return (
+      <Tooltip hasArrow label="Delete Tenant Request">
+        <IconButton
+          size="md"
+          variant="ghost"
+          aria-label="Delete Listing"
+          onClick={() => {
+            onActionModalOpen(tenant);
+            setModalType("delete");
+          }}
+          icon={<DeleteIcon />}
+        />
+      </Tooltip>
+    );
+  };
+
+  const ReceivedButtonGroups = (props: ButtonGroupProps) => {
+    const { tenant } = props;
+    return (
+      <ButtonGroup isAttached>
+        <Tooltip hasArrow label="Accept Tenant">
+          <IconButton
+            variant="ghost"
+            aria-label="Accept Tenant"
+            onClick={() => {
+              onActionModalOpen(tenant);
+              setModalType("accept");
+            }}
+            icon={<CheckIcon />}
+          />
+        </Tooltip>
+
+        <Tooltip hasArrow label="Reject Tenant">
+          <IconButton
+            variant="ghost"
+            aria-label="Reject Tenant"
+            onClick={() => {
+              onActionModalOpen(tenant);
+              setModalType("reject");
+            }}
+            icon={<NotAllowedIcon />}
+          />
+        </Tooltip>
+      </ButtonGroup>
+    );
+  };
+
+  const PendingButtonGroups = (props: ButtonGroupProps) => {
+    const { tenant } = props;
+    //add stripe front end logic here!
+    return userView === "tenant" ? (
+      <ButtonGroup>
+        <ButtonPrimary>Pay Deposit</ButtonPrimary>
+        <Tooltip hasArrow label="Delete Tenant Request">
+          <IconButton
+            size="md"
+            variant="ghost"
+            aria-label="Delete Listing"
+            onClick={() => {
+              onActionModalOpen(tenant);
+              setModalType("delete");
+            }}
+            icon={<DeleteIcon />}
+          />
+        </Tooltip>
+      </ButtonGroup>
+    ) : null;
+  };
+
+  const landlordButtonGroups = (tenant: TenantRequestEntry) => {
+    switch (requestStatus) {
+      case Status.Sent:
+        return <ReceivedButtonGroups tenant={tenant} />;
+      default:
+        return null;
+    }
+  };
+
+  const tenantButtonGroups = (tenant: TenantRequestEntry) => {
+    switch (requestStatus) {
+      case Status.Sent:
+        return <SentButtonGroups tenant={tenant} />;
+      case Status.Pending:
+        return <PendingButtonGroups tenant={tenant} />;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -384,9 +551,11 @@ const RequestsTable = (props: {
         <Thead>
           <Tr>
             <Th display={["none", "none", "none", "block", "block"]}>Photo</Th>
-            <Th>Listing</Th>
+            <Th width={300}>Listing</Th>
             <Th>First name</Th>
             <Th>Last name</Th>
+            <Th>Rent Price</Th>
+            <Th>Deposit Price</Th>
             <Th>Sent Date</Th>
             <Th width={0} />
           </Tr>
@@ -404,6 +573,8 @@ const RequestsTable = (props: {
                 <Td>{tenant.listing.data.details.title}</Td>
                 <Td>{tenant.firstName}</Td>
                 <Td>{tenant.lastName}</Td>
+                <Td>{`$${tenant.listing.data.lease.price}`}</Td>
+                <Td>{`$${tenant.listing.data.lease.depositPrice}`}</Td>
                 <Td>{tenant.listing.initiatedAt.toDate().toDateString()}</Td>
                 <Td>
                   <ButtonGroup spacing={5}>
@@ -416,46 +587,9 @@ const RequestsTable = (props: {
                         <ButtonSecondary>View Listing</ButtonSecondary>
                       </Link>
                     </NextLink>
-                    {requestType === "sent" ? (
-                      <Tooltip label="Delete Tenant Request">
-                        <IconButton
-                          size="md"
-                          variant="ghost"
-                          aria-label="Delete Listing"
-                          onClick={() => {
-                            onActionModalOpen(tenant);
-                            setModalType("delete");
-                          }}
-                          icon={<DeleteIcon />}
-                        />
-                      </Tooltip>
-                    ) : (
-                      <ButtonGroup isAttached>
-                        <Tooltip hasArrow label="Accept Tenant">
-                          <IconButton
-                            variant="ghost"
-                            aria-label="Accept Tenant"
-                            onClick={() => {
-                              onActionModalOpen(tenant);
-                              setModalType("accept");
-                            }}
-                            icon={<CheckIcon />}
-                          />
-                        </Tooltip>
-
-                        <Tooltip hasArrow label="Reject Tenant">
-                          <IconButton
-                            variant="ghost"
-                            aria-label="Reject Tenant"
-                            onClick={() => {
-                              onActionModalOpen(tenant);
-                              setModalType("reject");
-                            }}
-                            icon={<NotAllowedIcon />}
-                          />
-                        </Tooltip>
-                      </ButtonGroup>
-                    )}
+                    {userView === "tenant"
+                      ? tenantButtonGroups(tenant)
+                      : landlordButtonGroups(tenant)}
                   </ButtonGroup>
                 </Td>
               </Tr>
