@@ -12,10 +12,12 @@ import RoutePath, {
   pathMapping,
 } from "@/src/routes";
 import { useStore } from "@/src/store";
+import { getUserType } from "@/src/localStorage";
 
 function DashboardPage(): ReactElement {
   const [dashboardPath, setDashboardPath] = useState<RoutePathDashboard>();
   const router = useRouter();
+  const userTypeLS = getUserType();
   const userTypeStore = useStore((state) => state.userType);
   const setUserTypeStore = useStore((state) => state.setUserType);
 
@@ -43,10 +45,13 @@ function DashboardPage(): ReactElement {
   useEffect(() => {
     if (dashboardPath && dashboardPath !== RoutePathDashboard.Start) {
       // Defaults to Tenant user type when in ambiguous sidebar tab
-      setUserTypeStore(exclusiveUserType ?? userTypeStore ?? UserType.Tenant);
+      setUserTypeStore(
+        exclusiveUserType ?? userTypeLS ?? userTypeStore ?? UserType.Tenant
+      );
     }
   }, [
     dashboardPath,
+    userTypeLS,
     userTypeStore,
     setUserTypeStore,
     tab,
