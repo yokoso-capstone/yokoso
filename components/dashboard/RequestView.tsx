@@ -56,8 +56,8 @@ import { UserType } from "@/src/enum";
 import { Heading5 } from "../core/Text";
 
 enum Request {
-  Sent = "tenantUid",
-  Received = "landlordUid",
+  TenantUid = "tenantUid",
+  LandlordUid = "landlordUid",
 }
 
 enum Status {
@@ -80,8 +80,6 @@ interface DeleteProps {
 const MAX_TITLE_LENGTH = 15;
 
 function RequestView(): ReactElement {
-  // const [userView, setUserView] = useState<string>("tenant");
-
   const [tenantRequestList, setTenantRequestList] = useState<
     TenantRequestEntry[]
   >([]);
@@ -90,7 +88,9 @@ function RequestView(): ReactElement {
   const userType = useStore((state) => state.userType);
 
   const selectedRequest =
-    userType && userType === UserType.Tenant ? Request.Sent : Request.Received;
+    userType && userType === UserType.Tenant
+      ? Request.TenantUid
+      : Request.LandlordUid;
 
   const [user] = useAuthState(auth);
 
@@ -112,7 +112,9 @@ function RequestView(): ReactElement {
         const requestData = doc.data();
         const publicUserInfo = await getUserPublicById(
           requestData[
-            selectedRequest === Request.Received ? "tenantUid" : "landlordUid"
+            userType === UserType.Tenant
+              ? Request.LandlordUid
+              : Request.TenantUid
           ]
         );
 
@@ -140,15 +142,13 @@ function RequestView(): ReactElement {
           <TabList>
             <TabPrimary
               onClick={() => {
-                // setSelectedRequest(Request.Sent);
                 setRequestStatus(Status.Sent);
               }}
             >
-              {userView === "tenant" ? "Sent" : "Received"}
+              {userType === UserType.Tenant ? "Sent" : "Received"}
             </TabPrimary>
             <TabPrimary
               onClick={() => {
-                // setSelectedRequest(Request.Received);
                 setRequestStatus(Status.Pending);
               }}
             >
@@ -156,13 +156,11 @@ function RequestView(): ReactElement {
             </TabPrimary>
             <TabPrimary
               onClick={() => {
-                // setSelectedRequest(Request.Received);
                 setRequestStatus(Status.Accepted);
               }}
             >
               Accepted
             </TabPrimary>
-            <TabPrimary>Toggle</TabPrimary>
             <Spacer />
             <Box marginTop="8px" marginBottom="16px">
               <DashboardSearchInput />
@@ -173,7 +171,7 @@ function RequestView(): ReactElement {
               <RequestsTable
                 tenantRequests={tenantRequestList}
                 userId={user?.uid}
-                userView={userView}
+                userView={userType}
                 requestStatus={requestStatus}
               />
             </TabPanel>
@@ -181,7 +179,7 @@ function RequestView(): ReactElement {
               <RequestsTable
                 tenantRequests={tenantRequestList}
                 userId={user?.uid}
-                userView={userView}
+                userView={userType}
                 requestStatus={requestStatus}
               />
             </TabPanel>
@@ -189,19 +187,9 @@ function RequestView(): ReactElement {
               <RequestsTable
                 tenantRequests={tenantRequestList}
                 userId={user?.uid}
-                userView={userView}
+                userView={userType}
                 requestStatus={requestStatus}
               />
-            </TabPanel>
-            <TabPanel>
-              <ButtonPrimary
-                onClick={() =>
-                  // remember to delete this before merge
-                  setUserView(userView === "tenant" ? "landlord" : "tenant")
-                }
-              >
-                {userView}
-              </ButtonPrimary>
             </TabPanel>
           </TabPanels>
         </Tabs>
@@ -468,7 +456,7 @@ const ActionConfirmationModal = (props: DeleteProps) => {
 const RequestsTable = (props: {
   tenantRequests?: TenantRequestEntry[];
   userId: string | undefined;
-  userView: string;
+  userView: string | undefined;
   requestStatus: Status;
 }) => {
   const { tenantRequests, userId, userView, requestStatus } = props;
