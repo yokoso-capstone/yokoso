@@ -51,6 +51,8 @@ import {
   listingRouteBuilder,
   listingHrefBuilder,
 } from "@/src/utils/listingRoute";
+import { useStore } from "@/src/store";
+import { UserType } from "@/src/enum";
 import { Heading5 } from "../core/Text";
 
 enum Request {
@@ -78,29 +80,29 @@ interface DeleteProps {
 const MAX_TITLE_LENGTH = 15;
 
 function RequestView(): ReactElement {
-  const [selectedRequest, setSelectedRequest] = useState<Request>(
-    Request.Received
-  );
-
-  const [userView, setUserView] = useState<string>("tenant");
+  // const [userView, setUserView] = useState<string>("tenant");
 
   const [tenantRequestList, setTenantRequestList] = useState<
     TenantRequestEntry[]
   >([]);
   const [requestStatus, setRequestStatus] = useState<Status>(Status.Sent);
 
+  const userType = useStore((state) => state.userType);
+
+  const selectedRequest =
+    userType && userType === UserType.Tenant ? Request.Sent : Request.Received;
+
   const [user] = useAuthState(auth);
 
-  const query = useMemo(() => {
-    setSelectedRequest(
-      userView === "landlord" ? Request.Received : Request.Sent
-    );
-    return user
-      ? tenantRequests
-          .where(selectedRequest, "==", user.uid)
-          .where("status", "==", requestStatus)
-      : undefined;
-  }, [user, selectedRequest, requestStatus, userView]);
+  const query = useMemo(
+    () =>
+      user
+        ? tenantRequests
+            .where(selectedRequest, "==", user.uid)
+            .where("status", "==", requestStatus)
+        : undefined,
+    [user, selectedRequest, requestStatus, userType]
+  );
 
   const [snapshot] = useCollection(query);
 
@@ -113,6 +115,7 @@ function RequestView(): ReactElement {
             selectedRequest === Request.Received ? "tenantUid" : "landlordUid"
           ]
         );
+
         return {
           ...publicUserInfo,
           ...requestData,
@@ -125,8 +128,10 @@ function RequestView(): ReactElement {
       }
     };
 
-    handleTenantRequestPromise();
-  }, [user, snapshot]);
+    if (selectedRequest) {
+      handleTenantRequestPromise();
+    }
+  }, [selectedRequest, snapshot]);
 
   return (
     <>
@@ -135,7 +140,7 @@ function RequestView(): ReactElement {
           <TabList>
             <TabPrimary
               onClick={() => {
-                setSelectedRequest(Request.Sent);
+                // setSelectedRequest(Request.Sent);
                 setRequestStatus(Status.Sent);
               }}
             >
@@ -143,7 +148,7 @@ function RequestView(): ReactElement {
             </TabPrimary>
             <TabPrimary
               onClick={() => {
-                setSelectedRequest(Request.Received);
+                // setSelectedRequest(Request.Received);
                 setRequestStatus(Status.Pending);
               }}
             >
@@ -151,7 +156,7 @@ function RequestView(): ReactElement {
             </TabPrimary>
             <TabPrimary
               onClick={() => {
-                setSelectedRequest(Request.Received);
+                // setSelectedRequest(Request.Received);
                 setRequestStatus(Status.Accepted);
               }}
             >

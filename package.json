@@ -13,7 +13,7 @@
     "format:check": "prettier --check '**/*'.{js,ts,tsx,css} --ignore-path .gitignore",
     "lint": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore",
     "lint-fix": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore --fix",
-    "test:unit:components": "jest components/__tests__",
+    "test:unit:components": "env-cmd -e staging jest components/__tests__",
     "test:unit:firestore": "jest test/unit/firestore",
     "cypress": "cypress open",
     "cypress:all": "cypress run"
@@ -47,7 +47,9 @@
     "react-icons": "^4.2.0",
     "react-map-gl": "^6.1.11",
     "react-slick": "^0.28.1",
-    "slick-carousel": "^1.8.1"
+    "slick-carousel": "^1.8.1",
+    "use-debounce": "^7.0.1",
+    "zustand": "^3.6.5"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^1.2.6",
