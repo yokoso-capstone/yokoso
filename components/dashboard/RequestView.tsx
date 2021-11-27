@@ -617,7 +617,7 @@ const RequestsTable = (props: {
                         </ButtonSecondary>
                       </Link>
                     </NextLink>
-                    {userView === "tenant"
+                    {userView === UserType.Tenant
                       ? tenantButtonGroups(tenant)
                       : landlordButtonGroups(tenant)}
                   </ButtonGroup>
