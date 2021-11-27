@@ -61,9 +61,6 @@ function TenantsView(): ReactElement {
           <TabPrimary onClick={() => setSelectedPeriod(TimePeriod.Past)}>
             Past
           </TabPrimary>
-          <TabPrimary onClick={() => setSelectedPeriod(TimePeriod.Current)}>
-            Current
-          </TabPrimary>
           <TabPrimary onClick={() => setSelectedPeriod(TimePeriod.Upcoming)}>
             Upcoming
           </TabPrimary>

@@ -12,3 +12,9 @@ export enum UserType {
   Tenant = "tenant",
   Landlord = "landlord",
 }
+
+export enum ListingStatus {
+  Available = "available",
+  Pending = "pending",
+  Rented = "rented"
+}
