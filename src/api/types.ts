@@ -106,7 +106,9 @@ export type Listing = {
     depositPrice: number;
   };
   features: string[];
+  featureDescription: string;
   utilities: string[];
+  utilitiesDescription: string;
   images: string[];
   applicants: number;
   createdAt: timestamp;
