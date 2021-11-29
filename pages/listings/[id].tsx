@@ -240,9 +240,8 @@ function ListingPage(
                 </Grid>
               </Stack>
             </Box>
-            <Divider />
             {featureDescription && (
-              <Box>
+              <Box paddingTop="2rem">
                 <Heading5 marginBottom="2rem">Additional Amenities</Heading5>
                 {featureDescription.length > maxDescriptionCharacters ? (
                   <Box>
@@ -288,9 +287,8 @@ function ListingPage(
                 </Grid>
               </Stack>
             </Box>
-            <Divider />
             {utilitiesDescription && (
-              <Box>
+              <Box paddingTop="2rem">
                 <Heading5 marginBottom="2rem">Additional Utilities</Heading5>
                 {utilitiesDescription.length > maxDescriptionCharacters ? (
                   <Box>
