@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { useState, ReactElement } from "react";
 import Head from "next/head";
 import {
