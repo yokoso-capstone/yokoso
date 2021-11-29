@@ -106,7 +106,6 @@ describe("From index page", () => {
       cy.contains("Lease details");
       cy.contains("Amenities");
       cy.contains("Utilities");
-      cy.contains("Reviews");
       cy.contains("Contact");
     });
   });

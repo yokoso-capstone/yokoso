@@ -7,7 +7,13 @@ import {
 } from "next";
 import Header from "@/components/sections/Header";
 import { ContainerPrimary } from "@/components/core/Layout";
-import { Body1, Caption, Heading4 } from "@/components/core/Text";
+import {
+  Body1,
+  Caption,
+  Heading4,
+  Heading5,
+  Heading6,
+} from "@/components/core/Text";
 import ImageCarousel from "@/components/sections/ImageCarousel";
 import ListingContactCard from "@/components/sections/ListingContactCard";
 import {
@@ -16,10 +22,28 @@ import {
   Divider,
   Grid,
   HStack,
-  ListItem,
   Stack,
-  UnorderedList,
+  Icon,
 } from "@chakra-ui/react";
+import {
+  MdOutlineBathtub,
+  MdOutlineOutdoorGrill,
+  MdOutlineLocalLaundryService,
+  MdOutlineMicrowave,
+  MdCable,
+  MdOutlineWaterDrop,
+} from "react-icons/md";
+import { GiRedCarpet, GiHeatHaze } from "react-icons/gi";
+import { CgSmartHomeWashMachine } from "react-icons/cg";
+import { BiFridge } from "react-icons/bi";
+import { SiBathasu } from "react-icons/si";
+import { HiDesktopComputer } from "react-icons/hi";
+import { FcElectricity, FcCableRelease } from "react-icons/fc";
+import {
+  FaTemperatureHigh,
+  FaRegSnowflake,
+  FaWheelchair,
+} from "react-icons/fa";
 import { Listing } from "@/src/api/types";
 import { auth } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -69,20 +93,52 @@ function ListingPage(
     details: {
       title,
       description,
+      furnished,
+      petsAllowed,
       propertyType,
       rentalSpace,
       rentalSize,
       numBedrooms,
       numBaths,
+      smokingAllowed,
     },
     features,
+    featureDescription,
     lease: { price },
     utilities,
+    utilitiesDescription,
     images,
   } = listing;
   const maxDescriptionCharacters = 300;
   const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [
+    isFeatureDescriptionExpanded,
+    setFeatureDescriptionExpanded,
+  ] = useState(false);
+  const [
+    isUtilityDescriptionExpanded,
+    setUtilityDescriptionExpanded,
+  ] = useState(false);
   const [user, loading, error] = useAuthState(auth);
+  const iconMap = new Map([
+    ["bathtub", MdOutlineBathtub],
+    ["bbqReady", MdOutlineOutdoorGrill],
+    ["carpets", GiRedCarpet],
+    ["laundry", MdOutlineLocalLaundryService],
+    ["dishwasher", CgSmartHomeWashMachine],
+    ["fridge", BiFridge],
+    ["jacuzzi", SiBathasu],
+    ["microwave", MdOutlineMicrowave],
+    ["snowRemoval", FaRegSnowflake],
+    ["tv", HiDesktopComputer],
+    ["wheelchairAccessible", FaWheelchair],
+    ["cable", MdCable],
+    ["electricity", FcElectricity],
+    ["heating", FaTemperatureHigh],
+    ["hydro", MdOutlineWaterDrop],
+    ["internet", FcCableRelease],
+    ["naturalGas", GiHeatHaze],
+  ]);
 
   return (
     <>
@@ -118,7 +174,6 @@ function ListingPage(
                 </Caption>
               </HStack>
             </Box>
-            <Divider />
             <Box>
               {description.length > maxDescriptionCharacters ? (
                 <Box>
@@ -150,40 +205,123 @@ function ListingPage(
             <Divider />
             <Box>
               <Heading4 marginBottom="2rem">Lease details</Heading4>
-              <UnorderedList>
-                <Stack>
-                  <ListItem>Property type: {propertyType}</ListItem>
-                  <ListItem>Space: {rentalSpace}</ListItem>
-                  <ListItem>Area: {rentalSize} sq ft</ListItem>
-                </Stack>
-              </UnorderedList>
+              <Grid
+                templateColumns="repeat(3, 1fr)"
+                rowGap={3}
+                marginBottom="2rem"
+              >
+                <Heading6>Property type</Heading6>
+                <Heading6>Space</Heading6>
+                <Heading6>Area</Heading6>
+                <Body1>{propertyType}</Body1>
+                <Body1>{rentalSpace}</Body1>
+                <Body1>{rentalSize} sq ft</Body1>
+              </Grid>
+              <Grid templateColumns="repeat(3, 1fr)" rowGap={3}>
+                <Heading6>Furnished Status</Heading6>
+                <Heading6>Pets Allowed</Heading6>
+                <Heading6>Smoking Allowed</Heading6>
+                <Body1>{furnished ? "Furnished" : "Unfurnished"}</Body1>
+                <Body1>{petsAllowed ? "Yes" : "No"}</Body1>
+                <Body1>{smokingAllowed ? "Yes" : "No"}</Body1>
+              </Grid>
             </Box>
             <Divider />
             <Box>
               <Heading4 marginBottom="2rem">Amenities</Heading4>
-              <UnorderedList>
-                <Stack>
+              <Stack>
+                <Grid templateColumns="repeat(4, 1fr)" rowGap={10}>
                   {features.map((feature, index) => (
-                    <ListItem key={index}>{camelToSentence(feature)}</ListItem>
+                    <HStack key={index}>
+                      <Icon as={iconMap.get(feature)} boxSize={8} />
+                      <Heading6>{camelToSentence(feature)}</Heading6>
+                    </HStack>
                   ))}
-                </Stack>
-              </UnorderedList>
+                </Grid>
+              </Stack>
             </Box>
+            <Divider />
+            {featureDescription && (
+              <Box>
+                <Heading5 marginBottom="2rem">Additional Amenities</Heading5>
+                {featureDescription.length > maxDescriptionCharacters ? (
+                  <Box>
+                    <Body1 marginBottom="1rem">
+                      {isFeatureDescriptionExpanded
+                        ? featureDescription
+                        : `${featureDescription.substring(
+                            0,
+                            maxDescriptionCharacters
+                          )}...`}
+                    </Body1>
+                    <Button
+                      variant="link"
+                      color="text.variant"
+                      _active={{
+                        color: "text.secondary",
+                      }}
+                      onClick={() =>
+                        setFeatureDescriptionExpanded(
+                          !isFeatureDescriptionExpanded
+                        )
+                      }
+                    >
+                      {isFeatureDescriptionExpanded ? "See less" : "See more"}
+                    </Button>
+                  </Box>
+                ) : (
+                  <Body1>{featureDescription}</Body1>
+                )}
+              </Box>
+            )}
             <Divider />
             <Box>
               <Heading4 marginBottom="2rem">Utilities</Heading4>
-              <UnorderedList>
-                <Stack>
+              <Stack>
+                <Grid templateColumns="repeat(4, 1fr)" rowGap={10}>
                   {utilities.map((utility, index) => (
-                    <ListItem key={index}>{camelToSentence(utility)}</ListItem>
+                    <HStack key={index}>
+                      <Icon as={iconMap.get(utility)} boxSize={8} />
+                      <Heading6>{camelToSentence(utility)}</Heading6>
+                    </HStack>
                   ))}
-                </Stack>
-              </UnorderedList>
+                </Grid>
+              </Stack>
             </Box>
             <Divider />
-            <Box height="3in">
-              <Heading4>Reviews</Heading4>
-            </Box>
+            {utilitiesDescription && (
+              <Box>
+                <Heading5 marginBottom="2rem">Additional Utilities</Heading5>
+                {utilitiesDescription.length > maxDescriptionCharacters ? (
+                  <Box>
+                    <Body1 marginBottom="1rem">
+                      {isUtilityDescriptionExpanded
+                        ? utilitiesDescription
+                        : `${utilitiesDescription.substring(
+                            0,
+                            maxDescriptionCharacters
+                          )}...`}
+                    </Body1>
+                    <Button
+                      variant="link"
+                      color="text.variant"
+                      _active={{
+                        color: "text.secondary",
+                      }}
+                      onClick={() =>
+                        setUtilityDescriptionExpanded(
+                          !isUtilityDescriptionExpanded
+                        )
+                      }
+                    >
+                      {isUtilityDescriptionExpanded ? "See less" : "See more"}
+                    </Button>
+                  </Box>
+                ) : (
+                  <Body1>{utilitiesDescription}</Body1>
+                )}
+              </Box>
+            )}
           </Stack>
           <Box gridColumn={["1", "1", "1", "2"]} gridRow="1">
             <Box
