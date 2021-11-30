@@ -31,7 +31,9 @@ function SearchInput(props: SearchInputProps): ReactElement {
     router.push({
       pathname: RoutePath.Search,
       query: {
+        bbox: result.bbox,
         center: result.center,
+        type: result.place_type,
         place: result.place_name,
         text: result.text,
       },
