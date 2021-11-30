@@ -1,4 +1,77 @@
 {
-  "indexes": [],
+  "indexes": [
+    {
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "location.cityKey",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "details.numBaths",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "details.numBedrooms",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lease.price",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "location.cityKey",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "details.numBaths",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lease.price",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "location.cityKey",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "details.numBedrooms",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lease.price",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "location.cityKey",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lease.price",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
   "fieldOverrides": []
 }

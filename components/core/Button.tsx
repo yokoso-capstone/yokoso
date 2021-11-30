@@ -11,21 +11,17 @@ export const ButtonBase = chakra(Button, {
 
 export const RedButton = chakra(ButtonBase, {
   baseStyle: {
+    fontWeight: "bold",
     color: "white",
     background: "brand.primary",
     borderWidth: "1px",
     borderStyle: "solid",
     borderColor: "brand.primary",
-    width: "100%",
-    margin: "0 auto",
-    display: "block",
     _hover: {
       background: "brand.primary_hover",
-      borderColor: "brand.primary_hover",
     },
     _active: {
       background: "brand.primary_active",
-      borderColor: "brand.primary_active",
     },
   },
 });

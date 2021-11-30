@@ -12,6 +12,7 @@ export interface ListingType {
 export interface ListingStatus {
   applicants: number;
   isHidden: boolean;
+  status: string;
 }
 
 export interface Coordinate {
@@ -51,5 +52,6 @@ export const testListing: ListingType = {
   status: {
     applicants: 10,
     isHidden: false,
+    status: "available",
   },
 };

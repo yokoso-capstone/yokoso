@@ -59,6 +59,7 @@ import firebase from "firebase/app";
 import "firebase/storage";
 
 import { fetchCoordinates } from "@/src/mapbox";
+import { ListingStatus } from "@/src/enum";
 
 const storageRef = firebase.storage().ref();
 
@@ -226,10 +227,13 @@ function CreateListingView(): ReactElement {
               depositPrice: Number(part1Data.depositPrice),
             },
             features: part1Data.features,
+            featureDescription: part1Data.featureDescription,
             utilities: part1Data.utilities,
+            utilitiesDescription: part1Data.utilitiesDescription,
             images: fileUrls,
             applicants: 0,
             createdAt: serverTimestamp,
+            status: ListingStatus.Available,
           };
 
           const { id: listingId } = await listings.add(listing);
@@ -1034,7 +1038,7 @@ const Part1 = (props: {
                       <FormLabel>Posting Status</FormLabel>
                       <SelectControl name="postingStatus" isRequired>
                         <option value="public">Public</option>
-                        <option value="draft">Draft</option>
+                        <option value="hidden">Hidden</option>
                       </SelectControl>
                     </Box>
                     <Field

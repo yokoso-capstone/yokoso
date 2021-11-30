@@ -1,16 +1,39 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect, useMemo, useState } from "react";
 import { Box, Flex, Stack, IconButton, chakra, Image } from "@chakra-ui/react";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../../src/firebase";
+import { usersPublic } from "../../src/api/collections";
+import { UserPublic } from "../../src/api/types";
 import { Heading4 } from "../core/Text";
 import NotificationBellSvg from "../svg/notification-bell.svg";
 
 export const NotificationBell = chakra(NotificationBellSvg);
 
 interface DashboardHeaderProps {
-  title: string;
+  title?: string;
 }
 
 function DashboardHeader(props: DashboardHeaderProps): ReactElement {
   const { title } = props;
+
+  const [user] = useAuthState(auth);
+  const query = useMemo(() => (user ? usersPublic.doc(user.uid) : undefined), [
+    user,
+  ]);
+  const [photoUrl, setPhotoUrl] = useState("");
+
+  useEffect(() => {
+    const getPhotoUrl = async () => {
+      if (query) {
+        const userPublicDoc = await query.get();
+        const userPublicData = userPublicDoc.data() as UserPublic;
+
+        setPhotoUrl(userPublicData.profilePicture);
+      }
+    };
+
+    getPhotoUrl();
+  }, [query]);
 
   return (
     <Box
@@ -52,12 +75,7 @@ function DashboardHeader(props: DashboardHeaderProps): ReactElement {
             width="44px"
             height="44px"
             isRound
-            icon={
-              <Image
-                borderRadius="full"
-                src="https://placekitten.com/300/300"
-              />
-            }
+            icon={<Image borderRadius="full" src={photoUrl} />}
           />
         </Stack>
       </Flex>

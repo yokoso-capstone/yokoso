@@ -10,7 +10,7 @@ export type FirestoreFieldValue = firebase.firestore.FieldValue;
 
 export type FirestoreTimestamp = firebase.firestore.Timestamp;
 
-export type Visibility = "public" | "draft";
+export type Visibility = "public" | "hidden";
 
 export type PropertyType = "Apartment" | "House" | "Townhouse";
 
@@ -22,12 +22,17 @@ export type Frequency =
 
 export type LeaseType = "Sublet" | "Lease";
 
+export type RequestStatus = "sent" |"pending" | "rejected" | "accepted";
+
 export type RentalSpace =
   | "Entire Building"
   | "Partial Building"
   | "Single Room";
 
 export type FurnishedStatus = "Unfurnished" | "Furnished" | "Semi-Furnished";
+
+export type ListingStatus = "available" | "pending" | "rented";
+
 
 export type TenantEntry = UserPublic & {
   rentals: {
@@ -37,6 +42,8 @@ export type TenantEntry = UserPublic & {
     };
   };
 };
+
+export type TenantRequestEntry = UserPublic & TenantRequest;
 
 export type UserPublic = {
   uid?: string;
@@ -99,10 +106,13 @@ export type Listing = {
     depositPrice: number;
   };
   features: string[];
+  featureDescription: string;
   utilities: string[];
+  utilitiesDescription: string;
   images: string[];
   applicants: number;
   createdAt: timestamp;
+  status: ListingStatus;
 };
 
 export type ChatRoom = {
@@ -132,6 +142,19 @@ export type Message = {
   };
   createdAt: timestamp;
 };
+
+export type TenantRequest = {
+  id?: string;
+  landlordUid: string;
+  tenantUid: string;
+  createdAt: timestamp;
+  status: RequestStatus;
+  listing: {
+    initiatedAt: any;
+    data: Listing;
+    id: string;
+  };
+}
 
 export type Schema = {
   [CollectionName.ChatRooms]: {

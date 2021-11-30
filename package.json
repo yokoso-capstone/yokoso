@@ -13,8 +13,10 @@
     "format:check": "prettier --check '**/*'.{js,ts,tsx,css} --ignore-path .gitignore",
     "lint": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore",
     "lint-fix": "eslint . -c .eslintrc.json --ext js,jsx,ts,tsx --ignore-path .eslintignore --fix",
-    "test:unit:components": "jest components/__tests__",
-    "test:unit:firestore": "jest test/unit/firestore"
+    "test:unit:components": "env-cmd -e staging jest components/__tests__",
+    "test:unit:firestore": "jest test/unit/firestore",
+    "cypress": "cypress open",
+    "cypress:all": "cypress run"
   },
   "license": "MIT",
   "dependencies": {
@@ -43,11 +45,13 @@
     "react-dropzone": "^11.3.2",
     "react-firebase-hooks": "^3.0.3",
     "react-hamburger-menu": "^1.2.1",
-    "react-icons": "^4.2.0",
+    "react-icons": "^4.3.1",
     "react-map-gl": "^6.1.11",
     "react-slick": "^0.28.1",
     "slick-carousel": "^1.8.1",
-    "stripe": "^8.177.0"
+    "stripe": "^8.177.0",
+    "use-debounce": "^7.0.1",
+    "zustand": "^3.6.5"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^1.2.6",
@@ -63,12 +67,14 @@
     "@typescript-eslint/eslint-plugin": "^4.15.1",
     "@typescript-eslint/parser": "^4.15.1",
     "babel-eslint": "^10.1.0",
+    "cypress": "^8.6.0",
     "electron": "^12.0.2",
     "env-cmd": "^10.1.0",
     "enzyme-to-json": "^3.6.2",
     "eslint": "^7.20.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-prettier": "^3.3.1",

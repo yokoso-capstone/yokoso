@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect, useMemo, useState } from "react";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -8,6 +8,9 @@ import {
   Flex,
   Link,
   Stack,
+  IconButton,
+  Image,
+  Divider,
 } from "@chakra-ui/react";
 import { ButtonPrimary, ButtonSecondary } from "@/components/core/Button";
 import { LogoWhite, LogoBlack } from "@/components/core/Branding";
@@ -19,6 +22,8 @@ import Login from "@/components/sections/Login";
 import Signup from "@/components/sections/Signup";
 import { auth } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { usersPublic } from "@/src/api/collections";
+import { UserPublic } from "@/src/api/types";
 import RoutePath, { RoutePathDashboard } from "@/src/routes";
 
 const darkThemeSecondaryButtonProps: ButtonProps = {
@@ -47,6 +52,11 @@ function Header(props: HeaderProps): ReactElement {
   const background = darkTheme ? "black" : "white";
 
   const [user] = useAuthState(auth);
+  const query = useMemo(() => (user ? usersPublic.doc(user.uid) : undefined), [
+    user,
+  ]);
+  const [photoUrl, setPhotoUrl] = useState("");
+
   const { isOpen, onToggle } = useDisclosure();
   const {
     isOpen: isOpenLogin,
@@ -75,6 +85,19 @@ function Header(props: HeaderProps): ReactElement {
       onOpenLogin();
     }
   };
+
+  useEffect(() => {
+    const getPhotoUrl = async () => {
+      if (query) {
+        const userPublicDoc = await query.get();
+        const userPublicData = userPublicDoc.data() as UserPublic;
+
+        setPhotoUrl(userPublicData.profilePicture);
+      }
+    };
+
+    getPhotoUrl();
+  }, [query]);
 
   return (
     <>
@@ -130,7 +153,7 @@ function Header(props: HeaderProps): ReactElement {
             <Stack
               spacing="12px"
               direction="row"
-              display={["none", "none", "none", "block"]}
+              display={["none", "none", "none", "flex"]}
             >
               <ButtonSecondary
                 {...(darkTheme && darkThemeSecondaryButtonProps)}
@@ -144,6 +167,21 @@ function Header(props: HeaderProps): ReactElement {
               >
                 Get Started
               </ButtonPrimary>
+              {user && (
+                <>
+                  <Box height="auto" px={2}>
+                    <Divider orientation="vertical" />
+                  </Box>
+                  <IconButton
+                    aria-label="Profile"
+                    width="44px"
+                    height="44px"
+                    isRound
+                    onClick={handleGetStarted}
+                    icon={<Image borderRadius="full" src={photoUrl} />}
+                  />
+                </>
+              )}
             </Stack>
             <Box display={["block", "block", "block", "none"]} cursor="pointer">
               {/* TODO: show overlay with options (search, post listing, and get started) */}

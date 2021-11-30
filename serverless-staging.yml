@@ -1,7 +1,7 @@
 name: yokoso-staging
 
 yokoso-staging:
-  component: "@sls-next/serverless-component@1.18.0"
+  component: "@sls-next/serverless-component@3.6.0"
   inputs:
     build:
       cmd: "npm"
