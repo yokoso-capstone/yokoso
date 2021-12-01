@@ -229,7 +229,6 @@ function SearchPage(): ReactElement {
           long >= bbox[0] && lat >= bbox[1] && long <= bbox[2] && lat <= bbox[3]
         );
       }
-      console.log(place);
       return (
         place?.includes(location.country) &&
         place.includes(location.province) &&
