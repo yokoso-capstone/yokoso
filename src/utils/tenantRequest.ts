@@ -63,22 +63,25 @@ export const checkRequestStatus = async (
   if (!listing){
     throw Error;
   }
+  if (!userUid){
+    setRequestStatus(true);
+  } else {
+    const requestId = [userUid, ownerUid, listing.id].sort().join("-");
 
-  const requestId = [userUid, ownerUid, listing.id].sort().join("-");
+    try {
+      const requestRef = tenantRequests.doc(requestId);
+      const requestDoc = await requestRef.get();
 
-  try {
-    const requestRef = tenantRequests.doc(requestId);
-    const requestDoc = await requestRef.get();
+      if (requestDoc.exists || userUid === ownerUid) {
+        setRequestStatus(true);
+      } else {
+        setRequestStatus(false);
+      }
 
-    if (requestDoc.exists || userUid === ownerUid) {
-      setRequestStatus(true);
-    } else {
-      setRequestStatus(false);
-    }
-
-  } catch (err) {
-    if (onError) {
-      onError();
+    } catch (err) {
+      if (onError) {
+        onError();
+      }
     }
   }
 };
