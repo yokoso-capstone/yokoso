@@ -17,3 +17,12 @@ firebase functions:config:get > .runtimeconfig.json
 ```
 firebase.functions().useEmulator("localhost", 5001);
 ```
+
+## Stripe Integration
+
+### Webhooks
+
+Helpful documentation:
+
+- https://stripe.com/docs/stripe-cli/webhooks
+- https://stripe.com/docs/cli/trigger
