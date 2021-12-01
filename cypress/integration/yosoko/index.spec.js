@@ -90,7 +90,7 @@ describe("From index page", () => {
   context("with Vancouver searched", () => {
     beforeEach(() => {
       cy.visit(
-        "http://localhost:3000/search?center=-123.113953&center=49.260872&place=Vancouver%2C+British+Columbia%2C+Canada&text=Vancouver"
+        "http://localhost:3000/search?bbox=-123.224221806&bbox=49.198533909&bbox=-123.022935527&bbox=49.314078994&center=-123.113953&center=49.260872&type=place&place=Vancouver%2C+British+Columbia%2C+Canada&text=Vancouver"
       );
       cy.intercept(
         "POST",
