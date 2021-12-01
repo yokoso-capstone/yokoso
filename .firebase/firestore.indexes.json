@@ -71,6 +71,20 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "visibility",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lease.price",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []
