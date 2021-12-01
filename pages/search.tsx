@@ -220,15 +220,21 @@ function SearchPage(): ReactElement {
   const [snapshot] = useCollectionOnce(query);
   const listings = snapshot?.docs
     .filter((doc) => {
+      const { location } = doc.data();
       if (bbox) {
-        const long = doc.data().location.coordinate.longitude;
-        const lat = doc.data().location.coordinate.latitude;
+        const long = location.coordinate.longitude;
+        const lat = location.coordinate.latitude;
 
         return (
           long >= bbox[0] && lat >= bbox[1] && long <= bbox[2] && lat <= bbox[3]
         );
       }
-      return true;
+      console.log(place);
+      return (
+        place?.includes(location.country) &&
+        place.includes(location.province) &&
+        place.includes(location.cityName)
+      );
     })
     .map((doc) => {
       return ({
