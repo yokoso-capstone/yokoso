@@ -10,13 +10,16 @@ const stripe = new Stripe(STRIPE_SECRET_KEY, {apiVersion: "2020-08-27"});
 admin.initializeApp();
 
 const firestore = admin.firestore();
+const LISTING_COLLECTION_NAME = "listings";
 const TENANT_REQUEST_COLLECTION_NAME = "tenant-requests";
 
-type Status = "sent" | "pending" | "rejected" | "accepted";
+type ListingVisibility = "public" | "hidden";
+
+type RequestStatus = "sent" | "pending" | "rejected" | "accepted";
 
 interface TenantRequest {
-  listing: { data: { lease: { depositPrice: number } } };
-  status: Status;
+  listing: { data: { lease: { depositPrice: number } }; id: string };
+  status: RequestStatus;
   tenantUid: string;
 }
 
@@ -66,8 +69,8 @@ exports.createStripeCheckoutDeposit = functions.https.onCall(
       try {
         const tenantRequestSnapshot = await tenantRequestRef.get();
         const tenantRequestData = tenantRequestSnapshot.data() as
-        | TenantRequest
-        | undefined;
+          | TenantRequest
+          | undefined;
 
         if (!tenantRequestData) {
           const errorType: FunctionsErrorCode = "not-found";
@@ -119,7 +122,7 @@ exports.createStripeCheckoutDeposit = functions.https.onCall(
 
         return {session_id: session.id};
       } catch (err) {
-        console.error(err);
+        console.log(err);
 
         const errorType: FunctionsErrorCode = "unknown";
         const errorMsg = "There was an issue processing your request.";
@@ -162,16 +165,59 @@ exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
       return;
     }
 
+    const batch = firestore.batch();
+
     const tenantRequestRef = firestore
         .collection(TENANT_REQUEST_COLLECTION_NAME)
         .doc(tenantRequestId);
+    const requestStatusUpdate: { status: RequestStatus } = {
+      status: "accepted",
+    };
 
-    const statusUpdate: { status: Status } = {status: "accepted"};
-    await tenantRequestRef.update(statusUpdate);
+    batch.update(tenantRequestRef, requestStatusUpdate);
 
-    // TODO: reject all other rental requests for the same property
+    const tenantRequestSnapshot = await tenantRequestRef.get();
+    const tenantRequestData = tenantRequestSnapshot.data() as
+      | TenantRequest
+      | undefined;
 
-    // TODO: hide listing
+    if (!tenantRequestData) {
+      res.status(400).send(`Tenant request ${tenantRequestId} not found.`);
+      return;
+    }
+
+    const listingId = tenantRequestData.listing.id;
+    const listingRef = firestore
+        .collection(LISTING_COLLECTION_NAME)
+        .doc(listingId);
+    const listingVisibilityUpdate: { visibility: ListingVisibility } = {
+      visibility: "hidden",
+    };
+
+    batch.update(listingRef, listingVisibilityUpdate);
+
+    const tenantRequestStatusToReject: RequestStatus[] = ["sent", "pending"];
+    const requestsToRejectRef = firestore
+        .collection(TENANT_REQUEST_COLLECTION_NAME)
+        .where("listing.id", "==", listingId)
+        .where("status", "in", tenantRequestStatusToReject);
+    const requestsToRejectSnapshot = await requestsToRejectRef.get();
+    const requestsToRejectIds = requestsToRejectSnapshot.docs
+        .map((doc) => doc.id)
+        .filter((id) => id !== tenantRequestId);
+
+    requestsToRejectIds.forEach((id) => {
+      const requestRef = firestore
+          .collection(TENANT_REQUEST_COLLECTION_NAME)
+          .doc(id);
+      const requestStatusUpdate: { status: RequestStatus } = {
+        status: "rejected",
+      };
+
+      batch.update(requestRef, requestStatusUpdate);
+    });
+
+    await batch.commit();
   } catch (err) {
     const error = err as { message: string };
     res.status(400).send(`Webhook Error: ${error.message}`);
