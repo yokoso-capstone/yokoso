@@ -1,5 +1,5 @@
 import { tenantRequests } from "@/src/api/collections";
-import { serverTimestamp } from "@/src/firebase";
+import { firestoreTimestamp, serverTimestamp } from "@/src/firebase";
 import { Dispatch, SetStateAction } from "react";
 import { Listing, TenantRequest } from "../api/types";
 
@@ -7,6 +7,7 @@ export const handleTenantRequest = async (
   listing: Listing,
   userUid: string,
   ownerUid: string,
+  requestLeaseStartDate: Date,
   onSuccess?: () => void,
   onError?: () => void,
   setLoading?: Dispatch<SetStateAction<boolean>>,
@@ -34,6 +35,7 @@ export const handleTenantRequest = async (
         status: "sent",
         listing: currentListingData,
         createdAt: serverTimestamp,
+        leaseStartDate: firestoreTimestamp.fromDate(requestLeaseStartDate)
       };
       await requestRef.set(tenantRequestData);
 

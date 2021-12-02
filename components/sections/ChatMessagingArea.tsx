@@ -7,6 +7,7 @@ import {
 } from "@/components/core/IconButton";
 import { DashboardCard } from "@/components/core/Layout";
 import { Body2 } from "@/components/core/Text";
+import DatePicker from "@/components/core/DatePicker";
 import {
   Box,
   Grid,
@@ -23,6 +24,7 @@ import {
   ModalBody,
   ModalCloseButton,
   Stack,
+  Divider,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -47,10 +49,15 @@ const Header = (props: {
 }) => {
   const { photoUrl, name, listing, user } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const availableDate = listing
+    ? new Date(String(listing?.lease.availability))
+    : new Date();
   const [requestDisabled, setRequestDisabled] = useState(false);
   const [isLandlord, setIsLandlord] = useState(false);
   const [requestLoading, setRequestLoading] = useState(false);
+  const [requestLeaseStartDate, setRequestLeaseStartDate] = useState(
+    availableDate >= new Date() ? availableDate : new Date()
+  );
 
   const toast = useToast();
 
@@ -180,7 +187,7 @@ const Header = (props: {
           <ModalHeader>Actions</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Stack>
+            <Stack spacing="12px">
               {/* TODO: handle error situation of no listing or ID (shouldn't happen?) */}
               <Tooltip label="test">
                 <NextLink href={listingRouteBuilder(listing?.id)} passHref>
@@ -188,6 +195,29 @@ const Header = (props: {
                     <ButtonSecondary isFullWidth>View listing</ButtonSecondary>
                   </Link>
                 </NextLink>
+              </Tooltip>
+              <Divider />
+              <Tooltip
+                isDisabled={requestDisabled}
+                hasArrow
+                label="Select your desired lease start date."
+              >
+                <Box>
+                  <DatePicker
+                    isDisabled={requestDisabled}
+                    selectedDate={requestLeaseStartDate}
+                    onChange={(d: Date) => {
+                      setRequestLeaseStartDate(d);
+                    }}
+                    showPopperArrow={false}
+                    placeholderText="MM/DD/YYYY"
+                    minDate={
+                      new Date(availableDate) >= new Date()
+                        ? new Date(availableDate)
+                        : new Date()
+                    }
+                  />
+                </Box>
               </Tooltip>
               <Tooltip
                 isDisabled={!requestDisabled || !user || !listing}
@@ -205,6 +235,7 @@ const Header = (props: {
                           listing,
                           user.uid,
                           listing.owner.uid,
+                          requestLeaseStartDate,
                           handleRequestSuccess,
                           handleRequestError,
                           setRequestLoading

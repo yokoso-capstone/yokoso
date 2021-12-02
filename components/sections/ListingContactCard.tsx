@@ -16,6 +16,7 @@ import {
   Tooltip,
   useToast,
 } from "@chakra-ui/react";
+import DatePicker from "@/components/core/DatePicker";
 import { FaCheckCircle } from "react-icons/fa";
 import { getUTCMonthString } from "@/src/utils";
 import { CollectionName, chatRooms } from "@/src/api/collections";
@@ -35,6 +36,7 @@ interface ListingCardProps {
   disabled: boolean;
   userUid: string;
   ownerUid: string;
+  availableDate: string;
   listing: Listing;
 }
 
@@ -47,6 +49,7 @@ function ListingCard(props: ListingCardProps): ReactElement {
     joined,
     disabled,
     userUid,
+    availableDate,
     ownerUid,
     listing,
   } = props;
@@ -55,6 +58,9 @@ function ListingCard(props: ListingCardProps): ReactElement {
   const [requestDisabled, setRequestDisabled] = useState(false);
   const [chatLoading, setChatLoading] = useState(false);
   const [requestLoading, setRequestLoading] = useState(false);
+  const [requestLeaseStartDate, setRequestLeaseStartDate] = useState(
+    new Date(availableDate) >= new Date() ? new Date(availableDate) : new Date()
+  );
   const router = useRouter();
   const toast = useToast();
   const placeholderText = `Hi ${firstName}, I am interested in your listing. Is it still available? When would be a good time to view it?`;
@@ -251,6 +257,30 @@ function ListingCard(props: ListingCardProps): ReactElement {
               </ButtonPrimary>
             </Box>
           </Tooltip>
+          <Divider />
+          <Heading5>Tenant Request</Heading5>
+          <Tooltip
+            isDisabled={requestDisabled}
+            hasArrow
+            label="Select your desired lease start date."
+          >
+            <Box>
+              <DatePicker
+                isDisabled={requestDisabled}
+                selectedDate={requestLeaseStartDate}
+                onChange={(d: Date) => {
+                  setRequestLeaseStartDate(d);
+                }}
+                showPopperArrow={false}
+                placeholderText="MM/DD/YYYY"
+                minDate={
+                  new Date(availableDate) >= new Date()
+                    ? new Date(availableDate)
+                    : new Date()
+                }
+              />
+            </Box>
+          </Tooltip>
           <Tooltip
             isDisabled={!requestDisabled}
             hasArrow
@@ -265,6 +295,7 @@ function ListingCard(props: ListingCardProps): ReactElement {
                     listing,
                     userUid,
                     ownerUid,
+                    requestLeaseStartDate,
                     onTenantRequestSuccess,
                     onTenantRequestError,
                     setRequestLoading
