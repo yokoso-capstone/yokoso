@@ -151,6 +151,7 @@ export type TenantRequest = {
   status: RequestStatus;
   leaseStartDate: timestamp;
   listing: {
+    leaseStartDate: any;
     initiatedAt: any;
     data: Listing;
     id: string;
