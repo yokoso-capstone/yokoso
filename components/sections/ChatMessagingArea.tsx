@@ -7,7 +7,6 @@ import {
 } from "@/components/core/IconButton";
 import { DashboardCard } from "@/components/core/Layout";
 import { Body2 } from "@/components/core/Text";
-import DatePicker from "@/components/core/DatePicker";
 import {
   Box,
   Grid,
@@ -15,8 +14,8 @@ import {
   Image,
   Input,
   Link,
-  Modal,
   Tooltip,
+  Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
@@ -24,7 +23,6 @@ import {
   ModalBody,
   ModalCloseButton,
   Stack,
-  Divider,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -36,10 +34,8 @@ import { CollectionName, chatRooms } from "@/src/api/collections";
 import { serverTimestamp } from "@/src/firebase";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { listingRouteBuilder } from "@/src/utils/listingRoute";
-import {
-  checkRequestStatus,
-  handleTenantRequest,
-} from "@/src/utils/tenantRequest";
+import { checkRequestStatus } from "@/src/utils/tenantRequest";
+import TenantRequestModal from "./TenantRequestModal";
 
 const Header = (props: {
   photoUrl?: string;
@@ -49,15 +45,17 @@ const Header = (props: {
 }) => {
   const { photoUrl, name, listing, user } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isRequestOpen,
+    onOpen: onRequestOpen,
+    onClose: onRequestClose,
+  } = useDisclosure();
   const availableDate = listing
     ? new Date(String(listing?.lease.availability))
     : new Date();
   const [requestDisabled, setRequestDisabled] = useState(false);
   const [isLandlord, setIsLandlord] = useState(false);
   const [requestLoading, setRequestLoading] = useState(false);
-  const [requestLeaseStartDate, setRequestLeaseStartDate] = useState(
-    availableDate >= new Date() ? availableDate : new Date()
-  );
 
   const toast = useToast();
 
@@ -196,29 +194,6 @@ const Header = (props: {
                   </Link>
                 </NextLink>
               </Tooltip>
-              <Divider />
-              <Tooltip
-                isDisabled={requestDisabled}
-                hasArrow
-                label="Select your desired lease start date."
-              >
-                <Box>
-                  <DatePicker
-                    isDisabled={requestDisabled}
-                    selectedDate={requestLeaseStartDate}
-                    onChange={(d: Date) => {
-                      setRequestLeaseStartDate(d);
-                    }}
-                    showPopperArrow={false}
-                    placeholderText="MM/DD/YYYY"
-                    minDate={
-                      new Date(availableDate) >= new Date()
-                        ? new Date(availableDate)
-                        : new Date()
-                    }
-                  />
-                </Box>
-              </Tooltip>
               <Tooltip
                 isDisabled={!requestDisabled || !user || !listing}
                 hasArrow
@@ -229,19 +204,7 @@ const Header = (props: {
                     isFullWidth
                     isDisabled={requestDisabled}
                     isLoading={requestLoading}
-                    onClick={() => {
-                      if (user && listing) {
-                        handleTenantRequest(
-                          listing,
-                          user.uid,
-                          listing.owner.uid,
-                          requestLeaseStartDate,
-                          handleRequestSuccess,
-                          handleRequestError,
-                          setRequestLoading
-                        );
-                      }
-                    }}
+                    onClick={onRequestOpen}
                   >
                     Send Tenant Request
                   </ButtonSecondary>
@@ -257,6 +220,21 @@ const Header = (props: {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      {listing && user && (
+        <TenantRequestModal
+          isOpen={isRequestOpen}
+          availableDate={String(availableDate)}
+          onClose={onRequestClose}
+          listing={listing}
+          userUid={user?.uid}
+          onSuccess={handleRequestSuccess}
+          onError={handleRequestError}
+          setLoading={setRequestLoading}
+          isLoading={requestLoading}
+          isDisabled={requestDisabled}
+          requestTooltip={disabledRequestErrorMsg}
+        />
+      )}
     </>
   );
 };
