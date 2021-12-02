@@ -15,16 +15,15 @@ import {
   Textarea,
   Tooltip,
   useToast,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { FaCheckCircle } from "react-icons/fa";
 import { getUTCMonthString } from "@/src/utils";
 import { CollectionName, chatRooms } from "@/src/api/collections";
 import { ChatRoom, Listing, Message } from "@/src/api/types";
 import { serverTimestamp } from "@/src/firebase";
-import {
-  checkRequestStatus,
-  handleTenantRequest,
-} from "@/src/utils/tenantRequest";
+import { checkRequestStatus } from "@/src/utils/tenantRequest";
+import TenantRequestModal from "./TenantRequestModal";
 
 interface ListingCardProps {
   price: number;
@@ -35,6 +34,7 @@ interface ListingCardProps {
   disabled: boolean;
   userUid: string;
   ownerUid: string;
+  availableDate: string;
   listing: Listing;
 }
 
@@ -47,6 +47,7 @@ function ListingCard(props: ListingCardProps): ReactElement {
     joined,
     disabled,
     userUid,
+    availableDate,
     ownerUid,
     listing,
   } = props;
@@ -55,6 +56,7 @@ function ListingCard(props: ListingCardProps): ReactElement {
   const [requestDisabled, setRequestDisabled] = useState(false);
   const [chatLoading, setChatLoading] = useState(false);
   const [requestLoading, setRequestLoading] = useState(false);
+  const { isOpen, onClose, onOpen } = useDisclosure();
   const router = useRouter();
   const toast = useToast();
   const placeholderText = `Hi ${firstName}, I am interested in your listing. Is it still available? When would be a good time to view it?`;
@@ -184,101 +186,107 @@ function ListingCard(props: ListingCardProps): ReactElement {
   }, [listing, userUid, ownerUid, requestLoading]);
 
   return (
-    <Card
-      width="100%"
-      padding={["3rem 2rem", "5rem 3rem", "5rem 4rem", "4rem 3rem"]}
-    >
-      <Stack spacing="24px">
-        <HStack align="baseline">
-          <Heading4>${price.toLocaleString("en")} </Heading4>{" "}
-          <TextBase fontSize="20px">/month</TextBase>
-        </HStack>
-        <Divider />
-        <HStack spacing="24px">
-          <Image
-            src={profilePicture}
-            rounded="full"
-            boxSize="48px"
-            objectFit="cover"
-            fallback={<SkeletonCircle size="48px" />}
-          />
-          <Stack spacing="4px">
-            <HStack>
-              <Body1>
-                {firstName} {lastName}
+    <>
+      <Card
+        width="100%"
+        padding={["3rem 2rem", "5rem 3rem", "5rem 4rem", "4rem 3rem"]}
+      >
+        <Stack spacing="24px">
+          <HStack align="baseline">
+            <Heading4>${price.toLocaleString("en")} </Heading4>{" "}
+            <TextBase fontSize="20px">/month</TextBase>
+          </HStack>
+          <Divider />
+          <HStack spacing="24px">
+            <Image
+              src={profilePicture}
+              rounded="full"
+              boxSize="48px"
+              objectFit="cover"
+              fallback={<SkeletonCircle size="48px" />}
+            />
+            <Stack spacing="4px">
+              <HStack>
+                <Body1>
+                  {firstName} {lastName}
+                </Body1>
+                <Icon
+                  as={FaCheckCircle}
+                  color="text.primary"
+                  width="16px"
+                  height="16px"
+                />
+              </HStack>
+              <Body1 color="text.variant">
+                Joined {getUTCMonthString(joinedDate)}{" "}
+                {joinedDate.getUTCFullYear()}
               </Body1>
-              <Icon
-                as={FaCheckCircle}
-                color="text.primary"
-                width="16px"
-                height="16px"
-              />
-            </HStack>
-            <Body1 color="text.variant">
-              Joined {getUTCMonthString(joinedDate)}{" "}
-              {joinedDate.getUTCFullYear()}
-            </Body1>
+            </Stack>
+          </HStack>
+          <Divider />
+          <Stack spacing="16px">
+            <Heading5>Contact</Heading5>
+            <Textarea
+              disabled={disabled || isSameUser}
+              placeholder={placeholderText}
+              size="sm"
+              borderRadius="4px"
+              padding="16px"
+              lineHeight="1.5"
+              height="100px"
+              value={chatValue}
+              onChange={handleInputChange}
+              onFocus={handleFocus}
+            />
+            <Tooltip
+              isDisabled={Boolean(chatValue)}
+              hasArrow
+              label={disabledErrorMsg}
+            >
+              <Box>
+                <ButtonPrimary
+                  isDisabled={!chatValue}
+                  isFullWidth
+                  onClick={handleSend}
+                  isLoading={chatLoading}
+                >
+                  Send
+                </ButtonPrimary>
+              </Box>
+            </Tooltip>
+
+            <Tooltip
+              isDisabled={!requestDisabled}
+              hasArrow
+              label={disabledRequestErrorMsg}
+            >
+              <Box>
+                <ButtonSecondary
+                  isDisabled={requestDisabled}
+                  isFullWidth
+                  onClick={onOpen}
+                  isLoading={requestLoading}
+                >
+                  Send Tenant Request
+                </ButtonSecondary>
+              </Box>
+            </Tooltip>
           </Stack>
-        </HStack>
-        <Divider />
-        <Stack spacing="16px">
-          <Heading5>Contact</Heading5>
-          <Textarea
-            disabled={disabled || isSameUser}
-            placeholder={placeholderText}
-            size="sm"
-            borderRadius="4px"
-            padding="16px"
-            lineHeight="1.5"
-            height="100px"
-            value={chatValue}
-            onChange={handleInputChange}
-            onFocus={handleFocus}
-          />
-          <Tooltip
-            isDisabled={Boolean(chatValue)}
-            hasArrow
-            label={disabledErrorMsg}
-          >
-            <Box>
-              <ButtonPrimary
-                isDisabled={!chatValue}
-                isFullWidth
-                onClick={handleSend}
-                isLoading={chatLoading}
-              >
-                Send
-              </ButtonPrimary>
-            </Box>
-          </Tooltip>
-          <Tooltip
-            isDisabled={!requestDisabled}
-            hasArrow
-            label={disabledRequestErrorMsg}
-          >
-            <Box>
-              <ButtonSecondary
-                isDisabled={requestDisabled}
-                isFullWidth
-                onClick={() =>
-                  handleTenantRequest(
-                    listing,
-                    userUid,
-                    ownerUid,
-                    onTenantRequestSuccess,
-                    onTenantRequestError,
-                    setRequestLoading
-                  )
-                }
-                isLoading={requestLoading}
-              >
-                Send Tenant Request
-              </ButtonSecondary>
-            </Box>
-          </Tooltip>
         </Stack>
-      </Stack>
-    </Card>
+      </Card>
+      <TenantRequestModal
+        isOpen={isOpen}
+        onClose={onClose}
+        listing={listing}
+        availableDate={availableDate}
+        userUid={userUid}
+        onSuccess={onTenantRequestSuccess}
+        onError={onTenantRequestError}
+        setLoading={setRequestLoading}
+        isLoading={requestLoading}
+        requestTooltip={disabledRequestErrorMsg}
+      />
+    </>
   );
 }
 

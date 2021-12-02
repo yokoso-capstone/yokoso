@@ -576,6 +576,7 @@ const RequestsTable = (props: {
             <Th>Last name</Th>
             <Th>Rent Price</Th>
             <Th>Deposit Price</Th>
+            <Th>Request Lease Date</Th>
             <Th>Sent Date</Th>
             <Th width={0} />
           </Tr>
@@ -603,6 +604,11 @@ const RequestsTable = (props: {
                 <Td>{tenant.lastName}</Td>
                 <Td>{`$${tenant.listing.data.lease.price}`}</Td>
                 <Td>{`$${tenant.listing.data.lease.depositPrice}`}</Td>
+                <Td>
+                  {tenant.leaseStartDate
+                    ? tenant.leaseStartDate.toDate().toDateString()
+                    : null}
+                </Td>
                 <Td>{tenant.listing.initiatedAt.toDate().toDateString()}</Td>
                 <Td>
                   <ButtonGroup spacing={2}>
