@@ -18,7 +18,15 @@ type ListingVisibility = "public" | "hidden";
 type RequestStatus = "sent" | "pending" | "rejected" | "accepted";
 
 interface TenantRequest {
-  listing: { data: { lease: { depositPrice: number } }; id: string };
+  listing: {
+    data: {
+      details: { title: string };
+      images?: string[];
+      lease: { depositPrice: number };
+      owner: { firstName: string; lastName: string };
+    };
+    id: string;
+  };
   status: RequestStatus;
   tenantUid: string;
 }
@@ -69,8 +77,8 @@ exports.createStripeCheckoutDeposit = functions.https.onCall(
       try {
         const tenantRequestSnapshot = await tenantRequestRef.get();
         const tenantRequestData = tenantRequestSnapshot.data() as
-          | TenantRequest
-          | undefined;
+        | TenantRequest
+        | undefined;
 
         if (!tenantRequestData) {
           const errorType: FunctionsErrorCode = "not-found";
@@ -79,7 +87,7 @@ exports.createStripeCheckoutDeposit = functions.https.onCall(
           throw new functions.https.HttpsError(errorType, errorMsg);
         }
 
-        const {tenantUid, status} = tenantRequestData;
+        const {tenantUid, status, listing} = tenantRequestData;
 
         if (tenantUid !== uid) {
           const errorType: FunctionsErrorCode = "permission-denied";
@@ -95,9 +103,24 @@ exports.createStripeCheckoutDeposit = functions.https.onCall(
           throw new functions.https.HttpsError(errorType, errorMsg);
         }
 
-        const {depositPrice} = tenantRequestData.listing.data.lease;
+        const {details, images, lease, owner} = listing.data;
+
+        if (
+          !details?.title ||
+          !lease?.depositPrice ||
+          !owner?.firstName ||
+          !owner?.lastName
+        ) {
+          const errorType: FunctionsErrorCode = "not-found";
+          const errorMsg = "Listing details not found.";
+
+          throw new functions.https.HttpsError(errorType, errorMsg);
+        }
+
         // Adjust price from dollars to cents
-        const adjustedPrice = depositPrice * 100;
+        const adjustedPrice = lease.depositPrice * 100;
+        const name = `Deposit payment to ${owner.firstName} ${owner.lastName}`;
+        const description = `For listing "${details.title}"`;
 
         const session = await stripe.checkout.sessions.create({
           line_items: [
@@ -107,8 +130,9 @@ exports.createStripeCheckoutDeposit = functions.https.onCall(
                 currency: "CAD",
                 unit_amount: adjustedPrice,
                 product_data: {
-                  name: "name",
-                  description: "description",
+                  name: name,
+                  description: description,
+                  images: images,
                 },
               },
             },
