@@ -7,6 +7,8 @@ yokoso-production:
       cmd: "npm"
       args: ["run", "build:production"]
     bucketName: yokoso-production-s3
+    cloudfront:
+      comment: "Distribution for yokoso-production"
     description: "Lambda@Edge for yokoso-production"
     name:
       defaultLambda: yokoso-production-default-lambda

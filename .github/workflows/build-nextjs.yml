@@ -1,26 +1,23 @@
-name: Unit test components
+name: build
 on:
   push:
+    branches-ignore:
+      - "main"
+      - "develop"
     paths-ignore:
       - "functions/**"
 
 jobs:
-  test-components:
-    name: Test components with Jest and Enzyme
+  build-nextjs:
+    name: Build Next.js
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
       - name: Setup node
         uses: actions/setup-node@v2
         with:
           node-version: "12"
-
       - name: Install npm v7
         run: npm install -g npm@7
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run component unit tests
-        run: npm run test:unit:components
+      - run: npm ci
+      - run: npm run build

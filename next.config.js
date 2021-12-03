@@ -7,6 +7,7 @@ module.exports = {
     messagingSenderId: process.env.messagingSenderId,
     appId: process.env.appId,
     measurementId: process.env.measurementId,
+    stripePublishableKey: process.env.stripePublishableKey,
   },
   target: "serverless",
   webpack(config) {

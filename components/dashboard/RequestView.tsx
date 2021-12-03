@@ -40,20 +40,24 @@ import {
 } from "@chakra-ui/react";
 import { PropertyImage } from "@/components/sections/Listings";
 import { TenantRequestEntry } from "@/src/api/types";
-import { auth } from "@/src/firebase";
+import { auth, functions } from "@/src/firebase";
+import { stripePromise } from "@/src/stripe";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { tenantRequests, listings } from "@/src/api/collections";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { getUserPublicById, getListingById } from "@/src/api/queries";
 import { DeleteIcon, CheckIcon, NotAllowedIcon } from "@chakra-ui/icons";
-import { ListingStatus } from "@/src/enum";
+import { ListingStatus, UserType } from "@/src/enum";
 import {
   listingRouteBuilder,
   listingHrefBuilder,
 } from "@/src/utils/listingRoute";
 import { useStore } from "@/src/store";
-import { UserType } from "@/src/enum";
 import { Heading5 } from "../core/Text";
+
+const createStripeCheckout = functions.httpsCallable(
+  "createStripeCheckoutDeposit"
+);
 
 enum Request {
   TenantUid = "tenantUid",
@@ -84,7 +88,7 @@ function RequestView(): ReactElement {
     TenantRequestEntry[]
   >([]);
   const [requestStatus, setRequestStatus] = useState<Status>(Status.Sent);
-
+  const toast = useToast();
   const userType = useStore((state) => state.userType);
 
   const selectedRequest =
@@ -101,7 +105,7 @@ function RequestView(): ReactElement {
             .where(selectedRequest, "==", user.uid)
             .where("status", "==", requestStatus)
         : undefined,
-    [user, selectedRequest, requestStatus, userType]
+    [user, selectedRequest, requestStatus]
   );
 
   const [snapshot] = useCollection(query);
@@ -133,7 +137,32 @@ function RequestView(): ReactElement {
     if (selectedRequest) {
       handleTenantRequestPromise();
     }
-  }, [selectedRequest, snapshot]);
+  }, [selectedRequest, snapshot, userType]);
+
+  useEffect(() => {
+    // Check to see if this is a redirect back from Checkout
+    const query = new URLSearchParams(window.location.search);
+
+    if (query.get("success")) {
+      toast({
+        title: "Successful deposit",
+        description: "Your deposit was placed.",
+        isClosable: true,
+        duration: 4000,
+        status: "success",
+      });
+    }
+
+    if (query.get("cancelled")) {
+      toast({
+        title: "Payment cancelled",
+        description: "You still have the option to complete it.",
+        isClosable: true,
+        duration: 4000,
+        status: "success",
+      });
+    }
+  }, [toast]);
 
   return (
     <>
@@ -469,6 +498,8 @@ const RequestsTable = (props: {
     TenantRequestEntry | undefined
   >();
 
+  const toast = useToast();
+
   const onActionModalOpen = async (request: TenantRequestEntry | undefined) => {
     setTenantRequest(request);
     onOpen();
@@ -525,10 +556,67 @@ const RequestsTable = (props: {
 
   const PendingButtonGroups = (props: ButtonGroupProps) => {
     const { tenant } = props;
-    //add stripe front end logic here!
+    const [isPayDepositLoading, setDepositLoading] = useState(false);
+
+    const handlePayDeposit = async (tenantRequest: TenantRequestEntry) => {
+      setDepositLoading(true);
+      const { id: tenantRequestId } = tenantRequest;
+
+      let sessionResponse;
+
+      try {
+        sessionResponse = await createStripeCheckout({ tenantRequestId });
+      } catch (err) {
+        toast({
+          title: "Something went wrong",
+          description: "An error occurred when starting the payment.",
+          isClosable: true,
+          duration: 4000,
+          status: "error",
+        });
+        setDepositLoading(false);
+        return;
+      }
+
+      const { session_id: sessionId } = sessionResponse.data;
+
+      if (!sessionId) {
+        toast({
+          title: "Something went wrong",
+          description: "An error occurred after starting the payment.",
+          isClosable: true,
+          duration: 4000,
+          status: "error",
+        });
+        setDepositLoading(false);
+        return;
+      }
+
+      const stripe = await stripePromise;
+      const stripeError = await stripe?.redirectToCheckout({ sessionId });
+
+      if (stripeError) {
+        toast({
+          title: "Something went wrong",
+          description: "An error occurred when contacting Stripe.",
+          isClosable: true,
+          duration: 4000,
+          status: "error",
+        });
+      }
+
+      setDepositLoading(false);
+    };
+
     return userView === "tenant" ? (
       <ButtonGroup>
-        <ButtonPrimary padding={3}>Pay Deposit</ButtonPrimary>
+        <ButtonPrimary
+          isLoading={isPayDepositLoading}
+          padding={3}
+          onClick={() => handlePayDeposit(tenant)}
+        >
+          Pay Deposit
+        </ButtonPrimary>
         <Tooltip hasArrow label="Delete Tenant Request">
           <IconButton
             size="md"

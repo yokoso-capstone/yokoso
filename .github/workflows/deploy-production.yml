@@ -5,6 +5,7 @@ on:
       - main
 jobs:
   deploy-nextjs:
+    name: Deploy Next.js in production environment
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -44,6 +45,7 @@ jobs:
         run: aws s3 sync .serverless s3://yokoso-serverless-state-bucket/yokoso/production/.serverless --delete
 
   deploy-firebase:
+    name: Deploy Firebase in production environment
     needs: deploy-nextjs
     runs-on: ubuntu-latest
     steps:
@@ -52,6 +54,6 @@ jobs:
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
-          args: deploy -P production --only firestore,storage
+          args: deploy -P production --only firestore,storage,functions --force
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_PRODUCTION }}
