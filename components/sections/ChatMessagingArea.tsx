@@ -14,8 +14,8 @@ import {
   Image,
   Input,
   Link,
-  Modal,
   Tooltip,
+  Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
@@ -34,10 +34,8 @@ import { CollectionName, chatRooms } from "@/src/api/collections";
 import { serverTimestamp } from "@/src/firebase";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { listingRouteBuilder } from "@/src/utils/listingRoute";
-import {
-  checkRequestStatus,
-  handleTenantRequest,
-} from "@/src/utils/tenantRequest";
+import { checkRequestStatus } from "@/src/utils/tenantRequest";
+import TenantRequestModal from "./TenantRequestModal";
 
 const Header = (props: {
   photoUrl?: string;
@@ -47,7 +45,14 @@ const Header = (props: {
 }) => {
   const { photoUrl, name, listing, user } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const {
+    isOpen: isRequestOpen,
+    onOpen: onRequestOpen,
+    onClose: onRequestClose,
+  } = useDisclosure();
+  const availableDate = listing
+    ? new Date(String(listing?.lease.availability))
+    : new Date();
   const [requestDisabled, setRequestDisabled] = useState(false);
   const [isLandlord, setIsLandlord] = useState(false);
   const [requestLoading, setRequestLoading] = useState(false);
@@ -180,7 +185,7 @@ const Header = (props: {
           <ModalHeader>Actions</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Stack>
+            <Stack spacing="12px">
               {/* TODO: handle error situation of no listing or ID (shouldn't happen?) */}
               <Tooltip label="test">
                 <NextLink href={listingRouteBuilder(listing?.id)} passHref>
@@ -199,18 +204,7 @@ const Header = (props: {
                     isFullWidth
                     isDisabled={requestDisabled}
                     isLoading={requestLoading}
-                    onClick={() => {
-                      if (user && listing) {
-                        handleTenantRequest(
-                          listing,
-                          user.uid,
-                          listing.owner.uid,
-                          handleRequestSuccess,
-                          handleRequestError,
-                          setRequestLoading
-                        );
-                      }
-                    }}
+                    onClick={onRequestOpen}
                   >
                     Send Tenant Request
                   </ButtonSecondary>
@@ -226,6 +220,21 @@ const Header = (props: {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      {listing && user && (
+        <TenantRequestModal
+          isOpen={isRequestOpen}
+          availableDate={String(availableDate)}
+          onClose={onRequestClose}
+          listing={listing}
+          userUid={user?.uid}
+          onSuccess={handleRequestSuccess}
+          onError={handleRequestError}
+          setLoading={setRequestLoading}
+          isLoading={requestLoading}
+          isDisabled={requestDisabled}
+          requestTooltip={disabledRequestErrorMsg}
+        />
+      )}
     </>
   );
 };

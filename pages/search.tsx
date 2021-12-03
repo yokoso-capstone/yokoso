@@ -158,8 +158,23 @@ function SearchPage(): ReactElement {
 
   const router = useRouter();
   const { center } = router.query;
+  const { bbox } = router.query;
+  const type = getQueryValue(router.query, "type");
   const place = getQueryValue(router.query, "place");
-  const text = getQueryValue(router.query, "text")?.toLowerCase();
+  const text = getQueryValue(router.query, "text");
+
+  const buildQuery = (searchType?: string) => {
+    switch (searchType) {
+      case "address":
+        return "location.address";
+      case "postal code":
+        return "location.postalCode";
+      case "place":
+        return "location.cityName";
+      default:
+        return "location.address";
+    }
+  };
 
   // Query uses composite indexes
   const query = useMemo(() => {
@@ -167,7 +182,12 @@ function SearchPage(): ReactElement {
       return undefined;
     }
 
-    let query = listingsCollection.where("location.cityKey", "==", text);
+    let query = listingsCollection.where("visibility", "==", "public");
+
+    if (!bbox) {
+      const addressQuery = buildQuery(type);
+      query = query.where(addressQuery, "==", text);
+    }
 
     if (isPriceFilterActive) {
       const [minPrice, maxPrice] = priceFilterDebounced;
@@ -198,13 +218,29 @@ function SearchPage(): ReactElement {
     bathrooms,
   ]);
   const [snapshot] = useCollectionOnce(query);
-  const listings = snapshot?.docs.map(
-    (doc) =>
-      (({
+  const listings = snapshot?.docs
+    .filter((doc) => {
+      const { location } = doc.data();
+      if (bbox) {
+        const long = location.coordinate.longitude;
+        const lat = location.coordinate.latitude;
+
+        return (
+          long >= bbox[0] && lat >= bbox[1] && long <= bbox[2] && lat <= bbox[3]
+        );
+      }
+      return (
+        place?.includes(location.country) &&
+        place.includes(location.province) &&
+        place.includes(location.cityName)
+      );
+    })
+    .map((doc) => {
+      return ({
         ...doc.data(),
         id: doc.id,
-      } as unknown) as Listing)
-  );
+      } as unknown) as Listing;
+    });
 
   return (
     <>

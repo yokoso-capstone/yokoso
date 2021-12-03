@@ -1,4 +1,4 @@
-import React, { HTMLAttributes } from "react";
+import React from "react";
 import ReactDatePicker from "react-datepicker";
 import { Input } from "@chakra-ui/react";
 
@@ -13,6 +13,7 @@ interface Props {
   maxDate?: Date;
   minDate?: Date;
   name?: string;
+  isDisabled?: boolean;
 }
 
 const DatePicker = ({
@@ -21,13 +22,13 @@ const DatePicker = ({
   isClearable = false,
   showPopperArrow = false,
   placeholderText = "DD/MM/YYYY",
+  isDisabled = false,
   startDate,
   endDate,
   maxDate,
   minDate,
   name,
-  onBlur,
-}: Props & HTMLAttributes<HTMLElement>) => (
+}: Props) => (
   <ReactDatePicker
     selected={selectedDate}
     onChange={onChange}
@@ -38,9 +39,8 @@ const DatePicker = ({
     endDate={endDate}
     maxDate={maxDate}
     minDate={minDate}
-    customInput={<Input />}
+    customInput={<Input isDisabled={isDisabled} />}
     name={name}
-    onBlur={onBlur}
   />
 );
 

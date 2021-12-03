@@ -1,7 +1,7 @@
 import firebase from "firebase/app";
 import { CollectionName } from "./collections";
 
-export type timestamp =
+export type timestamp = 
   | number
   | firebase.firestore.FieldValue
   | firebase.firestore.Timestamp;
@@ -149,6 +149,7 @@ export type TenantRequest = {
   tenantUid: string;
   createdAt: timestamp;
   status: RequestStatus;
+  leaseStartDate: any;
   listing: {
     initiatedAt: any;
     data: Listing;

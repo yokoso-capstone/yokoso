@@ -104,7 +104,7 @@ function ListingPage(
     },
     features,
     featureDescription,
-    lease: { price },
+    lease: { price, availability },
     utilities,
     utilitiesDescription,
     images,
@@ -330,6 +330,7 @@ function ListingPage(
             >
               <ListingContactCard
                 price={price}
+                availableDate={String(availability)}
                 firstName={firstName}
                 lastName={lastName}
                 profilePicture={profilePicture}

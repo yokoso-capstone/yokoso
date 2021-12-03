@@ -1,5 +1,5 @@
 import { tenantRequests } from "@/src/api/collections";
-import { serverTimestamp } from "@/src/firebase";
+import { firestoreTimestamp, serverTimestamp } from "@/src/firebase";
 import { Dispatch, SetStateAction } from "react";
 import { Listing, TenantRequest } from "../api/types";
 
@@ -7,6 +7,7 @@ export const handleTenantRequest = async (
   listing: Listing,
   userUid: string,
   ownerUid: string,
+  requestLeaseStartDate: Date,
   onSuccess?: () => void,
   onError?: () => void,
   setLoading?: Dispatch<SetStateAction<boolean>>,
@@ -34,6 +35,7 @@ export const handleTenantRequest = async (
         status: "sent",
         listing: currentListingData,
         createdAt: serverTimestamp,
+        leaseStartDate: firestoreTimestamp.fromDate(requestLeaseStartDate)
       };
       await requestRef.set(tenantRequestData);
 
@@ -63,22 +65,25 @@ export const checkRequestStatus = async (
   if (!listing){
     throw Error;
   }
+  if (!userUid){
+    setRequestStatus(true);
+  } else {
+    const requestId = [userUid, ownerUid, listing.id].sort().join("-");
 
-  const requestId = [userUid, ownerUid, listing.id].sort().join("-");
+    try {
+      const requestRef = tenantRequests.doc(requestId);
+      const requestDoc = await requestRef.get();
 
-  try {
-    const requestRef = tenantRequests.doc(requestId);
-    const requestDoc = await requestRef.get();
+      if (requestDoc.exists || userUid === ownerUid) {
+        setRequestStatus(true);
+      } else {
+        setRequestStatus(false);
+      }
 
-    if (requestDoc.exists || userUid === ownerUid) {
-      setRequestStatus(true);
-    } else {
-      setRequestStatus(false);
-    }
-
-  } catch (err) {
-    if (onError) {
-      onError();
+    } catch (err) {
+      if (onError) {
+        onError();
+      }
     }
   }
 };
