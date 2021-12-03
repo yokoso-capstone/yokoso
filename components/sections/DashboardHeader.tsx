@@ -26,9 +26,12 @@ function DashboardHeader(props: DashboardHeaderProps): ReactElement {
     const getPhotoUrl = async () => {
       if (query) {
         const userPublicDoc = await query.get();
-        const userPublicData = userPublicDoc.data() as UserPublic;
 
-        setPhotoUrl(userPublicData.profilePicture);
+        // Checks if public user data is set to avoid error if account skips it
+        if (userPublicDoc.exists) {
+          const userPublicData = userPublicDoc.data() as UserPublic;
+          setPhotoUrl(userPublicData.profilePicture);
+        }
       }
     };
 
