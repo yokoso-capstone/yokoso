@@ -554,57 +554,67 @@ const RequestsTable = (props: {
     );
   };
 
-  const handlePayDeposit = async (tenantRequest: TenantRequestEntry) => {
-    const { id: tenantRequestId } = tenantRequest;
-
-    let sessionResponse;
-
-    try {
-      sessionResponse = await createStripeCheckout({ tenantRequestId });
-    } catch (err) {
-      toast({
-        title: "Something went wrong",
-        description: "An error occurred when starting the payment.",
-        isClosable: true,
-        duration: 4000,
-        status: "error",
-      });
-      return;
-    }
-
-    const { session_id: sessionId } = sessionResponse.data;
-
-    if (!sessionId) {
-      toast({
-        title: "Something went wrong",
-        description: "An error occurred after starting the payment.",
-        isClosable: true,
-        duration: 4000,
-        status: "error",
-      });
-      return;
-    }
-
-    const stripe = await stripePromise;
-    const stripeError = await stripe?.redirectToCheckout({ sessionId });
-
-    if (stripeError) {
-      toast({
-        title: "Something went wrong",
-        description: "An error occurred when contacting Stripe.",
-        isClosable: true,
-        duration: 4000,
-        status: "error",
-      });
-    }
-  };
-
   const PendingButtonGroups = (props: ButtonGroupProps) => {
     const { tenant } = props;
+    const [isPayDepositLoading, setDepositLoading] = useState(false);
+
+    const handlePayDeposit = async (tenantRequest: TenantRequestEntry) => {
+      setDepositLoading(true);
+      const { id: tenantRequestId } = tenantRequest;
+
+      let sessionResponse;
+
+      try {
+        sessionResponse = await createStripeCheckout({ tenantRequestId });
+      } catch (err) {
+        toast({
+          title: "Something went wrong",
+          description: "An error occurred when starting the payment.",
+          isClosable: true,
+          duration: 4000,
+          status: "error",
+        });
+        setDepositLoading(false);
+        return;
+      }
+
+      const { session_id: sessionId } = sessionResponse.data;
+
+      if (!sessionId) {
+        toast({
+          title: "Something went wrong",
+          description: "An error occurred after starting the payment.",
+          isClosable: true,
+          duration: 4000,
+          status: "error",
+        });
+        setDepositLoading(false);
+        return;
+      }
+
+      const stripe = await stripePromise;
+      const stripeError = await stripe?.redirectToCheckout({ sessionId });
+
+      if (stripeError) {
+        toast({
+          title: "Something went wrong",
+          description: "An error occurred when contacting Stripe.",
+          isClosable: true,
+          duration: 4000,
+          status: "error",
+        });
+      }
+
+      setDepositLoading(false);
+    };
 
     return userView === "tenant" ? (
       <ButtonGroup>
-        <ButtonPrimary padding={3} onClick={() => handlePayDeposit(tenant)}>
+        <ButtonPrimary
+          isLoading={isPayDepositLoading}
+          padding={3}
+          onClick={() => handlePayDeposit(tenant)}
+        >
           Pay Deposit
         </ButtonPrimary>
         <Tooltip hasArrow label="Delete Tenant Request">
