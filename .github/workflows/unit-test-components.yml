@@ -1,5 +1,8 @@
 name: Unit test components
-on: push
+on:
+  push:
+    paths-ignore:
+      - "functions/**"
 
 jobs:
   test-components:
