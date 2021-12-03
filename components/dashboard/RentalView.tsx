@@ -124,10 +124,17 @@ function RentalView(): ReactElement {
       } as unknown) as TenantRequest)
   );
 
-  // TODO: filter using lease start date when it's implemented
+  // NOTE: consider filtering at the query level
   const listings = acceptedTenantRequests
     ?.filter((request) => {
-      const leaseStartDate = request.createdAt as firebase.firestore.Timestamp;
+      // TODO: handle sketchy fallback onto leave availability better (avoids errors on old data)
+      const leaseStartDate =
+        (request.leaseStartDate as firebase.firestore.Timestamp) ??
+        firebase.firestore.Timestamp.fromDate(
+          new Date(
+            (request.listing.data.lease.availability as unknown) as string
+          )
+        );
       const timestampMillis = leaseStartDate.toMillis();
       const now = Date.now();
 
