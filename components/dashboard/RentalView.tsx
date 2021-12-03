@@ -1,16 +1,9 @@
 import { useMemo, useState, ReactElement } from "react";
-import NextLink from "next/link";
 import firebase from "firebase/app";
-import { ButtonSecondary } from "@/components/core/Button";
 import { DashboardCard } from "@/components/core/Layout";
 import { TabPrimary } from "@/components/core/Tabs";
-import {
-  listingRouteBuilder,
-  listingHrefBuilder,
-} from "@/src/utils/listingRoute";
 import DashboardSearchInput from "@/components/core/DashboardSearchInput";
 import {
-  Link,
   Tabs,
   TabList,
   TabPanels,
@@ -37,7 +30,6 @@ import { useCollection } from "react-firebase-hooks/firestore";
 
 interface ListingProps {
   listings?: Listing[];
-  userId?: string;
 }
 
 enum TimePeriod {
@@ -46,7 +38,7 @@ enum TimePeriod {
 }
 
 const LandlordListingTable = (props: ListingProps) => {
-  const { listings, userId } = props;
+  const { listings } = props;
 
   return (
     <Table>
@@ -55,8 +47,7 @@ const LandlordListingTable = (props: ListingProps) => {
           <Th display={["none", "none", "none", "block", "block"]}>Image</Th>
           <Th>Property</Th>
           <Th>Price</Th>
-          <Th>Applicants</Th>
-          <Th width={0} />
+          <Th>Address</Th>
         </Tr>
       </Thead>
       <Tbody>
@@ -82,18 +73,11 @@ const LandlordListingTable = (props: ListingProps) => {
               />
             </Td>
             <Td>
-              <Box>{listing.applicants}</Box>
-            </Td>
-            <Td>
-              <NextLink
-                href={listingHrefBuilder(listing.id, userId)}
-                as={listingRouteBuilder(listing.id)}
-                passHref
-              >
-                <Link _hover={{ textDecoration: "none" }}>
-                  <ButtonSecondary>View Listing</ButtonSecondary>
-                </Link>
-              </NextLink>
+              <Box>
+                {`${listing.location.unitNumber} ${listing.location.address}, ${listing.location.cityName}, ${listing.location.province}`}
+                <br />
+                {listing.location.postalCode}
+              </Box>
             </Td>
           </Tr>
         ))}
@@ -162,10 +146,10 @@ function RentalView(): ReactElement {
 
         <TabPanels>
           <TabPanel paddingX={0}>
-            <LandlordListingTable userId={user?.uid} listings={listings} />
+            <LandlordListingTable listings={listings} />
           </TabPanel>
           <TabPanel>
-            <LandlordListingTable userId={user?.uid} listings={listings} />
+            <LandlordListingTable listings={listings} />
           </TabPanel>
         </TabPanels>
       </Tabs>
