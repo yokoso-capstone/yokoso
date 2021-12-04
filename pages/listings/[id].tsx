@@ -26,7 +26,9 @@ import {
   Stack,
   Icon,
   useToast,
+  Tooltip,
 } from "@chakra-ui/react";
+import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import {
   MdOutlineBathtub,
   MdOutlineOutdoorGrill,
@@ -50,8 +52,10 @@ import { Listing } from "@/src/api/types";
 import { auth } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import FireStoreParser from "firestore-parser";
-import { listingsRest } from "@/src/api/collections";
-import { listings as listingsCollection } from "@/src/api/collections";
+import {
+  listingsRest,
+  listings as listingsCollection,
+} from "@/src/api/collections";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -153,12 +157,6 @@ function ListingPage(
     ["naturalGas", GiHeatHaze],
   ]);
 
-  const statusMap = new Map([
-    ["available", "green.400"],
-    ["pending", "yellow.600"],
-    ["rented", "red.400"],
-  ]);
-
   const toast = useToast();
   const toggleVisibility = visibility === "public" ? "hidden" : "public";
   const publicSuccessMsg = "Listing was successfully made public";
@@ -226,12 +224,27 @@ function ListingPage(
                 <Caption>{country}</Caption>
               </HStack>
               <Heading4 marginBottom="4px">{title}</Heading4>
-              {user && listing.owner.uid === user.uid && (
+              {(status === "pending" || status === "rented") && (
                 <HStack>
                   <Heading5 marginBottom="8px">Listing status:</Heading5>
-                  <Heading5 marginBottom="8px" color={statusMap.get(status)}>
+                  <Heading5
+                    marginBottom="8px"
+                    color={status === "pending" ? "yellow.600" : "red.400"}
+                  >
                     {camelToSentence(status)}
                   </Heading5>
+                  <Tooltip
+                    label={
+                      status === "pending"
+                        ? "There are offers for this listing"
+                        : "A listing offer has been accepted"
+                    }
+                    fontSize="md"
+                    hasArrow
+                    closeDelay={500}
+                  >
+                    <QuestionOutlineIcon boxSize="20px" marginBottom="5px" />
+                  </Tooltip>
                 </HStack>
               )}
               <HStack>
