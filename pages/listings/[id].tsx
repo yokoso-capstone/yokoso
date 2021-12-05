@@ -412,7 +412,12 @@ function ListingPage(
               paddingBottom={[0, 0, 0, "1in"]}
             >
               {isVisibilityToggled === "hidden" && (
-                <Card background="pink" width="100%" padding="2rem 2rem">
+                <Card
+                  background="pink"
+                  width="100%"
+                  padding="2rem 2rem"
+                  marginBottom="1rem"
+                >
                   <Stack>
                     <Heading6 textAlign="center">
                       This listing is hidden and cannot be publicly viewed.
@@ -425,7 +430,6 @@ function ListingPage(
                   </Stack>
                 </Card>
               )}
-              {isVisibilityToggled === "hidden" && <br />}
               <ListingContactCard
                 price={price}
                 availableDate={String(availability)}
