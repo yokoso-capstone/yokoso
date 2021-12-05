@@ -67,6 +67,9 @@ function ListingCard(props: ListingCardProps): ReactElement {
   if (disabled) {
     disabledErrorMsg = "Create an account or log in to get started";
     disabledRequestErrorMsg = "Create an account or log in to get started";
+  } else if (listing.status === "rented") {
+    disabledErrorMsg = "This listing has already been rented";
+    disabledRequestErrorMsg = "This listing has already been rented";
   } else if (isSameUser) {
     disabledErrorMsg = "Can't send a message to yourself";
     disabledRequestErrorMsg = "Can't send a tenant request to yourself";

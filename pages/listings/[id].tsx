@@ -6,7 +6,7 @@ import {
   InferGetServerSidePropsType,
 } from "next";
 import Header from "@/components/sections/Header";
-import { ContainerPrimary } from "@/components/core/Layout";
+import { ContainerPrimary, Card } from "@/components/core/Layout";
 import {
   Body1,
   Caption,
@@ -16,6 +16,7 @@ import {
 } from "@/components/core/Text";
 import ImageCarousel from "@/components/sections/ImageCarousel";
 import ListingContactCard from "@/components/sections/ListingContactCard";
+import { ButtonPrimary } from "@/components/core/Button";
 import {
   Box,
   Button,
@@ -24,7 +25,10 @@ import {
   HStack,
   Stack,
   Icon,
+  useToast,
+  Tooltip,
 } from "@chakra-ui/react";
+import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import {
   MdOutlineBathtub,
   MdOutlineOutdoorGrill,
@@ -48,7 +52,10 @@ import { Listing } from "@/src/api/types";
 import { auth } from "@/src/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import FireStoreParser from "firestore-parser";
-import { listingsRest } from "@/src/api/collections";
+import {
+  listingsRest,
+  listings as listingsCollection,
+} from "@/src/api/collections";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -89,7 +96,14 @@ function ListingPage(
   const { listing } = props;
   const {
     owner: { firstName, lastName, profilePicture, createdAt, uid },
-    location: { cityName },
+    location: {
+      country,
+      cityName,
+      address,
+      province,
+      unitNumber,
+      hideUnitNumber,
+    },
     details: {
       title,
       description,
@@ -108,6 +122,8 @@ function ListingPage(
     utilities,
     utilitiesDescription,
     images,
+    visibility,
+    status,
   } = listing;
   const maxDescriptionCharacters = 300;
   const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
@@ -119,6 +135,7 @@ function ListingPage(
     isUtilityDescriptionExpanded,
     setUtilityDescriptionExpanded,
   ] = useState(false);
+  const [isVisibilityToggled, setVisibilityToggled] = useState(visibility);
   const [user, loading, error] = useAuthState(auth);
   const iconMap = new Map([
     ["bathtub", MdOutlineBathtub],
@@ -139,6 +156,39 @@ function ListingPage(
     ["internet", FcCableRelease],
     ["naturalGas", GiHeatHaze],
   ]);
+
+  const toast = useToast();
+  const toggleVisibility = visibility === "public" ? "hidden" : "public";
+  const publicSuccessMsg = "Listing was successfully made public";
+  const handleVisibilityChange = async (listingId: string | undefined) => {
+    try {
+      await listingsCollection
+        .doc(listingId)
+        .update({ visibility: `${toggleVisibility}` });
+
+      toast({
+        title: "Updated Listing",
+        description: publicSuccessMsg,
+        isClosable: true,
+        duration: 4000,
+        status: "success",
+      });
+    } catch (e) {
+      toast({
+        title: "Something went wrong",
+        description:
+          "An error occurred and we couldn't update your listing. Please try again later.",
+        isClosable: true,
+        duration: 4000,
+        status: "error",
+      });
+    }
+  };
+
+  const onVisibilityUpdate = (listingId: string | undefined) => {
+    setVisibilityToggled("public");
+    handleVisibilityChange(listingId);
+  };
 
   return (
     <>
@@ -162,8 +212,41 @@ function ListingPage(
             paddingBottom={["0.5in", "0.5in", "0.5in", "1in"]}
           >
             <Box>
-              <Caption>{cityName}</Caption>
-              <Heading4 marginBottom="8px">{title}</Heading4>
+              <HStack>
+                <Caption>
+                  {!hideUnitNumber && unitNumber} {address}
+                </Caption>
+                <Caption>·</Caption>
+                <Caption>{cityName}</Caption>
+                <Caption>·</Caption>
+                <Caption>{province}</Caption>
+                <Caption>·</Caption>
+                <Caption>{country}</Caption>
+              </HStack>
+              <Heading4 marginBottom="4px">{title}</Heading4>
+              {(status === "pending" || status === "rented") && (
+                <HStack>
+                  <Heading5 marginBottom="8px">Listing status:</Heading5>
+                  <Heading5
+                    marginBottom="8px"
+                    color={status === "pending" ? "yellow.600" : "red.400"}
+                  >
+                    {camelToSentence(status)}
+                  </Heading5>
+                  <Tooltip
+                    label={
+                      status === "pending"
+                        ? "There are offers for this listing"
+                        : "A listing offer has been accepted"
+                    }
+                    fontSize="md"
+                    hasArrow
+                    closeDelay={500}
+                  >
+                    <QuestionOutlineIcon boxSize="20px" marginBottom="5px" />
+                  </Tooltip>
+                </HStack>
+              )}
               <HStack>
                 <Caption>
                   {numBedrooms} Bedroom{numBedrooms > 1 && "s"}
@@ -328,6 +411,25 @@ function ListingPage(
               paddingTop={["0.5in", "0.5in", "0.5in", "1in"]}
               paddingBottom={[0, 0, 0, "1in"]}
             >
+              {isVisibilityToggled === "hidden" && (
+                <Card
+                  background="pink"
+                  width="100%"
+                  padding="2rem 2rem"
+                  marginBottom="1rem"
+                >
+                  <Stack>
+                    <Heading6 textAlign="center">
+                      This listing is hidden and cannot be publicly viewed.
+                    </Heading6>
+                    <ButtonPrimary
+                      onClick={() => onVisibilityUpdate(listing?.id)}
+                    >
+                      Change to public listing
+                    </ButtonPrimary>
+                  </Stack>
+                </Card>
+              )}
               <ListingContactCard
                 price={price}
                 availableDate={String(availability)}
