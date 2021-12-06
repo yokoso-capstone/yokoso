@@ -23,17 +23,7 @@ import {
   PopoverBody,
   Flex,
   Box,
-  SimpleGrid,
   PopoverFooter,
-  Modal,
-  ModalOverlay,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
-  ModalFooter,
-  ModalContent,
-  FormControl,
-  FormLabel,
   useDisclosure,
   HStack,
   Tag,
@@ -62,27 +52,6 @@ interface FilterDisplay {
 const SLIDER_FILTER_MIN = 0;
 const SLIDER_FILTER_MAX = 2100;
 
-const FilterModals = ({ isOpen, onClose }: any) => {
-  return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Filters</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <FormControl id="more-filters">
-            <FormLabel>Amenities</FormLabel>
-          </FormControl>
-        </ModalBody>
-        <ModalFooter>
-          {/* TODO: add or remove amenities filter */}
-          <ButtonSecondary onClick={onClose}>Apply</ButtonSecondary>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  );
-};
-
 const SingleFilter = (props: FilterDisplay) => {
   const { name, childComp, onOpen, onClose, isOpen, onApply } = props;
 
@@ -91,8 +60,9 @@ const SingleFilter = (props: FilterDisplay) => {
       <PopoverTrigger>
         <ButtonSecondaryVariant
           padding="9px"
-          display={["none", "none", "none", "block", "block"]}
           maxW="140px"
+          minW="min-content"
+          width="100%"
         >
           {name}
         </ButtonSecondaryVariant>
@@ -119,12 +89,6 @@ const SingleFilter = (props: FilterDisplay) => {
 };
 
 function SearchPage(): ReactElement {
-  const {
-    isOpen: isFilterOpen,
-    onOpen: onFilterOpen,
-    onClose: onFilterClose,
-  } = useDisclosure();
-
   const {
     onOpen: onOpenBathroom,
     onClose: onCloseBathroom,
@@ -216,6 +180,8 @@ function SearchPage(): ReactElement {
     rooms,
     isBathroomFilterActive,
     bathrooms,
+    bbox,
+    type,
   ]);
   const [snapshot] = useCollectionOnce(query);
   const listings = snapshot?.docs
@@ -256,7 +222,7 @@ function SearchPage(): ReactElement {
             <Box flex="1" p="5">
               <Heading4>{place || "Location not found"}</Heading4>
             </Box>
-            <SimpleGrid flex="1" m="4" spacing={[0, 0, 1, 2, 2]} columns={4}>
+            <HStack m="4">
               <SingleFilter
                 name="Price"
                 isOpen={isOpenPrice}
@@ -307,16 +273,7 @@ function SearchPage(): ReactElement {
                   />
                 }
               />
-
-              <ButtonSecondaryVariant
-                maxW="140px"
-                padding="9px"
-                onClick={onFilterOpen}
-              >
-                Other
-              </ButtonSecondaryVariant>
-              <FilterModals isOpen={isFilterOpen} onClose={onFilterClose} />
-            </SimpleGrid>
+            </HStack>
             <HStack m={4}>
               {isPriceFilterActive && (
                 <Tag size="md" borderRadius="full">
