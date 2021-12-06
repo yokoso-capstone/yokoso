@@ -14,7 +14,7 @@ const LISTING_COLLECTION_NAME = "listings";
 const TENANT_REQUEST_COLLECTION_NAME = "tenant-requests";
 
 type ListingVisibility = "public" | "hidden";
-
+type ListingStatus = "available" | "pending" | "rented";
 type RequestStatus = "sent" | "pending" | "rejected" | "accepted";
 
 interface TenantRequest {
@@ -24,6 +24,8 @@ interface TenantRequest {
       images?: string[];
       lease: { depositPrice: number };
       owner: { firstName: string; lastName: string };
+      visibility: ListingVisibility;
+      status: ListingStatus;
     };
     id: string;
   };
@@ -77,8 +79,8 @@ exports.createStripeCheckoutDeposit = functions.https.onCall(
       try {
         const tenantRequestSnapshot = await tenantRequestRef.get();
         const tenantRequestData = tenantRequestSnapshot.data() as
-        | TenantRequest
-        | undefined;
+          | TenantRequest
+          | undefined;
 
         if (!tenantRequestData) {
           const errorType: FunctionsErrorCode = "not-found";
@@ -214,11 +216,15 @@ exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
     const listingRef = firestore
         .collection(LISTING_COLLECTION_NAME)
         .doc(listingId);
-    const listingVisibilityUpdate: { visibility: ListingVisibility } = {
+    const listingUpdate: {
+      visibility: ListingVisibility;
+      status: ListingStatus;
+    } = {
       visibility: "hidden",
+      status: "rented",
     };
 
-    batch.update(listingRef, listingVisibilityUpdate);
+    batch.update(listingRef, listingUpdate);
 
     const tenantRequestStatusToReject: RequestStatus[] = ["sent", "pending"];
     const requestsToRejectRef = firestore
