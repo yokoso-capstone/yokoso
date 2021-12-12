@@ -87,7 +87,7 @@ function Login(props: LoginProps) {
                   isClosable: true,
                 });
                 onClose();
-                router.push(RoutePath.Dashboard)
+                router.push(RoutePath.Dashboard);
               } catch (error) {
                 actions.setSubmitting(false);
                 const wrongPassword = error.code === "auth/wrong-password";

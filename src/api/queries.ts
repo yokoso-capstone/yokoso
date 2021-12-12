@@ -1,4 +1,11 @@
-import { ChatRoom, Listing, Message, TenantRequest, UserPrivate, UserPublic } from "./types";
+import {
+  ChatRoom,
+  Listing,
+  Message,
+  TenantRequest,
+  UserPrivate,
+  UserPublic,
+} from "./types";
 import {
   chatRooms,
   listings,
@@ -64,7 +71,7 @@ export const getReceivedTenantRequest = async (id: string) => {
     id: doc.id,
     ...doc.data(),
   })) as TenantRequest[];
-}
+};
 
 export const getSentTenantRequests = async (id: string) => {
   const ref = tenantRequests.orderBy("createdAt").where("tenantUid", "==", id);
@@ -76,7 +83,7 @@ export const getSentTenantRequests = async (id: string) => {
     id: doc.id,
     ...doc.data(),
   })) as TenantRequest[];
-}
+};
 
 /**
  * Get the messages of a chat room.
