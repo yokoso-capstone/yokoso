@@ -156,6 +156,7 @@ function ListingPage(
     ["internet", FcCableRelease],
     ["naturalGas", GiHeatHaze],
   ]);
+  const availabilityDate = new Date(String(availability));
 
   const toast = useToast();
   const toggleVisibility = visibility === "public" ? "hidden" : "public";
@@ -254,6 +255,10 @@ function ListingPage(
                 <Caption>·</Caption>
                 <Caption>
                   {numBaths} Bath{numBaths > 1 && "s"}
+                </Caption>
+                <Caption>·</Caption>
+                <Caption>
+                  Available starting {availabilityDate.toLocaleDateString()}
                 </Caption>
               </HStack>
             </Box>
