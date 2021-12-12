@@ -1,7 +1,7 @@
 import firebase from "firebase/app";
 import { CollectionName } from "./collections";
 
-export type timestamp = 
+export type timestamp =
   | number
   | firebase.firestore.FieldValue
   | firebase.firestore.Timestamp;
@@ -22,7 +22,7 @@ export type Frequency =
 
 export type LeaseType = "Sublet" | "Lease";
 
-export type RequestStatus = "sent" |"pending" | "rejected" | "accepted";
+export type RequestStatus = "sent" | "pending" | "rejected" | "accepted";
 
 export type RentalSpace =
   | "Entire Building"
@@ -32,7 +32,6 @@ export type RentalSpace =
 export type FurnishedStatus = "Unfurnished" | "Furnished" | "Semi-Furnished";
 
 export type ListingStatus = "available" | "pending" | "rented";
-
 
 export type TenantEntry = UserPublic & {
   rentals: {
@@ -155,7 +154,7 @@ export type TenantRequest = {
     data: Listing;
     id: string;
   };
-}
+};
 
 export type Schema = {
   [CollectionName.ChatRooms]: {

@@ -10,9 +10,9 @@ export const handleTenantRequest = async (
   requestLeaseStartDate: Date,
   onSuccess?: () => void,
   onError?: () => void,
-  setLoading?: Dispatch<SetStateAction<boolean>>,
+  setLoading?: Dispatch<SetStateAction<boolean>>
 ) => {
-  if (setLoading){
+  if (setLoading) {
     setLoading(true);
   }
 
@@ -35,7 +35,7 @@ export const handleTenantRequest = async (
         status: "sent",
         listing: currentListingData,
         createdAt: serverTimestamp,
-        leaseStartDate: firestoreTimestamp.fromDate(requestLeaseStartDate)
+        leaseStartDate: firestoreTimestamp.fromDate(requestLeaseStartDate),
       };
       await requestRef.set(tenantRequestData);
 
@@ -47,7 +47,6 @@ export const handleTenantRequest = async (
     if (onError) {
       onError();
     }
-
   } finally {
     if (setLoading) {
       setLoading(false);
@@ -60,12 +59,12 @@ export const checkRequestStatus = async (
   userUid: string,
   ownerUid: string,
   setRequestStatus: Dispatch<SetStateAction<boolean>>,
-  onError?: () => void,
+  onError?: () => void
 ) => {
-  if (!listing){
+  if (!listing) {
     throw Error;
   }
-  if (!userUid){
+  if (!userUid) {
     setRequestStatus(true);
   } else {
     const requestId = [userUid, ownerUid, listing.id].sort().join("-");
@@ -79,7 +78,6 @@ export const checkRequestStatus = async (
       } else {
         setRequestStatus(false);
       }
-
     } catch (err) {
       if (onError) {
         onError();

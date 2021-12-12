@@ -16,5 +16,5 @@ export enum UserType {
 export enum ListingStatus {
   Available = "available",
   Pending = "pending",
-  Rented = "rented"
+  Rented = "rented",
 }
