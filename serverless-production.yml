@@ -15,5 +15,5 @@ yokoso-production:
       apiLambda: yokoso-production-api-lambda
     publicDirectoryCache: true
     runtime:
-      defaultLambda: "nodejs12.x"
-      apiLambda: "nodejs12.x"
+      defaultLambda: "nodejs16.x"
+      apiLambda: "nodejs16.x"
