@@ -15,5 +15,5 @@ yokoso-staging:
       apiLambda: yokoso-staging-api-lambda
     publicDirectoryCache: false
     runtime:
-      defaultLambda: "nodejs12.x"
-      apiLambda: "nodejs12.x"
+      defaultLambda: "nodejs16.x"
+      apiLambda: "nodejs16.x"
